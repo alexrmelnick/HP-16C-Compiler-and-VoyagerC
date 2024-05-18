@@ -4,7 +4,7 @@ This project is a compiler that translates VoyagerC, a custom, C-based high-leve
 
 ## Description
 
-The HP-16C Compiler allows users to write programs in VoyagerC and compile them into plaintext for typing into the HP-16C calculator or into the .16c format to be run on the [JRPN HP-16C simulator](https://jrpn.jovial.com/)). The HP-16C is a computer scientist's calculator produced from 1982 until 1989. To this day, it is considered the greatest programmer's calculator ever made and is still highly sought after by assembly programmers. This project aims to provide a user-friendly way to develop complex programs for the HP-16C.
+The HP-16C Compiler allows users to write programs in VoyagerC and compile them into plaintext for typing into the HP-16C calculator or into the .16c format to be run on the [JRPN HP-16C simulator](https://jrpn.jovial.com/). The HP-16C is a computer scientist's calculator produced from 1982 until 1989. To this day, it is considered the greatest programmer's calculator ever made and is still highly sought after by assembly programmers. This project aims to provide a user-friendly way to develop complex programs for the HP-16C.
 
 ## Getting Started
 
