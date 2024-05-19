@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Documentation
+docs/HP-16C-Owners-Handbook.pdf
+
+# User-specific files
+.vscode/
