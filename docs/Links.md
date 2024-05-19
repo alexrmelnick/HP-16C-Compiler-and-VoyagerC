@@ -11,3 +11,7 @@
 ## Other Tools
 
 - [JRPN HP-16C Simulator](https://jrpn.jovial.com/)
+
+## Helpful Resources I Came Across While Working on This Project
+- [I wrote a programming language. Here’s how you can, too.](https://www.freecodecamp.org/news/the-programming-language-pipeline-91d3f449c919/)
+- [Building Your Own Programming Language From Scratch](https://hackernoon.com/building-your-own-programming-language-from-scratch)

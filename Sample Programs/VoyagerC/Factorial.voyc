@@ -1,0 +1,15 @@
+/**
+* This is the very first program ever written in VoyagerC. It was created to demonstrate the basic syntax of 
+* the language and to test the compiler. It is a simple program that computes the factorial of a number.
+*/
+
+uint32 factorial(uint32 n) {
+    uint32 result = 1;
+
+    while (n > 1) {
+        result = result * n; // Eventually plan to implement *= operator, but not yet
+        n = n - 1; // Eventually plan to implement -- and -= operator, but not yet
+    }
+
+    return result;
+}
