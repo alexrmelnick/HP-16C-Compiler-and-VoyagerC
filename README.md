@@ -20,13 +20,13 @@ These two goals are quite different. Using the HP-16C as a general-purpose compu
 ## Getting Started
 
 This project is a work in progress. Below is a rough roadmap:
-1. Determine the Specifications of VoyagerC
-  - VoyagerC is planned to be an extension for the C programming language designed around specific HP-16C buttons and functions.
+1. Develop VoyagerC Library **(In Progress)**
+  - VoyagerC is planned to be an library for the C programming language designed around specific HP-16C buttons and functions. 
 2. Study Compilers and HP-16C Keystroke Programming
   - Thoroughly understand compiler design and the specifics of HP-16C keystroke programming.
-3. Develop the VoyagerC Compiler in C++
+3. Develop the VoyagerC Compiler in C++(? - language subject to change)
   - Begin by compiling into the .16c format used by the JRPN simulator since the simulator can import programs from files, which is convenient for testing.
-  - Once the compiler can generate .16c files, add functionality to produce a more human-readable format for viewing and printing HP-16C "assembly".
+  - Once the compiler can generate .16c files, add functionality to produce a more human-readable format for viewing and printing out on paper for manual input to the HP-16C. 
 
 ### Prerequisites
 
