@@ -21,7 +21,11 @@ VoyagerC is a C-like language designed specifically for the HP-16C calculator. I
 ## Roadmap
 
 This project is a work in progress and has a *very* long road ahead of it. Below is a rough roadmap:
-1. Develop VoyagerC language **(In Progress)**
+0. Learn how to write HP-16C programs in keystroke programming.
+  - This is a necessary step to understand how to compile VoyagerC into HP-16C keystroke programming.
+  - This will also help in understanding the limitations of the HP-16C and how to design VoyagerC to work within those constraints.
+  - **Status:** *In Progress* - Currently in process of writing a factorial program in HP-16C keystroke programming.
+1. Develop VoyagerC language 
   - VoyagerC is planned to be a C-based programming language designed around specific HP-16C buttons and functions. 
 2. Develop the VoyagerC Compiler in Python(? - language subject to change)
   - Begin by compiling into the .16c format used by the JRPN simulator since the simulator can import programs from files, which is convenient for testing.

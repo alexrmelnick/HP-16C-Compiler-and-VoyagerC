@@ -1,0 +1,44 @@
+This documents the program for computing the factorial of a number on the HP-16C.
+Programmed manually by me (Alex Melnick) on 2024-6-11.
+
+My VoyagerC program that I am converting to HP-16C "assembly" language:
+uint32 factorial(uint32 n) {
+    uint32 result = 1;
+
+    while (n > 1) {
+        result = result * n; // Eventually plan to implement *= operator, but not yet
+        n = n - 1; // Eventually plan to implement -- and -= operator, but not yet
+    }
+
+    return result;
+}
+
+My VoyagerC program converted to MIPS assembly (the only assembly language I know):
+.data
+    input:  .word 5  # The number to compute the factorial of
+    output: .word 0 # The result of the factorial computation
+.text
+    lw $t0, input  # Load the number to compute the factorial of into $t0
+    li $t1, 1      # Load the number 1 into $t1 - the result of the factorial computation
+    li $t2, 1      # Load the number 1 into $t2 - the number to subtract from $t0
+    Loop:
+        beq $t0, $t2, Done # If $t0 == 1, then we are done
+        mul $t1, $t1, $t0 # Multiply $t1 by $t0 and store the result in $t1
+        sub $t0, $t0, $t2 # Subtract 1 from $t0 and store the result in $t0
+        j Loop # Jump back to the beginning of the loop
+    Done:
+        sw $t1, output # Store the result of the factorial computation in output
+
+
+
+
+
+
+HP-16C "assembly" language program:
+g P/R           # Set to Progam mode
+f CLEAR PRGM    # Clear program memory
+g LBL A         # Label this program as "A"
+ENTER           # Place the number to compute the factorial of on the stack
+1               # Place the number 1 on the stack
+-               # Subtract 1 from the number on the stack
+*               # Multiply the two numbers on the stack
