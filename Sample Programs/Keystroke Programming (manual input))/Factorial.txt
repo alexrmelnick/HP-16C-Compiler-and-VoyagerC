@@ -37,19 +37,21 @@ HP-16C "assembly" language program: (not currently working)
 g P/R           # Set to Program mode
 f CLEAR PRGM    # Clear program memory
 g LBL A         # Label this program as "A" (the main program)
-STO 0           # Store the number to compute the factorial of in register 0
-1               # Store the number 1 in the X register
-STO 1           # Store the number 1 in register 1 - the result of the factorial computation
-g LBL B         # Label this loop as "B"
-RCL 0           # Recall the number to compute the factorial of into the X register
-g x=0           # If X == 0, then Go To C, else skip the next line
-GTO C
-RCL 1           # Recall the result of the factorial computation into the X register
-*               # Multiply the number to compute the factorial of by the result of the factorial computation
-STO 1           # Store the result of the multiplication in register 1
-RCL 0           # Recall the number to compute the factorial of into the X register
-1 -             # Subtract 1 from the number to compute the factorial of
-STO 0           # Store the result of the subtraction in register 0
-GTO B           # Goto B
-g LBL C         # Label this as the "Done" label
-g return        # Return the result of the factorial computation in the X register
+    STO 0           # R0 <- Input
+    1               # X <- 1
+    STO 1           # R1 <- X=1:=Result
+    g LBL B         # Label this loop as "B"
+        RCL 0           # X <- R0=Input
+        g x=0           # If X:=Input == 0, then Go To C, else skip the next line
+        GTO C
+        RCL 1           # Y <- X:=Input, X <- R1:=Result
+        *               # X <- (Y:=Input * X:=Result)
+        STO 1           # R1:=Result <- X:=Input*Result
+        RCL 0           # X <- R0:=Input
+        1 -             # X <- X-1:=Input-1
+        STO 0           # R0:=Input <- X:=Input-1
+        GTO B           # Goto B
+    g LBL C         # Label Done as "C"
+    RCL 1           # X <- R1:=Result
+#g return       # Return (only necessary if loading multiple programs)
+                # result is in R1
