@@ -1,0 +1,26 @@
+#  Program produced by JRPN Assembler.
+#  Character encoding: UTF-8
+#  Generated 2024-06-12 17:51:41
+# Program occupies NNN bytes.
+
+   000 {          } 
+   001 { ## ## ## } g LBL A
+   002 { ## ## ## } STO 0
+   003 { ## ## ## } 1
+   004 { ## ## ## } STO 1
+   005 { ## ## ## } g LBL B
+   006 { ## ## ## } RCL 0
+   007 { ## ## ## } g x==0
+   008 { ## ## ## } GTO C
+   009 { ## ## ## } RCL 1
+   010 { ## ## ## } *
+   011 { ## ## ## } STO 1
+   012 { ## ## ## } RCL 0
+   013 { ## ## ## } 1
+   014 { ## ## ## } -
+   015 { ## ## ## } STO 0
+   016 { ## ## ## } GTO B
+   017 { ## ## ## } g LBL C
+   018 { ## ## ## } RCL 1
+
+# End.

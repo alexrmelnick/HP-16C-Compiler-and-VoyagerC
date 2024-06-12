@@ -48,7 +48,8 @@ g LBL A         # Label this program as "A" (the main program)
         *               # X <- (Y:=Input * X:=Result)
         STO 1           # R1:=Result <- X:=Input*Result
         RCL 0           # X <- R0:=Input
-        1 -             # X <- X-1:=Input-1
+        1               # Y <- X:=Input, X <- 1
+        -               # X <- Y-X:=Input-1
         STO 0           # R0:=Input <- X:=Input-1
         GTO B           # Goto B
     g LBL C         # Label Done as "C"
