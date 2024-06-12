@@ -7,33 +7,10 @@
 #TODO: Add the rest of the buttons to the dictionary
 #TODO: Add functionality for detecting illegal buttons
 #TODO: Figure out how to work with the #B button
+#TODO: Need to account for SHOW [HEX/DEC/OCT/BIN] being having a space in the instruction
 import sys
 from datetime import datetime
-
-# Dictionary of valid buttons on the HP-16C calculator and their corresponding positions on the keyboard
-# Position of 11 is the top left button, 
-#TODO Add the rest of the buttons
-buttons = {
-    # Alphanumeric keys
-    'A': ' A',
-    'B': ' B',
-    'C': ' C',
-    'D': ' D',
-    'E': ' E',
-    'F': ' F',
-    '0': ' 0',
-    '1': ' 1',
-    '2': ' 2',
-    '3': ' 3',
-    '4': ' 4',
-    '5': ' 5',
-    '6': ' 6',
-    '7': ' 7',
-    '8': ' 8',
-    '9': ' 9',
-    # Function keys
-
-}
+from Buttons import buttons
 
 def main():
     # Check if the user has entered the correct number of arguments
@@ -51,7 +28,7 @@ def main():
     output_file = open(output_file_name, "w") # Open the output file in write mode with the same name as the input file and .16c extension
 
     # Write the header to the output file
-    output_file.write("#  Program produced by JRPN Assembler.\n")
+    output_file.write("#  Program produced by Alex Melnick's JRPN Assembler.\n")
     output_file.write("#  Character encoding: UTF-8\n")
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output_file.write("#  Generated "+current_time+"\n") # Write the current date and time to the output file
@@ -80,18 +57,14 @@ def main():
         # Write the line number to the output file
         output_file.write("   "+str(line_number).zfill(3)+" { ")
 
-        output_file.write("## ") # TODO: Figure out what these numbers are and how they are calculated
-        output_file.write("## ")
-        output_file.write("## } ")
-
         if(len(words) == 0):
             continue # This should have been caught by the empty line check above
         elif(len(words) == 1):
-            output_file.write(words[0]+"\n")
+            output_file.write("      "+buttons[words[0]]+" } "+words[0]+"\n")
         elif(len(words) == 2):
-            output_file.write(words[0]+" "+words[1]+"\n")
+            output_file.write("   "+buttons[words[0]]+" "+buttons[words[1]]+" } "+words[0]+" "+words[1]+"\n")
         elif(len(words) == 3):
-            output_file.write(words[0]+" "+words[1]+" "+words[2]+"\n")
+            output_file.write(buttons[words[0]]+" "+buttons[words[1]]+" "+buttons[words[2]]+" } "+words[0]+" "+words[1]+" "+words[2]+"\n")
         else:
             print("Error: Too many words on line "+input_line_number)
             sys.exit(1)

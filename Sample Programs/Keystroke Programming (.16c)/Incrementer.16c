@@ -1,0 +1,13 @@
+#  Program produced by JRPN 16C.
+#  Character encoding:  UTF-8
+#  Generated 2024-6-12 21:05 Jerusalem Daylight Time.
+#  Program occupies 28 bytes.
+
+   000 {          } 
+   001 { 43 22  A } g LBL A
+   002 {        1 } 1
+   003 {       40 } +
+   004 {    42 26 } f SHOW BIN
+   005 {    22  A } GTO A
+
+# End.
