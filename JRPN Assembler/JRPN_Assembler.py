@@ -4,8 +4,36 @@
 # because I need to brush up on Python for my summer internship. 
 # 
 # The simulator is written in Python 3.12.3.
+#TODO: Add the rest of the buttons to the dictionary
+#TODO: Add functionality for detecting illegal buttons
+#TODO: Figure out how to work with the #B button
 import sys
 from datetime import datetime
+
+# Dictionary of valid buttons on the HP-16C calculator and their corresponding positions on the keyboard
+# Position of 11 is the top left button, 
+#TODO Add the rest of the buttons
+buttons = {
+    # Alphanumeric keys
+    'A': ' A',
+    'B': ' B',
+    'C': ' C',
+    'D': ' D',
+    'E': ' E',
+    'F': ' F',
+    '0': ' 0',
+    '1': ' 1',
+    '2': ' 2',
+    '3': ' 3',
+    '4': ' 4',
+    '5': ' 5',
+    '6': ' 6',
+    '7': ' 7',
+    '8': ' 8',
+    '9': ' 9',
+    # Function keys
+
+}
 
 def main():
     # Check if the user has entered the correct number of arguments
@@ -27,7 +55,7 @@ def main():
     output_file.write("#  Character encoding: UTF-8\n")
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output_file.write("#  Generated "+current_time+"\n") # Write the current date and time to the output file
-    output_file.write("# Program occupies NNN bytes.\n\n") # TODO: Calculate the number of bytes in the program
+    output_file.write("# Program occupies ### bytes.\n\n") # TODO: Calculate the number of bytes in the program
 
     # Write the first line of the output file (always the same)
     output_file.write("   000 {          } \n") # 10 spaces between the curly braces
@@ -45,7 +73,7 @@ def main():
 
         # If any of the words are not in the dictionary, print an error message and exit
         # for word in words:
-        #     if word not in dictionary: # TODO: Add the dictionary of valid words
+        #     if word not in buttons: # TODO: Add the dictionary of valid words
         #         print("Error: Unknown word "+word+" on line "+input_line_number)
         #         sys.exit(1)
         
@@ -56,7 +84,9 @@ def main():
         output_file.write("## ")
         output_file.write("## } ")
 
-        if(len(words) == 1):
+        if(len(words) == 0):
+            continue # This should have been caught by the empty line check above
+        elif(len(words) == 1):
             output_file.write(words[0]+"\n")
         elif(len(words) == 2):
             output_file.write(words[0]+" "+words[1]+"\n")
@@ -74,7 +104,6 @@ def main():
     output_file.close()
 
     print("Assembly complete. Output written to "+output_file_name)
-
 
 if __name__ == "__main__":
     main()
