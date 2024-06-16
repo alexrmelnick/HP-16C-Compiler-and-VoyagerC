@@ -1,0 +1,45 @@
+# float exp(float base, int power) {
+#     float result = 1;
+#     for(int i = power; i > 0; i--) {
+#         result *= base;
+#     }
+#
+#     return result;
+# }
+
+# MIPS Assembly (not working)
+.data
+    base: .float 2.0
+    power: .float 3.0
+    result: .float 1.0
+.text
+    # Load floating-point values
+    l.s $f0, base # F0 <- base
+    l.s $f1, power # F1 <- power
+
+    # Initialize result to 1.0 (floating-point)
+    l.s $f2, result # F2 <- 1.0 := result
+
+    # Convert power to integer for loop control
+    trunc.w.s $f3, $f1 # F3 <- trunc(F1) (integer in floating-point register)
+    mfc1 $t1, $f3 # T1 <- F3 (integer power)
+
+    loop:
+        beq $t1, $zero, end # if T1 == 0, goto end
+        mul.s $f2, $f2, $f0 # F2 <- F2 * F0
+        addi $t1, $t1, -1 # T1 <- T1 - 1
+        j loop # goto loop
+
+    end:
+        # Result is in $f2
+
+
+
+
+# Memory Map
+# Exponentiation
+    # R8 := base
+    # R9 := exponent
+    # R10 := result
+    # R11 := i
+    # R12-15 := temp variables

@@ -8,6 +8,7 @@
 #TODO: Add functionality for detecting illegal buttons
 #TODO: Figure out how to work with the #B button
 #TODO: Need to account for SHOW [HEX/DEC/OCT/BIN] being having a space in the instruction
+#TODO: Figure out how to count the number of bytes in the program and write code to throw an error if the program is too long
 import sys
 from datetime import datetime
 from Buttons import buttons
