@@ -1,0 +1,25 @@
+#  Program produced by Alex Melnick's JRPN Assembler.
+#  Character encoding: UTF-8
+#  Generated 2024-06-17 19:52:48
+# Program occupies ### bytes.
+
+   000 {          } 
+   001 {    001 {    001 {    001 {    001 {    001 {    001 {    001 {    001 {    001 {    001 {    001 {    001 {    001 {    001 {    001 { 43 22  D } g LBL D
+   002 {    002 {        1 } 1
+   003 {    44 10 } STO 10
+   004 {    45  9 } RCL 9
+   005 {    44 32 } STO I
+   006 { 43 22  E } g LBL E
+   007 {    45  9 } RCL 9
+   008 {       DCZ } DCZ
+   009 {    22  0 } GTO 0
+   010 {    45 10 } RCL 10
+   011 {    45  8 } RCL 8
+   012 {       20 } *
+   013 {    44 10 } STO 10
+   014 { 43 22  0 } g LBL 0
+   015 {    45 10 } RCL 10
+   016 { 42 SHOW dec } f SHOW dec
+   017 {    43 21 } g RTN
+
+# End.

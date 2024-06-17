@@ -7,39 +7,31 @@
 #     return result;
 # }
 
-# MIPS Assembly (not working)
-.data
-    base: .float 2.0
-    power: .float 3.0
-    result: .float 1.0
-.text
-    # Load floating-point values
-    l.s $f0, base # F0 <- base
-    l.s $f1, power # F1 <- power
-
-    # Initialize result to 1.0 (floating-point)
-    l.s $f2, result # F2 <- 1.0 := result
-
-    # Convert power to integer for loop control
-    trunc.w.s $f3, $f1 # F3 <- trunc(F1) (integer in floating-point register)
-    mfc1 $t1, $f3 # T1 <- F3 (integer power)
-
-    loop:
-        beq $t1, $zero, end # if T1 == 0, goto end
-        mul.s $f2, $f2, $f0 # F2 <- F2 * F0
-        addi $t1, $t1, -1 # T1 <- T1 - 1
-        j loop # goto loop
-
-    end:
-        # Result is in $f2
-
-
-
-
+# 16c Assembly
 # Memory Map
-# Exponentiation
     # R8 := base
     # R9 := exponent
     # R10 := result
     # R11 := i
     # R12-15 := temp variables
+
+g LBL D # Label start of subroutine
+    # Initialize variables
+    1   # X <- 1
+    STO 10  # R10 := result <- X == 1
+    RCL 9   # X <- R9 := exponent
+    STO I   # RI <- X := exponent
+
+    g LBL E # Loop top
+        RCL 9   # X <- R9 := exponent
+        DCZ     # RI--; if RI == 0, exit, else proceed
+        GTO 0
+        RCL 10  # X <- R10:=result
+        RCL 8   # Y <- R10:=result, X <- R8:=base
+        *       # X <- X * Y
+        STO 10  # R10 <- X := result * base
+       
+    g LBL 0 # End of loop
+    RCL 10  # X <- R10 := result
+    f SHOW dec  # Display results
+g RTN   # Return

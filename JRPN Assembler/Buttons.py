@@ -1,6 +1,7 @@
 # Dictionary of valid buttons on the HP-16C calculator and their corresponding positions on the keyboard
 # Position of 11 is the top left button, 
 #TODO Double check encodings for all buttons and their positions
+
 buttons = {
     # Alphanumeric keys
     'A': ' A',
@@ -114,3 +115,10 @@ buttons = {
     'x==y': '49',
     'x==0': '40'
 }
+
+# Handle the case of an int other than 0-10
+def get_button(key):
+    try:
+        return buttons[key]
+    except KeyError:
+        return key

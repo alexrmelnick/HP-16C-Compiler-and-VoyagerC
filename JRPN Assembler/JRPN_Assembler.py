@@ -11,7 +11,7 @@
 #TODO: Figure out how to count the number of bytes in the program and write code to throw an error if the program is too long
 import sys
 from datetime import datetime
-from Buttons import buttons
+from Buttons import *
 
 def main():
     # Check if the user has entered the correct number of arguments
@@ -61,11 +61,11 @@ def main():
         if(len(words) == 0):
             continue # This should have been caught by the empty line check above
         elif(len(words) == 1):
-            output_file.write("      "+buttons[words[0]]+" } "+words[0]+"\n")
+            output_file.write("      "+get_button(words[0])+" } "+words[0]+"\n")
         elif(len(words) == 2):
-            output_file.write("   "+buttons[words[0]]+" "+buttons[words[1]]+" } "+words[0]+" "+words[1]+"\n")
+            output_file.write("   "+get_button(words[0])+" "+get_button(words[1])+" } "+words[0]+" "+words[1]+"\n")
         elif(len(words) == 3):
-            output_file.write(buttons[words[0]]+" "+buttons[words[1]]+" "+buttons[words[2]]+" } "+words[0]+" "+words[1]+" "+words[2]+"\n")
+            output_file.write(get_button(words[0])+" "+get_button(words[1])+" "+get_button(words[2])+" } "+words[0]+" "+words[1]+" "+words[2]+"\n")
         else:
             print("Error: Too many words on line "+input_line_number)
             sys.exit(1)
