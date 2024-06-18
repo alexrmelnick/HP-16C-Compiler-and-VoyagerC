@@ -16,7 +16,7 @@ from Buttons import *
 def main():
     # Check if the user has entered the correct number of arguments
     if len(sys.argv) != 2:
-        print("Usage: python JRPN_Assembler.py <filename>.16casm")
+        print("Usage: python SRPN_Assembler.py <filename>.16casm")
         sys.exit(1)
 
     # Open the input file, read it, then close it
@@ -29,7 +29,7 @@ def main():
     output_file = open(output_file_name, "w") # Open the output file in write mode with the same name as the input file and .16c extension
 
     # Write the header to the output file
-    output_file.write("#  Program produced by Alex Melnick's JRPN Assembler.\n")
+    output_file.write("#  Program produced by Alex Melnick's SRPN Assembler.\n")
     output_file.write("#  Character encoding: UTF-8\n")
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output_file.write("#  Generated "+current_time+"\n") # Write the current date and time to the output file

@@ -21,17 +21,21 @@ VoyagerC is a C-like language designed specifically for the HP-16C calculator. I
 ## Roadmap
 
 This project is a work in progress and has a *very* long road ahead of it. Below is a rough roadmap:
-0. Learn how to write HP-16C programs in keystroke programming.
+1. Learn how to write HP-16C programs in keystroke programming. *In progress*
   - This is a necessary step to understand how to compile VoyagerC into HP-16C keystroke programming.
   - This will also help in understanding the limitations of the HP-16C and how to design VoyagerC to work within those constraints.
-  - 0.a. Write some programs in HP-16C keystroke programming to get a feel for the language.
-  - 0.b. Build a simple assembler to convert VoyagerC assembly into the format readable by the JRPN Simulator. **(IN PROGRESS)**
-1. Develop VoyagerC language 
+  - Write some programs in HP-16C keystroke programming to get a feel for the language.
+2. Develop Saturnine Assembly Language and Assembler *In progress*
+  - A prototype of the Saturnine Assembly Language and Assembler has been developed. However, it needs to be refined and extended to support more complex programs.
+  - Specifically, a complete instruction set needs to be defined first. 
+  - Then the assembler needs to be developed to translate Saturnine Assembly Language into HP-16C keystroke programming and .16c format.
+  - I also want it to be able to generate a printable PDF with the sequences of keystrokes for manual input to the HP-16C for retro enthusiasts.
+3. Develop VoyagerC language *Subject to change*
   - VoyagerC is planned to be a C-based programming language designed around specific HP-16C buttons and functions. 
-2. Develop the VoyagerC Compiler in Python(? - language subject to change)
+4. Develop the VoyagerC Compiler in Python(? - language subject to change)
   - Begin by compiling into the .16c format used by the JRPN simulator since the simulator can import programs from files, which is convenient for testing.
   - Once the compiler can generate .16c files, add functionality to produce a more human-readable format for viewing and printing out on paper for manual input to the HP-16C. 
-3. Extend VoyagerC to support other HP calculators?
+5. Extend VoyagerC to support other HP calculators?
   - The HP-16C is the first target, but VoyagerC could be extended to support other HP calculators, such as the HP-12C or HP-15C.
   - This is a very long-term goal and will depend on the success of the HP-16C compiler.
 
