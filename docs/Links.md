@@ -12,7 +12,8 @@
 - [eBay](https://www.ebay.com/sch/i.html?_nkw=hp-16c) - This is how I got mine. They are not cheap, but they are worth it and will last forever. 
 - [SwissMicro DM16L](https://www.swissmicros.com/product/dm16l) - A modern clone of the HP-16C
 - [PX16C Kit](https://www.tindie.com/products/hobbystone/px16c-an-hp16c-programmers-calculator-emulator/) - This is a Raspberry Pi-based emulator of the HP-16C. It is a kit that you have to assemble yourself. It is currently out of stock. 
-    - I plan on getting on of these at some point. I would like to maybe try to port the VoyagerC compiler to it, but this is very far down the line.
+    - I plan on getting on of these at some point. I would like to maybe try to port the VoyagerC compiler to it, but it isn't open source, so I don't know if that will be possible. Of course, I could always make a C interpreter for VoyagerC and run it on the Raspberry Pi, but that just isn't the same. 
+    - I would love to see someone replace the Raspberry Pi with an FPGA to make it more authentic. I believe people have replicated the HP nut processor in Verilog and/or VHDL, so it should be possible.
 
 ## Other Tools
 

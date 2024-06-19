@@ -6,7 +6,14 @@ Please note that this documentation is a work in progress and will be updated as
 
 ## Table of Contents
 1. [Introduction](##introduction)
-2. [Registers, Memory, and Flags](##registers-memory-and-flags)
+2. [System Architecture](##system-architecture)
+    a. [Registers](###registers)
+    b. [Numerical Representation Modes](###numerical-representation-modes)
+        i. [Integer Mode](####integer-mode)
+        ii. [Floating Point Mode](####floating-point-mode)
+    c. [Memory](###memory)
+    d. [Flags](###flags)
+        i. [Status](###status)
 3. [Instruction Set](##instruction-set)
 4. [Syntax](##syntax)
 5. [Examples](##examples)
@@ -17,11 +24,11 @@ Saturnine is a custom assembly language designed specifically for the HP-16C cal
 
 The Saturnine Assembler gets its name from the JRPN HP-16C Simulator. JRPN stands for Jovial Reverse Polish Notation. One meaning of "Jovial" is "of Jupiter". The next planet after Jupiter is Saturn, so the name "Saturnine" was chosen. The word "Saturnine" has a few meanings, one of which is "gloomy or sullen in temperament". This is a appropriate given the HP-16C's challenge to program.
 
-This guide will repeat lots of information from the HP-16C manual. Part of the reason for its existence is to serve as my notes while learning the HP-16C keystroke programming language. I hope it will be useful to others as well.
+This guide will repeat lots of information from the HP-16C manual. Half of the reason for its existence is to serve as my notes while learning the HP-16C keystroke programming language. I hope it will be useful to others as well.
 
 
-## Registers, Memory, and Flags
-This will be my attempt to summarize how the registers, memory, and flags work on the HP-16C. This is a work in progress and will be updated as I learn more. You may find comparisons to MIPS, the only other assembly language I have experience with. However, the two are quite different.
+## System Architecture
+This will be my attempt to summarize how the system architecture works on the HP-16C. This is a work in progress and will be updated as I learn more. You may find comparisons to MIPS, the only other assembly language I have experience with. However, the two are quite different. I struggled on how exactly to order the categories in this section. I decided to simply copy the order of the HP-16C manual, however knowledge of some categories is required to understand others. I will try to make it clear when this is the case.
 
 ### Registers
 The HP-16C has 6 registers. It has a 4 register stack that can be used to store intermediate values, a Last X register which retains a copy of the X register, and an I register for indexing. 
@@ -30,20 +37,52 @@ The stack registers, in *reverse* order, are as follows:
 - Y: The second register. It is used for calculations that require 2 operands and to store intermediate values during calculations.
 - Z: The third register. It is used to store intermediate values during calculations.
 - T: The fourth register. It is used to store intermediate values during calculations. It is lost when a new value is entered into the X register.
+
 The stack registers can rotate depending on the operation. There are 3 types of operations: Stack Lift, Stack Drop, No Stack Change. These most easily understood by looking at the stack as a vertical list of registers. Stack Lift operations move the registers up, Stack Drop operations move the registers down, and No Stack Change operations leave the registers in place. Here is a diagram showing these operations:
 ![Stack Lift and Drop Diagram](Images/Stack_Lifts_and_Drops_Diagram.png)
+Most notably, entering numbers and `ENTER` are Stack Lift operations, and arithmetic and logical operations are Stack Drop operations. 
+
 The values stored in the stack can be rotated into and out of the X register using the `R^` and `Rv` instructions. The values of the X and Y registers can also be swapped with `X<>Y`. These allow the Y, Z, and T registers to be used more like general purpose registers. 
 
 Additionally, there are 2 more registers, however they are not part of the stack:
 - Last X: This register stores the value of the X register before the last operation was performed. It is useful for recalling the previous value of the X register.
 - I: This register is used to store the index of the current memory register. It is used in conjunction with the memory operations to allow for indirect memory access. This allows for more flexible memory operations. It can also be used with special functions to simplify for-loop control. 
 
+### Numerical Representation Modes
+The HP-16C has 2 main modes: integer, and floating point. The vast majority of calculations are done in integer mode since it is far more fully featured. The two modes are mostly incompatible with each other - the numbers in each do not have the necessarily same cardinality (i.e., numerical value) in each format. Converting between the two is possible, but not always straightforward. See the [Floating Point Mode](####Floating-Point-Mode) section for more information. 
+#### Integer Mode
+In integer mode, the HP-16C can store numbers in 4 different bases: `binary`, `octal`, `decimal`, and `hexadecimal`. For the Saturnine Assembler, to specify the base of the number, use `0b###` for `binary`, `0o###` for `octal`, `0d###` for `decimal`, and `0x###` for `hexadecimal`. If no base is specified, the number is assumed to be in `decimal`.
+
+The HP-16C can store integers in 180 different combinations of encodings. The original purpose of this is so you can set your HP-16C to whatever encoding your computer uses. The HP-16C was primarily a debugging tool for computer engineers working in assembly, so this feature was useful, but not so relevant for the Saturnine Assembler. 
+
+The HP-16C stores integers in 1 of 3 different encodings: `unsigned`, `1's complement`, and `2's complement`. The encoding set in Saturnine by using the `UNSIGNED`, `1's`, `2's` instructions, respectively. The default is `2's complement`. For most purposes, you should set the HP-16C to `2's complement` encoding for signed integers, or `unsigned` for unsigned integers. 
+
+The HP-16C can store integers in any word size between `4-` and `64-bits`. This means it is still actually useful for modern 64-bit computers. By default, the HP-16C is set to `16-bit` word size. The word size can be set using the `WORD` instruction. For most purposes, you should set the HP-16C to either `4-bit`, `8-bit`, `16-bit`, `32-bit`, or `64-bit` word size, depending on the size of the integers you are working with. I am unaware of any reason to use the other word sizes for integers. Maybe if you wanted to store `7-bit` integers for ASCII characters, but that seems like a stretch.
+
+The word size not only affects when the maximum storable value in a register, but also how many much memory is available. The HP-16C has 203 Bytes of memory. This is divided by the word size to get the number of storage addresses. This will be discussed in more detail in the [Memory](###Memory) section.
+
+#### Floating Point Mode
+In floating point mode, the HP-16C can do calculations with decimals. The HP-16C does not use the IEEE 754 Standard for Floating Point Arithmetic. The standard not published until 1985, 4 years after the HP-16C was released. In 1982 at release, the proposal was only a draft. Notably, HP did include a program in the manual to convert between the two formats, but does not use the IEEE 754 standard internally. This limits the usefulness of the HP-16C for modern floating point applications. 
+
+To enter floating point mode, use the `FLOAT #` instruction, where `#` is the number of decimal places to use. The value in the initial display will be Y*2^X, where Y and X are the integer values stored in the Y and X registers. This means that integers can be converted to floating point numbers by setting the X register to 0.
+- Example: `3`; `2`; `FLOAT 2`: X == 2, Y == 3, Display == 3*2^2 == 9.00
+
+On converting to floating point mode, the stack and the LAST X registers are cleared. The I register and the storage registers are not affected. The complement mode is maintained, but not in use.  
+
+**WIP** 
+
+
 ### Memory
 **WIP**
+From above for future use:
+In `16-bit` mode, there are 101 storage registers. In `64-bit` mode, there are 25 storage registers. Interestingly, in `4-bit` mode, there are 406 storage registers.
 
 ### Flags
 **WIP**
 
+#### Status
+This largely does not apply to the Saturnine Assembler, but is useful to know. When in `STATUS` mode, the HP-16C will display the status of the calculator. This includes, in order, the complement mode, the word size, and the current status of the `flags 3, 2, 1, and 0`. Note that `flags 4 (carry)` and `5 (out-of-range)` are always displayed by the `C` and `G` annunciators respectively. See the diagram below for the layout of the status display:
+![Status Display Diagram](Images/Status_Diagram.png)
 
 ## Instruction Set
 Each instruction in the Saturnine Assembly Language corresponds to a key press on the HP-16C calculator. Instructions are all based on the keys of 16C, but with some changes to make them typeable from a standard QWERTY keyboard. **Instructions are not case sensitive.** The documentation below will list them as they are on the HP-16C keys, but you may see them in all lowercase in the other files. 
@@ -108,4 +147,4 @@ The following is a list of the instructions available in the Saturnine Assembly 
     - The bit shifted out is stored in the carry flag.
     - Example:
         - `0b1010`; `SL`: X == 0b0100, carry == 1
-- `lj`: **WIP**s
+- `lj`: **WIP**
