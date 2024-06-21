@@ -15,8 +15,12 @@ Please note that this documentation is a work in progress and will be updated as
     d. [Flags](###flags)
         i. [Status](###status)
 3. [Instruction Set](##instruction-set)
+    a. [Numeric Input](###numeric-input)
+    b. [Arithmetic Operations](###arithmetic-operations)
+    c. [Logical Operations](###logical-operations)
+    d. [Shifting and Rotating Operations](###shifting-and-rotating-operations)
 4. [Syntax](##syntax)
-5. [Examples](##examples)
+5. [Usage](##usage)
 
 
 ## Introduction
@@ -55,22 +59,29 @@ In integer mode, the HP-16C can store numbers in 4 different bases: `binary`, `o
 
 The HP-16C can store integers in 180 different combinations of encodings. The original purpose of this is so you can set your HP-16C to whatever encoding your computer uses. The HP-16C was primarily a debugging tool for computer engineers working in assembly, so this feature was useful, but not so relevant for the Saturnine Assembler. 
 
-The HP-16C stores integers in 1 of 3 different encodings: `unsigned`, `1's complement`, and `2's complement`. The encoding set in Saturnine by using the `UNSIGNED`, `1's`, `2's` instructions, respectively. The default is `2's complement`. For most purposes, you should set the HP-16C to `2's complement` encoding for signed integers, or `unsigned` for unsigned integers. 
+The HP-16C stores integers in 1 of 3 different encodings: `unsigned`, `1's complement`, and `2's complement`. The encoding set in Saturnine by using the `UNSIGNED`, `1's`, `2's` instructions, respectively. The default is `2's complement`. For most purposes, you should set the HP-16C to `2's complement` encoding for signed integers, or `unsigned` for unsigned integers. `1's complement` mode arithmetic is weird and is effected by the carry flag and has -0. While you might find it useful for debugging a UNIVAC, I will not be discussing it further as it is not useful for programming.  
 
-The HP-16C can store integers in any word size between `4-` and `64-bits`. This means it is still actually useful for modern 64-bit computers. By default, the HP-16C is set to `16-bit` word size. The word size can be set using the `WORD` instruction. For most purposes, you should set the HP-16C to either `4-bit`, `8-bit`, `16-bit`, `32-bit`, or `64-bit` word size, depending on the size of the integers you are working with. I am unaware of any reason to use the other word sizes for integers. Maybe if you wanted to store `7-bit` integers for ASCII characters, but that seems like a stretch.
+The HP-16C can store integers in any word size between `4-` and `64-bits`. This means it is still actually useful for modern 64-bit computers. By default, the HP-16C is set to `16-bit` word size. The word size can be set using the `WORD` instruction. For most purposes, you should set the HP-16C to either `4-bit`, `8-bit`, `16-bit`, `32-bit`, or `64-bit` word size, depending on the size of the integers you are working with. I am unaware of any reason to use the other word sizes for integers. Maybe if you wanted to store `7-bit` integers for ASCII characters, but that seems like a stretch. Numbers that are too large to fit in the word size cannot be entered. Results of calculations with values larger than 2^[WORD SIZE] will cause an out-of-range error (flag 5 / `G` annunciator). The X register's value will be the result of the operation modulo 2^[WORD SIZE].
 
 The word size not only affects when the maximum storable value in a register, but also how many much memory is available. The HP-16C has 203 Bytes of memory. This is divided by the word size to get the number of storage addresses. This will be discussed in more detail in the [Memory](###Memory) section.
 
 #### Floating Point Mode
 In floating point mode, the HP-16C can do calculations with decimals. The HP-16C does not use the IEEE 754 Standard for Floating Point Arithmetic. The standard not published until 1985, 4 years after the HP-16C was released. In 1982 at release, the proposal was only a draft. Notably, HP did include a program in the manual to convert between the two formats, but does not use the IEEE 754 standard internally. This limits the usefulness of the HP-16C for modern floating point applications. 
 
-To enter floating point mode, use the `FLOAT #` instruction, where `#` is the number of decimal places to use. The value in the initial display will be Y*2^X, where Y and X are the integer values stored in the Y and X registers. This means that integers can be converted to floating point numbers by setting the X register to 0.
-- Example: `3`; `2`; `FLOAT 2`: X == 2, Y == 3, Display == 3*2^2 == 9.00
+To enter floating point mode, use the `FLOAT #` instruction, where `#` is the number of decimal places to use. If a `.` is entered instead of a number, the 16C will display the floating point number in scientific/engineering notion with 6 decimal place. The last 2 digits on the display (i.e., those to the right of the gap) are the exponent.
+- Example: `FLOAT 2`; `3`: DISPLAY == 3.00
+- Example: `FLOAT .`; `300`: DISPLAY == 3.000000 02 (== 3.000000 * 10^2)
+
+The value in the initial display will be Y*2^X, where Y and X are the integer values stored in the Y and X registers. This means that integers can be converted to floating point numbers by setting the X register to 0.
+- Example: `3`; `ENTER`; `2`; `FLOAT 2`: X == 2, Y == 3, Display 12.00 (== 3 * 2^2 == 3 * 4 == 12)
 
 On converting to floating point mode, the stack and the LAST X registers are cleared. The I register and the storage registers are not affected. The complement mode is maintained, but not in use.  
 
-**WIP** 
+Numbers can be entered in scientific notion using the `EEX` button to set the exponent. 
+- Example: `FLOAT 2`; `3`; `EEX`; `2`: DISPLAY == 300.00
+- Example: `FLOAT .`; `3`; `EEX`; `2`: DISPLAY == 3.000000 02 (== 3.000000 * 10^2)
 
+Internally, the HP-16C stores floating point numbers with a 10 digit mantissa and a 2 digit exponent. This means that the HP-16C can store floats between +/- 9.999999999 * 10^99. Results of calculations with values larger or smaller than these limits will cause an out-of-range error (flag 5 / `G` annunciator) with X <- +/- +/- 9.999999999 * 10^99. The smallest value that can be stored is 1.000000000 * 10^-99. Any values smaller than this will be rounded to 0.
 
 ### Memory
 **WIP**
@@ -92,12 +103,14 @@ The following is a list of the instructions available in the Saturnine Assembly 
 - `0` through `9`: Enter the corresponding digit in base 10.
 - `.`: Enter the decimal point in floating-point mode.
 - `A` through `F`: Enter the corresponding digit in base 16.
-- `-`: Set the sign of the number to negative in 1's or 2's complement mode.
+- `CHS`: Set the sign of the number to negative in 1's or 2's complement mode.
 - To specify the base of the number, use 0b### for binary, 0o### for octal, 0d### for decimal, and 0x### for hexadecimal. If no base is specified, the number is assumed to be in decimal.
 - Note that entering a number is its own operation and requires a separate instruction to do an operation with it.
-- Examples:
+- `HEX`, `DEC`, `OCT`, `BIN`: Set the base of the number to hexadecimal, decimal, octal, or binary, respectively.
+- Examples (in 2's complement mode with an 8-bit word size):
     - `3`: X <- 3
     - `0b1010`: X <- 0d10
+    - `0xA`; `CHS`; `DEC`: X <- 0xA; X <- 0xF6; X <- -10
 
 ### Arithmetic Operations
 - `+`: X <- X + Y
@@ -114,9 +127,11 @@ The following is a list of the instructions available in the Saturnine Assembly 
     - Example:
         - `10`; `2`; `/`: X == 5
         - X <- 10; X <- 2, Y <- 10; X <- (10 / 2) == 5
+- `RMD`: X <- Y % |X|
+    - Calculate the remainder of the division of the number in the Y register by the absolute value of the number in the X register and store the result in the X register.
 - `SQRT`: X <- sqrt(X)
     - Calculate the square root of the number in the X register and store the result in the X register.
-    - If in integer mode, the result is truncated to the nearest integer.
+- If in integer mode, the result of division and square roots are truncated to the nearest integer (i.e., rounded down).
 - `1/X`: X <- (1 / X)
     - Calculate the reciprocal of the number in the X register and store the result in the X register.
     - Only works in floating-point mode.
@@ -148,3 +163,13 @@ The following is a list of the instructions available in the Saturnine Assembly 
     - Example:
         - `0b1010`; `SL`: X == 0b0100, carry == 1
 - `lj`: **WIP**
+
+## Syntax
+The syntax for the Saturnine Assembler is based on the examples in the HP-16C manual. Each line of code in a Saturnine program corresponds to a series of key presses on the HP-16C calculator. Each instruction is written on a separate line and comments are allowed using `//`. One key difference is that writing the `f` and `g` keys is unnecessary. The Saturnine Assembler will add them automatically when assembling.
+
+The following is an example of the syntax for a Saturnine program:
+**WIP**
+
+## Usage
+**WIP**
+Initial mode settings? Could check if numbers are out of range on assembly
