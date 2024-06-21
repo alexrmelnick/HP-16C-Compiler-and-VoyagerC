@@ -49,7 +49,14 @@ Most notably, entering numbers and `ENTER` are Stack Lift operations, and arithm
 The values stored in the stack can be rotated into and out of the X register using the `R^` and `Rv` instructions. The values of the X and Y registers can also be swapped with `X<>Y`. These allow the Y, Z, and T registers to be used more like general purpose registers. 
 
 Additionally, there are 2 more registers, however they are not part of the stack:
-- Last X: This register stores the value of the X register before the last operation was performed. It is useful for recalling the previous value of the X register.
+- Last X: This register stores the value of the X register before the last operation was performed. It is useful for recalling the previous value of the X register. Example: 
+
+    | Keypress Sequence | Registers       |
+    |-------------------|-----------------|
+    | `1`, `ENTER`      | X <- 1          |
+    | `2`               | X <- 2, Y <- 1  |
+    | `+`               | X <- 3, Last X <- 2, Y == 1 |
+    | `LST-X`           | X <- 2, Last X == 2, Y == 1 |
 - I: This register is used to store the index of the current memory register. It is used in conjunction with the memory operations to allow for indirect memory access. This allows for more flexible memory operations. It can also be used with special functions to simplify for-loop control. 
 
 ### Numerical Representation Modes
@@ -72,16 +79,18 @@ To enter floating point mode, use the `FLOAT #` instruction, where `#` is the nu
 - Example: `FLOAT 2`; `3`: DISPLAY == 3.00
 - Example: `FLOAT .`; `300`: DISPLAY == 3.000000 02 (== 3.000000 * 10^2)
 
-The value in the initial display will be Y*2^X, where Y and X are the integer values stored in the Y and X registers. This means that integers can be converted to floating point numbers by setting the X register to 0.
-- Example: `3`; `ENTER`; `2`; `FLOAT 2`: X == 2, Y == 3, Display 12.00 (== 3 * 2^2 == 3 * 4 == 12)
-
-On converting to floating point mode, the stack and the LAST X registers are cleared. The I register and the storage registers are not affected. The complement mode is maintained, but not in use.  
-
 Numbers can be entered in scientific notion using the `EEX` button to set the exponent. 
 - Example: `FLOAT 2`; `3`; `EEX`; `2`: DISPLAY == 300.00
 - Example: `FLOAT .`; `3`; `EEX`; `2`: DISPLAY == 3.000000 02 (== 3.000000 * 10^2)
 
-Internally, the HP-16C stores floating point numbers with a 10 digit mantissa and a 2 digit exponent. This means that the HP-16C can store floats between +/- 9.999999999 * 10^99. Results of calculations with values larger or smaller than these limits will cause an out-of-range error (flag 5 / `G` annunciator) with X <- +/- +/- 9.999999999 * 10^99. The smallest value that can be stored is 1.000000000 * 10^-99. Any values smaller than this will be rounded to 0.
+Internally, the HP-16C stores floating point numbers with a 10 digit mantissa and a 2 digit exponent (#.### ### ### * 2 ^##). This means that the HP-16C can store floats between +/- 9.999999999 * 10^99. Results of calculations with values larger or smaller than these limits will cause an out-of-range error (flag 5 / `G` annunciator) with X <- +/- +/- 9.999999999 * 10^99. The smallest value that can be stored is 1.000000000 * 10^-99. Any values smaller than this will be rounded to 0.
+
+The value in the initial display will be Y*2^X, where Y and X are the integer values stored in the Y and X registers. This means that integers can be converted to floating point numbers by setting the X register to 0. Returning to integer mode will not convert the floating point number back to an integer. The X and Y registers will be set to values such that X * 2^Y == the floating point number previously displayed. 
+- Example: `3`; `ENTER`; `2`; `FLOAT 2`: X == 2, Y == 3, Display 12.00 (== 3 * 2^2 == 3 * 4 == 12)
+
+On converting to floating point mode, the stack and the LAST X registers are cleared. The I register and the storage registers are not affected. The complement mode is maintained, but not in use. On returning to integer mode, the registers are not cleared (note that they will not be converted to integers either). However, the X and Y registers will be altered as described above.
+
+Floating point mode has a word size of `56-bit`. This means an absolute maximum of 29 floating point values can be stored in memory, assuming no program is loaded. Returning to integer mode maintains this word `56-bit` size. 
 
 ### Memory
 **WIP**
