@@ -27,7 +27,7 @@ This project is a work in progress and has a *very* long road ahead of it. Below
   - Write some programs in HP-16C keystroke programming to get a feel for the language.
 2. Develop Saturnine Assembly Language and Assembler *In progress*
   - A prototype of the Saturnine Assembly Language and Assembler has been developed. However, it needs to be refined and extended to support more complex programs.
-  - Specifically, a complete instruction set needs to be defined first. 
+  - Specifically, a complete instruction set and feature list needs to be defined first. 
   - Then the assembler needs to be developed to translate Saturnine Assembly Language into HP-16C keystroke programming and .16c format.
   - I also want it to be able to generate a printable PDF with the sequences of keystrokes for manual input to the HP-16C for retro enthusiasts.
 3. Develop VoyagerC language *Subject to change*

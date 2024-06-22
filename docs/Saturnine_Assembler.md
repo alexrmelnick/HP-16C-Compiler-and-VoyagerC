@@ -17,7 +17,10 @@ Please note that this documentation is a work in progress and will be updated as
         ii. [Direct Addressing](####direct-addressing)
         iii. [Indirect Addressing](####indirect-addressing)
     d. [Flags](###flags)
-    e. [`STATUS` and `MEM`](###status-and-mem)
+        i. [User Flags](####user-flags)
+        ii. [System Flags](####system-flags)
+    e. [Subroutines](###subroutines)
+    f. [`STATUS` and `MEM`](###status-and-mem)
 4. [Instruction Set](##instruction-set)
     a. [Numeric Input](###numeric-input)
     b. [Arithmetic Operations](###arithmetic-operations)
@@ -29,11 +32,12 @@ Please note that this documentation is a work in progress and will be updated as
 
 
 ## Introduction
-Saturnine is a custom assembly language designed specifically for the HP-16C calculator. It is intended to be used with the JRPN HP-16C Simulator to write programs that can be run on the simulator. It is modeled on the HP-16C keystroke programming language provided in the HP-16C manual with some small simplifications for ease of programming. The Saturnine Assembler is designed to be easy to use and to provide a familiar programming environment for those who are already familiar with the HP-16C calculator.
+Saturnine is a custom assembly language designed specifically for the HP-16C calculator. It is intended to be used with the JRPN HP-16C Simulator to write programs that can be run on the simulator. It is modeled on the HP-16C keystroke programming language provided in the HP-16C manual with some small simplifications for ease of programming. The Saturnine Assembler is a multi-pass assembler designed to be easy to use and to provide a familiar programming environment for those who are already familiar with the HP-16C calculator.
 
 The Saturnine Assembler gets its name from the JRPN HP-16C Simulator. JRPN stands for Jovial Reverse Polish Notation. One meaning of "Jovial" is "of Jupiter". The next planet after Jupiter is Saturn, so the name "Saturnine" was chosen. The word "Saturnine" has a few meanings, one of which is "gloomy or sullen in temperament". This is a appropriate given the HP-16C's challenge to program.
 
 This guide will repeat lots of information from the HP-16C manual. Half of the reason for its existence is to serve as my notes while learning the HP-16C keystroke programming language. I hope it will be useful to others as well.
+
 
 ## Features
 The Saturnine Assembler provides a number of features that make it easy to write programs for the HP-16C calculator. These features include:
@@ -48,6 +52,8 @@ The Saturnine Assembler provides a number of features that make it easy to write
 - Support for throwing errors if the program is too large for the memory.
 - Support for throwing errors if addresses are out of range.
 - Support for directly addressing the first 32 storage registers in decimal.
+- Support for detecting if subroutines are nested more than 4 levels deep.
+
 
 ## System Architecture
 This will be my attempt to summarize how the system architecture works on the HP-16C. This is a work in progress and will be updated as I learn more. You may find comparisons to MIPS, the only other assembly language I have experience with. However, the two are quite different. I struggled on how exactly to order the categories in this section. I decided to simply copy the order of the HP-16C manual, however knowledge of some categories is required to understand others. I will try to make it clear when this is the case.
@@ -138,17 +144,31 @@ Any memory not being used in a program (in multiples of 7 lines) is automaticall
 The first 32 storage registers can be addressed directly for storing and recalling values. The remaining registers can only be access indirectly using the index register (see below). To access a storage register directly, use the `STO #` and `RCL #` instructions, where `#` is the number of the storage register (0-31). The `STO` instruction stores the value in the X register in the specified storage register, and the `RCL` instruction recalls the value from the specified storage register into the X register. The Saturnine Assembler will automatically convert the storage register number to the appropriate key press on the HP-16C. 
 
 #### Indirect Addressing
-The Index register (RI) is a permanent storage register that can be used to indirectly address other storage registers, indirectly branch to program labels, and hold loop counters for program loop control. Unlike other storage registers, *the Index register is always 68 bits*, regardless of current word size, and it is never converted to lines of program memory.
+The Index register I is a permanent storage register that can be used to indirectly address other storage registers, indirectly branch to program labels, and hold loop counters for program loop control. Unlike other storage registers, *the Index register is always 68 bits*, regardless of current word size, and it is never converted to lines of program memory.
 
 Values can be stored in the Index register using the `STO I` instruction, and recalled using the `RCL I` instruction. The value of the Index register can also be swapped with the X register with the `X<>I` instruction. 
 
 Data registers can be access indirectly by using the `(i)` instruction. Using `STO (i)` will store the value in the X register in the storage register whose index is stored in the I register. Using `RCL (i)` will recall the value from the storage register whose index is stored in the I register into the X register. The value of this indirectly addressed register can also be swapped with the value in the X register using the `X<>(i)` instruction. This is the only way to access the storage registers beyond the first 32.
 
-**WIP**
-Include GTO I and DSZ/ISZ from programming section (pdf pages 90 and 92)
+By placing an index value in I, you can indirectly branch to a location (`GTO I`) and indirectly call a subroutine (`GSB I`). For instance, if I <- -14, then `GTO I` instruction would transfer program
+execution to Label E (|-14| == 14 == 0xE). The `GSB I` instruction would transfer program execution to Label E and store the return address.
+
+The `DSZ` and `ISZ` instructions can be used to simplify loop. `DSZ` is used to decrement the value in the I register and skip the next instruction if the value is 0. `ISZ` is used to increment the value in the I register *and then* skip the next instruction if the value is 0. Generally, the next instruction is a `GTO` instruction to go to the start/end of the loop.
+
+### Subroutines
+The HP-16C can use subroutines to simplify function calls. Instead of using `GTO` to jump to a label, you can use `GSB` to jump to a label and store the return address. The return address is stored in special, non-user accessible registers *(I believe - manual is not clear on this and I do not have my 16C on hand to check)*. To return from a subroutine, use the `RTN` instruction. This will jump to the program line after the relevant `GSB` instruction. Note that you cannot have nested subroutines more than 4 levels deep. The Saturnine Assembler and HP-16C will throw an error if you try to do this.
 
 ### Flags
-**WIP**
+The HP-16C has 6 flags that can be set during programming. Flags 0, 1, and 2 are user flags that can be set, cleared, and tested by the programmer. Flags 3, 4, and 5 are system flags that are set automatically by the calculator. The `SF #` instruction is used to set a flag, the `CF #` instruction is used to clear a flag, and the `F? #` instruction is used to test a flag. The `F?` instruction will skip the next instruction if the specified flag is set. 
+
+#### System Flags
+Flags 3, 4, and 5 are system flags that are set automatically by the calculator. These flags are used change settings on the calculator or to indicate errors. They can still be set, cleared, and tested by the programmer if needed. They are generally only set by operations in integer mode, but some floating point operations can set them as well. The system flags are as follows:
+- Flag 3: This flag controls the display of leading zeros. When it is set, zeros to the left of the highest nonzero digit are displayed. When it is clear (the default condition), the display of leading zeros is suppressed. (Note that leading zeros are always suppressed in Decimal and Floating-Point Decimal modes.)
+- Flag 4: This flag is the carry flag. It is set when a carry occurs during an arithmetic operation. The carry flag is displayed by the `C` annunciator on the calculator.
+- Flag 5: This flag is the out-of-range flag. It is set when a result is too large to be displayed on the calculator. The out-of-range flag is displayed by the `G` annunciator on the calculator.
+
+See this chart to see which operations affect the carry and out-of-range flags:
+![Flag Operations Chart](Images/Flags.png)
 
 ### `STATUS` and `MEM`
 This largely does not apply to the Saturnine Assembler, but is useful to know. 
@@ -157,6 +177,7 @@ When in `STATUS` mode, the HP-16C will display the status of the calculator mode
 ![Status Display Diagram](Images/Status_Diagram.png)
 
 When in `MEM` mode, the HP-16C will display the status of the calculator memory. The display will show the number of program lines (`P-#`) used and the number of storage registers available (`r-###`). 
+
 
 ## Instruction Set
 Each instruction in the Saturnine Assembly Language corresponds to a key press on the HP-16C calculator. Instructions are all based on the keys of 16C, but with some changes to make them typeable from a standard QWERTY keyboard. **Instructions are not case sensitive.** The documentation below will list them as they are on the HP-16C keys, but you may see them in all lowercase in the other files. 
