@@ -21,8 +21,9 @@ Please note that this documentation is a work in progress and will be updated as
 4. [Instruction Set](##instruction-set)
     a. [Numeric Input](###numeric-input)
     b. [Arithmetic Operations](###arithmetic-operations)
-    c. [Logical Operations](###logical-operations)
-    d. [Shifting and Rotating Operations](###shifting-and-rotating-operations)
+    c. [Double Operations](###double-operations)
+    d. [Logical Operations](###logical-operations)
+    e. [Shifting and Rotating Operations](###shifting-and-rotating-operations)
 5. [Syntax](##syntax)
 6. [Usage](##usage)
 
@@ -139,9 +140,12 @@ The first 32 storage registers can be addressed directly for storing and recalli
 #### Indirect Addressing
 The Index register (RI) is a permanent storage register that can be used to indirectly address other storage registers, indirectly branch to program labels, and hold loop counters for program loop control. Unlike other storage registers, *the Index register is always 68 bits*, regardless of current word size, and it is never converted to lines of program memory.
 
+Values can be stored in the Index register using the `STO I` instruction, and recalled using the `RCL I` instruction. The value of the Index register can also be swapped with the X register with the `X<>I` instruction. 
+
+Data registers can be access indirectly by using the `(i)` instruction. Using `STO (i)` will store the value in the X register in the storage register whose index is stored in the I register. Using `RCL (i)` will recall the value from the storage register whose index is stored in the I register into the X register. The value of this indirectly addressed register can also be swapped with the value in the X register using the `X<>(i)` instruction. This is the only way to access the storage registers beyond the first 32.
+
 **WIP**
-
-
+Include GTO I and DSZ/ISZ from programming section (pdf pages 90 and 92)
 
 ### Flags
 **WIP**
@@ -197,6 +201,9 @@ The following is a list of the instructions available in the Saturnine Assembly 
     - Example:
         - `FLOAT`; `2`; `1/x`: X == 0.5
 
+### Double Operations
+**WIP**
+
 ### Logical Operations
 - `AND`: X <- (X && Y)
     - Perform a bitwise AND operation on the number in the X register and the number in the Y register and store the result in the X register.
@@ -222,6 +229,8 @@ The following is a list of the instructions available in the Saturnine Assembly 
     - Example:
         - `0b1010`; `SL`: X == 0b0100, carry == 1
 - `lj`: **WIP**
+
+
 
 ## Syntax
 The syntax for the Saturnine Assembler is based on the examples in the HP-16C manual. Each line of code in a Saturnine program corresponds to a series of key presses on the HP-16C calculator. Each instruction is written on a separate line and comments are allowed using `//`. One key difference is that writing the `f` and `g` keys is unnecessary. The Saturnine Assembler will add them automatically when assembling.
