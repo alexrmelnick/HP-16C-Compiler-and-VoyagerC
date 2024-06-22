@@ -39,7 +39,7 @@ Please note that this documentation is a work in progress and will be updated as
 
 
 ## Introduction
-Saturnine is a custom assembly language designed specifically for the HP-16C calculator. It is intended to be used with the JRPN HP-16C Simulator to write programs that can be run on the simulator. It is modeled on the HP-16C keystroke programming language provided in the HP-16C manual with some small simplifications for ease of programming. The Saturnine Assembler is a multi-pass assembler designed to be easy to use and to provide a familiar programming environment for those who are already familiar with the HP-16C calculator.
+Saturnine is a custom assembly language designed specifically for the HP-16C calculator. It is intended to be used with the JRPN HP-16C Simulator to write programs that can be run on the simulator. It is modeled on the HP-16C keystroke programming language provided in the HP-16C manual with some small simplifications for ease of programming. The Saturnine Assembler is a single-pass assembler designed to be easy to use and to provide a familiar programming environment for those who are already familiar with the HP-16C calculator.
 
 The Saturnine Assembler gets its name from the JRPN HP-16C Simulator. JRPN stands for Jovial Reverse Polish Notation. One meaning of "Jovial" is "of Jupiter". The next planet after Jupiter is Saturn, so the name "Saturnine" was chosen. The word "Saturnine" has a few meanings, one of which is "gloomy or sullen in temperament". This is a appropriate given the HP-16C's challenge to program.
 
@@ -437,4 +437,6 @@ The following is an example of the syntax for a Saturnine program:
 The Saturnine Assembler is a command line tool that can be used to assemble Saturnine Assembly files into a format that can be imported to the JRPN HP-16C calculator simulator (.16c) or printed out and typed into a physical HP-16C. The Saturnine Assembler is written in Python 3.12.3 (other versions may work, but no compatibility is guaranteed). 
 
 The Saturnine Assembler can be run from the command line using the following command:
-**WIP**
+`Saturnine_Assembler.py [input file] [output file] [options]`
+
+You can also run the Saturnine Assembler without any arguments to enter interactive mode. This will walk you through each argument and allow you to assemble a file without needing to remember the command line arguments.
