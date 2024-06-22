@@ -24,9 +24,17 @@ Please note that this documentation is a work in progress and will be updated as
 4. [Instruction Set](##instruction-set)
     a. [Numeric Input](###numeric-input)
     b. [Arithmetic Operations](###arithmetic-operations)
-    c. [Double Operations](###double-operations)
-    d. [Logical Operations](###logical-operations)
-    e. [Shifting and Rotating Operations](###shifting-and-rotating-operations)
+    c. [Logical Operations](###logical-operations)
+    d. [Bitwise Operations](###bitwise-operations)
+    e. [Double Operations](###double-operations)
+    f. [Stack Operations](###stack-operations)
+    g. [Memory Operations](###memory-operations)
+    h. [Flag Operations](###flag-operations)
+    i. [Control Operations](###control-operations)
+    j. [System Operations](###system-operations)
+    k. [Special Functions](###special-functions)
+    l. [Pseudo-Instructions](###pseudo-instructions)
+    m. [Functions not available Saturnine](###functions-not-in-saturnine)
 5. [Syntax](##syntax)
 6. [Usage](##usage)
 
@@ -53,6 +61,7 @@ The Saturnine Assembler provides a number of features that make it easy to write
 - Support for throwing errors if addresses are out of range.
 - Support for directly addressing the first 32 storage registers in decimal.
 - Support for detecting if subroutines are nested more than 4 levels deep.
+- Support for pseudo-instructions to simplify certain operations.
 
 
 ## System Architecture
@@ -98,7 +107,8 @@ The HP-16C can store integers in any word size between `4-` and `64-bits`. This 
 The word size not only affects when the maximum storable value in a register, but also how many much memory is available. The HP-16C has 203 Bytes of memory. This is divided by the word size to get the number of storage addresses. This will be discussed in more detail in the [Memory](###Memory) section.
 
 #### Floating Point Mode
-In floating point mode, the HP-16C can do calculations with decimals. The HP-16C does not use the IEEE 754 Standard for Floating Point Arithmetic. The standard not published until 1985, 4 years after the HP-16C was released. In 1982 at release, the proposal was only a draft. Notably, HP did include a program in the manual to convert between the two formats, but does not use the IEEE 754 standard internally. This limits the usefulness of the HP-16C for modern floating point applications. 
+In floating point mode, the HP-16C can do calculations with decimals. The HP-16C does not use the IEEE 754 Standard for Floating Point Arithmetic. The standard not published until 1985, 4 years after the HP-16C was released. In 1982 at release, the proposal was only a draft. Notably, HP did include a program in the manual to convert between the two formats, but does not use the IEEE 754 standard internally. This limits the usefulness of the HP-16C for modern floating point applications. Additionally, many of the operations that are available in integer mode are not available in floating point mode. See below for these operations:
+![Floating Point Operations Chart](Images/Floating_Point_Ops.png)
 
 To enter floating point mode, use the `FLOAT #` instruction, where `#` is the number of decimal places to use. If a `.` is entered instead of a number, the 16C will display the floating point number in scientific/engineering notion with 6 decimal place. The last 2 digits on the display (i.e., those to the right of the gap) are the exponent.
 - Example: `FLOAT 2`; `3`: DISPLAY == 3.00
@@ -187,10 +197,11 @@ The following is a list of the instructions available in the Saturnine Assembly 
 - `0` through `9`: Enter the corresponding digit in base 10.
 - `.`: Enter the decimal point in floating-point mode.
 - `A` through `F`: Enter the corresponding digit in base 16.
-- `CHS`: Set the sign of the number to negative in 1's or 2's complement mode.
+- `CHS`: Set the sign of the number to negative in 1's or 2's complement mode. Note that the Saturnine Assembler allows for negative numbers to be entered directly (`-#`), so the `CHS` instruction is not generally necessary.
 - To specify the base of the number, use 0b### for binary, 0o### for octal, 0d### for decimal, and 0x### for hexadecimal. If no base is specified, the number is assumed to be in decimal.
 - Note that entering a number is its own operation and requires a separate instruction to do an operation with it.
 - `HEX`, `DEC`, `OCT`, `BIN`: Set the base of the number to hexadecimal, decimal, octal, or binary, respectively.
+- `EEX`: Enter the exponent in floating-point mode. See the [Floating Point Mode](####floating-point-mode) section for more information.
 - Examples (in 2's complement mode with an 8-bit word size):
     - `3`: X <- 3
     - `0b1010`: X <- 0d10
@@ -213,6 +224,8 @@ The following is a list of the instructions available in the Saturnine Assembly 
         - X <- 10; X <- 2, Y <- 10; X <- (10 / 2) == 5
 - `RMD`: X <- Y % |X|
     - Calculate the remainder of the division of the number in the Y register by the absolute value of the number in the X register and store the result in the X register.
+- `ABS`: X <- |X|
+    - Calculate the absolute value of the number in the X register and store the result in the X register.
 - `SQRT`: X <- sqrt(X)
     - Calculate the square root of the number in the X register and store the result in the X register.
 - If in integer mode, the result of division and square roots are truncated to the nearest integer (i.e., rounded down).
@@ -220,10 +233,7 @@ The following is a list of the instructions available in the Saturnine Assembly 
     - Calculate the reciprocal of the number in the X register and store the result in the X register.
     - Only works in floating-point mode.
     - Example:
-        - `FLOAT`; `2`; `1/x`: X == 0.5
-
-### Double Operations
-**WIP**
+        - `FLOAT 2`; `2`; `1/x`: X == 0.5
 
 ### Logical Operations
 - `AND`: X <- (X && Y)
@@ -243,15 +253,139 @@ The following is a list of the instructions available in the Saturnine Assembly 
     - Example:
         - `0b1010`; `NOT`: X == 0b0101
 
-### Shifting and Rotating Operations
+### Bitwise Operations
 - `SL` and `SR`: X <- X << 1 and X <- X >> 1
     - Shift the number in the X register left or right by one bit and store the result in the X register.
     - The bit shifted out is stored in the carry flag.
+    - A 0 is shifted in from the left for `SL` and a 0 is shifted in from the right for `SR`.
     - Example:
         - `0b1010`; `SL`: X == 0b0100, carry == 1
-- `lj`: **WIP**
+    
+    ![Shift Operations Diagram](Images/Logical_Shift.png)
+- `LJ`: Left justify
+    - Shift the number in the X register left until the highest bit is set and store the result in the Y register.
+    - The number of shifts required to do this is stored in the X register.
+    - Example (in 2's complement mode with an 8-bit word size):
+        - `BIN`; `0b1111`; `LJ`: X == 4, Y == 0b11110000
+- `ASR` (and `ASL`): X <- X >> 1 (and X <- X << 1)
+    - Arithmetic shift right (and arithmetic shift left)
+    - Shift the number in the X register right by one bit and store the result in the X register.
+    - The bit shifted out is stored in the carry flag.
+    - A 0 is shifted in from the left if the MSB is clear (positive numbers in `2's complement`) and a 1 is shifted in from the left if the MSB is set (negative numbers in `2's complement`).
+    - Note that the `ASL` instruction is a pseudo-instruction. It is not available on the HP-16C calculator, but is included in the Saturnine Assembler for convenience. It is equivalent to the `SL` instruction
+    - Example (in 2's complement mode with an 4-bit word size):
+        - `0b1010`; `ASR`: X == 0b1101, carry == 0
+        - `0b1101`; `ASR`: X == 0b1110, carry == 1
+        - `0b1010`; `ASL`: X == 0b0100, carry == 1
+- `RL` and `RR`: X <- X rotated left and right
+    - Rotate the number in the X register left or right by one bit and store the result in the X register.
+    - The bit rotated out is copied to the carry flag.
+    - Example:
+        - `0b1010`; `RL`: X == 0b0101, carry == 1
+    
+    ![Rotate Operations Diagram](Images/Rotation.png)
+- `RLC` and `RRC`: X <- X rotated left and right through the carry flag
+    - Rotate the number in the X register left or right by one bit through the carry flag and store the result in the X register.
+    - The bit rotated out is moved to the carry flag and the carry flag is moved to the bit rotated in.
+    - Example:
+        - `0b1010`; `CF 4`; `RLC`: X == 0b0100, carry == 1
+    
+    ![Rotate Carry Operations Diagram](Images/Rotate_Carry.png)
+- `RLn #`, `RRn #`, `RLCn #`, and `RRCn #`: X <- X rotated left and right # times through and around the carry flag
+    - Rotate the number in the X register left or right by # bits and store the result in the X register.
+    - The bits rotated out are copied to the carry flag.
+    - Example:
+        - `0b1000`; `RLn 2`: X == 0b0010, carry == 0
+- `SB #` and `CB #`: Set and clear the the nth bit
+    - Set and clear the nth bit of the number in the X register.
+    - Bits are numbered from 0 to 7, with 0 being the least significant bit (rightmost bit).
+    - Example:
+        - `0b1000`; `SB 1`: X == 0b1010
+        - `0b1010`; `CB 1`: X == 0b1000
+- `MASKL` and `MASKR`: Creates a left or right justified string of n 1s, where n is the number in the X register
+    - Used to mask off the left or right n bits of a number with a logical operations
+    - Can also use the `MASKL #` and `MASKR #` pseudo-instructions create a mask of n 1s
+    - Example (in 2's complement mode with an 8-bit word size):
+        - `3`; `MASKL`: X == 0b11100000
+        - `3`; `MASKR`: X == 0b00000111
+- `#B`: Sum the bits of the number in the X register
+    - Add up the bits of the number in the X register and store the result in the X register.
+    - The previous value of the X register is stored in the Last X register.
+    - Example:
+        - `0b1010`; `#B`: X == 2, Last X == 0b1010
 
+### Double Operations
+- `DBL*`: Double multiplication
+    - For multiplication of two 8-bit numbers, the result is a 16-bit number. This poses a problem if your word size is 8-bits. The `DBL*` instruction is used to multiply two 8-bit numbers and store the 16-bit result across the X and Y registers.
+    - The MSBs are stored in the X register and the LSBs are stored in the Y register.
+    - Note that this causes weird results in `DEC` and also in `HEX` and `OCT` modes if the word size is not a multiple of 4 and 3 respectively due to bits not being aligned with the final representation.
+    - Example (in 2's complement mode with an 4-bit word size):
+        - `0b1010`; `0b1100`; `DBL*`: X <- 1010; X <- 1100, Y <- 1010; X <- 0111, Y <- 1000
+- `DBL/`: Double division
+    - This is used to divide a double-width number by a single-width number. The result is a single-width number.
+    - The MSBs of the dividend are stored in the Y register and the LSBs are stored in the Z register.
+    - The divisor is stored in the X register.
+    - The result is stored in the X register.
+    - The formula is X <- (Y|Z) / X (`|` means concatenation).
+    - Example (in 2's complement mode with an 4-bit word size):
+        - `0b1000`; `0b0010`; `0b0011`; `DBL/`
+        - X <- 1000; X <- 0010, Y <- 1000; X <- 0011, Y <- 0010, Z <- 1000; X <- ((0010|1000) / 0011) == 1101
+- `DBLrmd`: Double remainder
+    - This is used to calculate the remainder of a double-width number divided by a single-width number.
+    - Functions similarly to `DBL/`, but the result is the remainder of the division (see `DBL/` for more information).
 
+### Stack Operations
+- `ENTER`: Puts the number into the X register and pushes the stack up.
+    - Not generally necessary in the Saturnine Assembler, but can be used to push the stack up.
+- `R^` and `Rv`: Rotate the stack up and down.
+    - The order of the stack, from top to bottom, is: T, Z, Y, X
+- `X<>Y`: Swap the X and Y registers.
+    - Example:
+        - `5`; `3`; `X<>Y`: X == 5, Y == 3
+- `X<>I`: Swap the X and I registers.
+    - Example:
+        - `5`; `STO I`; `3`; `X<>I`: X == 5, I == 3
+
+### Memory Operations
+- `STO #` and `STO I`: R# <- X and I <- X
+    - Store the number in the X register in the specified storage register.
+    - Example:
+        - `5`; `STO 3`: R3 <- 5
+- `RCL #` and `RCL I`: X <- R# and X <- I
+    - Recall the number from the specified storage register into the X register.
+    - Example:
+        - `RCL 3`: X <- R3
+- `STO (i)` and `RCL (i)`: R(I) <- X and X <- R(I)
+    - Store and recall the number in the X register in the storage register whose index is stored in the I register.
+    - Example:
+        - `5`; `STO I`; `3`; `STO (i)`: R5 <- 3
+
+### Flag Operations
+- `SF #` and `CF #`: Set and clear the #-th flag
+    - Set and clear the #-th flag.
+    - Note that flags 0, 1, and 2 are user flags and flags 3, 4, and 5 are system flags. Flag 4 is the carry flag and flag 5 is the out-of-range flag.
+    - Example:
+        - `SF 1`: Set flag 1
+
+### Control Operations
+- 
+- `B? #` - Test the #-th bit. If it is set, the next instruction is skipped.
+- `F? #` - Test the #-th flag. If it is set, the next instruction is skipped.
+
+### System Operations
+**WIP**
+
+### Special Functions
+**WIP**
+
+### Pseudo-Instructions
+- `-#`: Enter a negative number. Equivalent to the `#; CHS` instruction sequence. 
+- `ASL`: Equivalent to the `SL` instruction. Shift the number in the X register left by one bit and store the result in the X register.
+- `MASKL #` and `MASKR #`: Equivalent to the `#; MASKL` and `#; MASKR` instruction sequences. Creates a left or right justified string of n 1s.
+
+### Functions not available in the Saturnine Assembler
+Not all of the functions available on the HP-16C are available in programming mode. As such, they are not available in the Saturnine Assembler. These functions are described in this excerpt from the HP-16C manual:
+![Functions not available in programming mode](Images/Nonprogramable_Functions.png)
 
 ## Syntax
 The syntax for the Saturnine Assembler is based on the examples in the HP-16C manual. Each line of code in a Saturnine program corresponds to a series of key presses on the HP-16C calculator. Each instruction is written on a separate line and comments are allowed using `//`. One key difference is that writing the `f` and `g` keys is unnecessary. The Saturnine Assembler will add them automatically when assembling.
