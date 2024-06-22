@@ -6,21 +6,25 @@ Please note that this documentation is a work in progress and will be updated as
 
 ## Table of Contents
 1. [Introduction](##introduction)
-2. [System Architecture](##system-architecture)
+2. [Features](##features)
+3. [System Architecture](##system-architecture)
     a. [Registers](###registers)
     b. [Numerical Representation Modes](###numerical-representation-modes)
         i. [Integer Mode](####integer-mode)
         ii. [Floating Point Mode](####floating-point-mode)
     c. [Memory](###memory)
+        i. [Memory Map](####memory-map)
+        ii. [Direct Addressing](####direct-addressing)
+        iii. [Indirect Addressing](####indirect-addressing)
     d. [Flags](###flags)
-        i. [Status](###status)
-3. [Instruction Set](##instruction-set)
+    e. [`STATUS` and `MEM`](###status-and-mem)
+4. [Instruction Set](##instruction-set)
     a. [Numeric Input](###numeric-input)
     b. [Arithmetic Operations](###arithmetic-operations)
     c. [Logical Operations](###logical-operations)
     d. [Shifting and Rotating Operations](###shifting-and-rotating-operations)
-4. [Syntax](##syntax)
-5. [Usage](##usage)
+5. [Syntax](##syntax)
+6. [Usage](##usage)
 
 
 ## Introduction
@@ -30,6 +34,19 @@ The Saturnine Assembler gets its name from the JRPN HP-16C Simulator. JRPN stand
 
 This guide will repeat lots of information from the HP-16C manual. Half of the reason for its existence is to serve as my notes while learning the HP-16C keystroke programming language. I hope it will be useful to others as well.
 
+## Features
+The Saturnine Assembler provides a number of features that make it easy to write programs for the HP-16C calculator. These features include:
+- A simple and intuitive syntax based on the sample programs in the HP-16C manual.
+- A comprehensive instruction set that covers all of the operations available on the HP-16C calculator.
+- Support for comments using a `//` prefix.
+- Support for automatic assembly of the `f` and `g` modifier keys.
+- Ability to specify the base of the number being entered (binary, octal, decimal, or hexadecimal).
+- Ability to use negative numbers as an immediate.
+- Support for optionally specifying the initial mode settings for the calculator.
+- Warnings for carry and out-of-range errors and other issues if the initial mode settings are supplied. 
+- Support for throwing errors if the program is too large for the memory.
+- Support for throwing errors if addresses are out of range.
+- Support for directly addressing the first 32 storage registers in decimal.
 
 ## System Architecture
 This will be my attempt to summarize how the system architecture works on the HP-16C. This is a work in progress and will be updated as I learn more. You may find comparisons to MIPS, the only other assembly language I have experience with. However, the two are quite different. I struggled on how exactly to order the categories in this section. I decided to simply copy the order of the HP-16C manual, however knowledge of some categories is required to understand others. I will try to make it clear when this is the case.
@@ -61,6 +78,7 @@ Additionally, there are 2 more registers, however they are not part of the stack
 
 ### Numerical Representation Modes
 The HP-16C has 2 main modes: integer, and floating point. The vast majority of calculations are done in integer mode since it is far more fully featured. The two modes are mostly incompatible with each other - the numbers in each do not have the necessarily same cardinality (i.e., numerical value) in each format. Converting between the two is possible, but not always straightforward. See the [Floating Point Mode](####Floating-Point-Mode) section for more information. 
+
 #### Integer Mode
 In integer mode, the HP-16C can store numbers in 4 different bases: `binary`, `octal`, `decimal`, and `hexadecimal`. For the Saturnine Assembler, to specify the base of the number, use `0b###` for `binary`, `0o###` for `octal`, `0d###` for `decimal`, and `0x###` for `hexadecimal`. If no base is specified, the number is assumed to be in `decimal`.
 
@@ -93,16 +111,48 @@ On converting to floating point mode, the stack and the LAST X registers are cle
 Floating point mode has a word size of `56-bit`. This means an absolute maximum of 29 floating point values can be stored in memory, assuming no program is loaded. Returning to integer mode maintains this word `56-bit` size. 
 
 ### Memory
+The HP-16C has a combined 203 bytes for program *and* data memory. This poses significant challenges for programming. Of course, this restriction is also where the fun begins - the best art is made under the tightest constraints. 
+
+#### Memory Map
+Here is the memory map of the HP-16C:
+![Memory Map Diagram](Images/Memory_Map.png)
+
+The memory is divided into 2 sections: program memory and data memory. The program memory is used to store the program that is currently being run. The data memory is used to store data that is used by the program (or generally for the calculator). The program memory is divided into program lines. Each program line occupies 1 byte and can be thought of as a single instruction. Program memory is allocated 7 bytes at a time (e.g., there is no difference in having a 1 byte program and a 7 byte program in terms of available data memory). 
+
+Any memory not being used in a program (in multiples of 7 lines) is automatically allocated as data memory. As more program memory is used, less data memory is available. The values in the highest registers are automatically overwritten and lost by the program memory. The data memory is divided into storage registers. The number of storage registers available and their size depend on the word size set in the calculator. The size of the storage registers is the word size, rounded up to the nearest nibble (4-bits). In floating point mode, the word size is always `56-bit` with a maximum of 29 storage registers. **The number of storage registers available = ((203 Bytes) - (# of program lines)) / (word size in Bytes, rounded up).** If the word size changes after data is already stored, the storage registers will be divided or concatenated to fit the new word size.
+
+##### Word Size and Maximum Number of Registers
+
+| Word Size | Max # of Regs |
+|-----------|---------------|
+| 4         | 406 |
+| 8         | 203 |
+| 16        | 101 |
+| 32        | 50 |
+| 56 (Floats) | 29 |
+| 64        | 25 |
+
+
+#### Direct Addressing
+The first 32 storage registers can be addressed directly for storing and recalling values. The remaining registers can only be access indirectly using the index register (see below). To access a storage register directly, use the `STO #` and `RCL #` instructions, where `#` is the number of the storage register (0-31). The `STO` instruction stores the value in the X register in the specified storage register, and the `RCL` instruction recalls the value from the specified storage register into the X register. The Saturnine Assembler will automatically convert the storage register number to the appropriate key press on the HP-16C. 
+
+#### Indirect Addressing
+The Index register (RI) is a permanent storage register that can be used to indirectly address other storage registers, indirectly branch to program labels, and hold loop counters for program loop control. Unlike other storage registers, *the Index register is always 68 bits*, regardless of current word size, and it is never converted to lines of program memory.
+
 **WIP**
-From above for future use:
-In `16-bit` mode, there are 101 storage registers. In `64-bit` mode, there are 25 storage registers. Interestingly, in `4-bit` mode, there are 406 storage registers.
+
+
 
 ### Flags
 **WIP**
 
-#### Status
-This largely does not apply to the Saturnine Assembler, but is useful to know. When in `STATUS` mode, the HP-16C will display the status of the calculator. This includes, in order, the complement mode, the word size, and the current status of the `flags 3, 2, 1, and 0`. Note that `flags 4 (carry)` and `5 (out-of-range)` are always displayed by the `C` and `G` annunciators respectively. See the diagram below for the layout of the status display:
+### `STATUS` and `MEM`
+This largely does not apply to the Saturnine Assembler, but is useful to know. 
+
+When in `STATUS` mode, the HP-16C will display the status of the calculator modes. This includes, in order, the complement mode, the word size, and the current status of the `flags 3, 2, 1, and 0`. Note that `flags 4 (carry)` and `5 (out-of-range)` are always displayed by the `C` and `G` annunciators respectively. See the diagram below for the layout of the status display:
 ![Status Display Diagram](Images/Status_Diagram.png)
+
+When in `MEM` mode, the HP-16C will display the status of the calculator memory. The display will show the number of program lines (`P-#`) used and the number of storage registers available (`r-###`). 
 
 ## Instruction Set
 Each instruction in the Saturnine Assembly Language corresponds to a key press on the HP-16C calculator. Instructions are all based on the keys of 16C, but with some changes to make them typeable from a standard QWERTY keyboard. **Instructions are not case sensitive.** The documentation below will list them as they are on the HP-16C keys, but you may see them in all lowercase in the other files. 
