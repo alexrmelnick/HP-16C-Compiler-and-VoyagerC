@@ -32,9 +32,8 @@ Please note that this documentation is a work in progress and will be updated as
     h. [Flag Operations](###flag-operations)
     i. [Control Operations](###control-operations)
     j. [System Operations](###system-operations)
-    k. [Special Functions](###special-functions)
-    l. [Pseudo-Instructions](###pseudo-instructions)
-    m. [Functions not available Saturnine](###functions-not-in-saturnine)
+    k. [Pseudo-Instructions](###pseudo-instructions)
+    l. [Functions not available Saturnine](###functions-not-in-saturnine)
 5. [Syntax](##syntax)
 6. [Usage](##usage)
 
@@ -200,7 +199,6 @@ The following is a list of the instructions available in the Saturnine Assembly 
 - `CHS`: Set the sign of the number to negative in 1's or 2's complement mode. Note that the Saturnine Assembler allows for negative numbers to be entered directly (`-#`), so the `CHS` instruction is not generally necessary.
 - To specify the base of the number, use 0b### for binary, 0o### for octal, 0d### for decimal, and 0x### for hexadecimal. If no base is specified, the number is assumed to be in decimal.
 - Note that entering a number is its own operation and requires a separate instruction to do an operation with it.
-- `HEX`, `DEC`, `OCT`, `BIN`: Set the base of the number to hexadecimal, decimal, octal, or binary, respectively.
 - `EEX`: Enter the exponent in floating-point mode. See the [Floating Point Mode](####floating-point-mode) section for more information.
 - Examples (in 2's complement mode with an 8-bit word size):
     - `3`: X <- 3
@@ -345,6 +343,12 @@ The following is a list of the instructions available in the Saturnine Assembly 
 - `X<>I`: Swap the X and I registers.
     - Example:
         - `5`; `STO I`; `3`; `X<>I`: X == 5, I == 3
+- `X<>(i)`: Swap the X register with the storage register whose index is stored in the I register.
+    - Example:
+        - `5`; `STO I`; `3`; `STO (i)`; `4`; `X<>(i)`: X == 3, R5 == 4
+- `CLx`: Clear the X register.
+    - Example:
+        - `5`; `CLx`: X == 0
 
 ### Memory Operations
 - `STO #` and `STO I`: R# <- X and I <- X
@@ -368,31 +372,69 @@ The following is a list of the instructions available in the Saturnine Assembly 
         - `SF 1`: Set flag 1
 
 ### Control Operations
-- 
+- `LBL #`: Label the current program line
+    - Label the current program line with the specified number 0-F. 
+    - The label is the number of the program line.
+    - Most programs start with a `LBL 0` instruction.
+    - Example:
+        - `LBL 5`: Label program line 5
+- `GTO #` and `GSB #`: Go to and go to subroutine the specified label
+    - Jump to the specified label.
+    - The label is the number of the program line to jump to.
+    - Example:
+        - `GTO 5`: Jump to program line 5
+- `RTN`: Return
+    - Return from the current subroutine to the line after the last `GSB` instruction.
+    - Halts the program and resets the PC to 0 if you are not in a subroutine. 
+- `DSZ` and `ISZ`: Decrement and increment the I register and skip the next instruction if I == 0
+- `X<=Y`, `X>Y`, `X==Y`, and `X!=Y`: Compare the X and Y registers
+    - Compare the numbers in the X and Y registers and skips the next instruction if the condition is met.
+    - Example:
+        - `5`; `3`; `X<=Y`: Skip the next instruction because 3 <= 5
+- `X<0`, `X>0`, `X==0`, and `X!=0`: Test the X register
+    - Test the number in the X register and skips the next instruction if the condition is met.
+    - Example:
+        - `5`; `X>0`: Skip the next instruction because 5 > 0
 - `B? #` - Test the #-th bit. If it is set, the next instruction is skipped.
 - `F? #` - Test the #-th flag. If it is set, the next instruction is skipped.
 
 ### System Operations
-**WIP**
-
-### Special Functions
-**WIP**
+- `HEX`, `DEC`, `OCT`, `BIN`: Set the base of the number to be subsequently entered to hexadecimal, decimal, octal, or binary, respectively.
+- `WSIZE`: Set the word size of the calculator to the X register.
+    - Can also use the `WSIZE #` pseudo-instruction to set the word size to #.
+- `UNSIGNED`, `1's`, `2's`: Set the complement mode to unsigned, 1's complement, or 2's complement, respectively.
+- `FLOAT #` and `FLOAT .`: Set the calculator to floating-point mode with # decimal places or scientific/engineering notation, respectively.
+- `SHOW HEX`, `SHOW DEC`, `SHOW OCT`, `SHOW BIN`: Momentarily pauses the program and displays the X register in the specified base.
+    - Think of this as a `print` statement.
+- `PSE`: Pause the program and and display the X register. 
+    - Not sure how this is different from `SHOW` instructions.
+- `WINDOW #`: Sets the segment of the X register to display. The X register is divided into up to 8, 8-digit segments, each of which can be displayed. The default view is 0 (the leftmost segment). The rightmost segment is 7. This will most likely not be very useful for those using the Saturnine Assembler for the JRPN simulator (which has a setting to display all digits), but is included for completeness.
+- `<` and `>`: Scroll the display left and right, respectively. This will most likely not be very useful for those using the Saturnine Assembler for the JRPN simulator (which has a setting to display all digits), but is included for completeness.
+- `R/S`: This pauses the program and allows the user to enter data. This data could be into the stack or into memory. The program will resume after the user presses `R/S` again. 
+- `CLEAR MEM`: Clears all memory registers. 
 
 ### Pseudo-Instructions
 - `-#`: Enter a negative number. Equivalent to the `#; CHS` instruction sequence. 
 - `ASL`: Equivalent to the `SL` instruction. Shift the number in the X register left by one bit and store the result in the X register.
-- `MASKL #` and `MASKR #`: Equivalent to the `#; MASKL` and `#; MASKR` instruction sequences. Creates a left or right justified string of n 1s.
+- `MASKL #` and `MASKR #`:  Creates a left or right justified string of # 1s.
+    - Equivalent to the `#; MASKL` and `#; MASKR` instruction sequences.
+    - Note that this alters the stack.
+- `WSIZE #`: Set the word size of the calculator to #.
+    - Equivalent to the `#; WSIZE` instruction sequence. 
+    - Note that this alters the stack.
 
 ### Functions not available in the Saturnine Assembler
 Not all of the functions available on the HP-16C are available in programming mode. As such, they are not available in the Saturnine Assembler. These functions are described in this excerpt from the HP-16C manual:
 ![Functions not available in programming mode](Images/Nonprogramable_Functions.png)
 
 ## Syntax
-The syntax for the Saturnine Assembler is based on the examples in the HP-16C manual. Each line of code in a Saturnine program corresponds to a series of key presses on the HP-16C calculator. Each instruction is written on a separate line and comments are allowed using `//`. One key difference is that writing the `f` and `g` keys is unnecessary. The Saturnine Assembler will add them automatically when assembling.
+The syntax for the Saturnine Assembler is based on the examples in the HP-16C manual and is detailed above. Each line of code in a Saturnine program corresponds to a series of key presses on the HP-16C calculator. Each instruction is written on a separate line and comments are allowed using `//`. One key difference is that writing the `f` and `g` keys is unnecessary. The Saturnine Assembler will add them automatically when assembling. It is recommended that you specify your initial settings at the beginning of your program. Otherwise, the Saturnine Assembler will assume the default settings (2's complement and 16-bit word size). All Saturnine Assembly files should have the `.sat` extension.
 
 The following is an example of the syntax for a Saturnine program:
 **WIP**
 
 ## Usage
+The Saturnine Assembler is a command line tool that can be used to assemble Saturnine Assembly files into a format that can be imported to the JRPN HP-16C calculator simulator (.16c) or printed out and typed into a physical HP-16C. The Saturnine Assembler is written in Python 3.12.3 (other versions may work, but no compatibility is guaranteed). 
+
+The Saturnine Assembler can be run from the command line using the following command:
 **WIP**
-Initial mode settings? Could check if numbers are out of range on assembly
