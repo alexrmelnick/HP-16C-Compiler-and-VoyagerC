@@ -28,6 +28,7 @@ from datetime import datetime
 # Global variables and their default values
 sign_mode = 2 # 0 = Unsigned, 1 = 1's complement, 2 = 2's complement
 word_size = 16 # Number of bits in a word
+base = 16 # Base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal)
 
 input_file_name = None # Input file
 input_file = None # File object for the input file
@@ -35,42 +36,35 @@ input_file = None # File object for the input file
 output_file_name = None # Output file
 output_mode = None # Output mode (16c or pdf)
 
+bare_keypresses = [] # List of keypress lines
+
+program_length = 0 # Length of the program in bytes
+registers_used = 0 # Number of registers used
+memory_available = 203 # Number of bytes available in memory
+
 def main():
     # Determine if in CLI mode or interactive mode, then parse accordingly
     if(len(sys.argv) == 1):
         parse_interactive()
     else:
-        parse_cli()
+        parse_cli(sys.argv)
 
     # Open the input file, read it, then close it
     input_file = open(input_file_name, "r") # Open the file in read mode
     assembly_code = input_file.readlines() # Read all the lines of the input file into a list
     input_file.close()
 
-    # Open the output file
-    if output_mode == "16c":
-        output_file_name = output_file_name + ".16c"
-        output_file = open(output_file_name, "w")
-        assemble_16c(assembly_code)
-    else:
-        output_file_name = output_file_name + ".pdf"
-        output_file = open(output_file_name, "w")
-        assemble_pdf(assembly_code)
+    # Assemble the code into "bare" keypress sequences
+    for line in assembly_code:
+        bare_line = parse_line(line)
+        if(bare_line != None):
+            bare_keypresses.append(bare_line)
 
-    # Close the output file
-    output_file.close()
+    # Output the assembled code in the desired format
+    #TODO
 
-
-
-def assemble_16c(assembly_code):
-    # TODO: Implement the assembly process for the HP-16C simulator
-    total_lines = 0
-    registers_available = 203 / ()
-
-
-def assemble_pdf(assembly_code):
-    #TODO: Figure out how to output a printable .pdf file
-    print("PDF output is not yet supported. If you know how to output a .pdf file, please let me know!")
+    # Return some useful information to the user
+    #TODO
 
 def parse_interactive():
     print("Welcome to the Saturnine Assembler - the first and only assembler for the HP-16C calculator!")
@@ -106,18 +100,26 @@ def parse_interactive():
         print("Invalid word size. Please enter a word size between 4 and 64 bits.")
         word_size = int(input("Word size: "))
 
-def parse_cli():
+    print("Enter the starting base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal).")
+    print("If you are unsure, enter 10 for decimal. It is the most common base for entering numbers.")
+    base = int(input("Base: "))
+    while(base != 2 and base != 8 and base != 10 and base != 16):
+        print("Invalid base. Please enter the base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal).")
+        base = int(input("Base: "))
+
+def parse_cli(argv):
     # Check if the user has entered the correct number of arguments
-    if len(sys.argv) != 6:
-        print("Usage: python Saturnine_Assembler.py <input filename> <output file name> <output mode (16c/pdf)> <sign mode (0/1/2)> <word size (4-64)>")
+    if len(argv) != 6:
+        print("Usage: python Saturnine_Assembler.py <input filename> <output file name> <output mode (16c/pdf)> <sign mode (0/1/2)> <word size (4-64)> <base (2/8/10/16)>")
         sys.exit(1)
     
     # Parse the command line arguments
-    input_file_name = sys.argv[1]
-    output_file_name = sys.argv[2]
-    output_mode = sys.argv[3]
-    sign_mode = int(sys.argv[4])
-    word_size = int(sys.argv[5])
+    input_file_name = argv[1]
+    output_file_name = argv[2]
+    output_mode = argv[3]
+    sign_mode = int(argv[4])
+    word_size = int(argv[5])
+    base = int(argv[6])
 
     # Check if arguments are valid
     if(output_mode != "16c" and output_mode != "pdf"):
@@ -129,7 +131,24 @@ def parse_cli():
     if(word_size < 4 or word_size > 64):
         print("Invalid word size. Please use a word size between 4 and 64 bits.")
         sys.exit(1)
+    if(base != 2 and base != 8 and base != 10 and base != 16):
+        print("Invalid base. Please use the base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal).")
+        sys.exit(1)
 
+def parse_line(line):
+    # Remove leading and trailing whitespace
+    line = line.strip()
+
+    # Check for comments and remove them
+    if line.find("//") != -1:
+        line = line[:line.find("//")]
+
+    # Check for empty lines
+    if len(line) == 0:
+        return None
+
+    # Separate the line into tokens
+    tokens = line.split()
 
 
 
