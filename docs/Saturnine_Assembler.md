@@ -54,6 +54,7 @@ The Saturnine Assembler provides a number of features that make it easy to write
 - Support for automatic assembly of the `f` and `g` modifier keys.
 - Ability to specify the base of the number being entered (binary, octal, decimal, or hexadecimal).
 - Ability to use negative numbers as an immediate.
+- Ability to enter floats in scientific notation.
 - Support for optionally specifying the initial mode settings for the calculator.
 - Warnings for carry and out-of-range errors and other issues if the initial mode settings are supplied. 
 - Support for throwing errors if the program is too large for the memory.
@@ -118,6 +119,8 @@ To enter floating point mode, use the `FLOAT #` instruction, where `#` is the nu
 Numbers can be entered in scientific notion using the `EEX` button to set the exponent. 
 - Example: `FLOAT 2`; `3`; `EEX`; `2`: DISPLAY == 300.00
 - Example: `FLOAT .`; `3`; `EEX`; `2`: DISPLAY == 3.000000 02 (== 3.000000 * 10^2)
+The Saturnine Assembler also allows floats to be entered in scientific notation using `#E#` where the first `#` is the mantissa and the second `#` is the exponent.
+- Example: `FLOAT 2`; `3E2`: DISPLAY == 300.00
 
 Internally, the HP-16C stores floating point numbers with a 10 digit mantissa and a 2 digit exponent (#.### ### ### * 2 ^##). This means that the HP-16C can store floats between +/- 9.999999999 * 10^99. Results of calculations with values larger or smaller than these limits will cause an out-of-range error (flag 5 / `G` annunciator) with X <- +/- +/- 9.999999999 * 10^99. The smallest value that can be stored is 1.000000000 * 10^-99. Any values smaller than this will be rounded to 0.
 
@@ -200,6 +203,7 @@ The following is a list of the instructions available in the Saturnine Assembly 
 - `A` through `F`: Enter the corresponding digit in base 16.
 - `CHS`: Set the sign of the number to negative in 1's or 2's complement mode. Note that the Saturnine Assembler allows for negative numbers to be entered directly (`-#`), so the `CHS` instruction is not generally necessary.
 - To specify the base of the number, use 0b### for binary, 0o### for octal, 0d### for decimal, and 0x### for hexadecimal. If no base is specified, the number is assumed to be in decimal.
+    - For negative numbers, use -0b### for binary, -0o### for octal, -0d### for decimal, and -0x### for hexadecimal. -### is also acceptable for decimal numbers.
 - Note that entering a number is its own operation and requires a separate instruction to do an operation with it.
 - `EEX`: Enter the exponent in floating-point mode. See the [Floating Point Mode](####floating-point-mode) section for more information.
 - Examples (in 2's complement mode with an 8-bit word size):
@@ -291,12 +295,11 @@ The following is a list of the instructions available in the Saturnine Assembly 
         - `0b1010`; `CF 4`; `RLC`: X == 0b0100, carry == 1
     
     ![Rotate Carry Operations Diagram](Images/Rotate_Carry.png)
-- `RLn #`, `RRn #`, `RLCn #`, and `RRCn #`: X <- X rotated left and right # times through and around the carry flag
-    - Rotate the number in the X register left or right by # bits and store the result in the X register.
+- `RLn`, `RRn`, `RLCn`, and `RRCn`: X <- Y rotated left and right X times through and around the carry flag
     - The bits rotated out are copied to the carry flag.
     - Example:
         - `0b1000`; `RLn 2`: X == 0b0010, carry == 0
-- `SB #` and `CB #`: Set and clear the the nth bit
+- `SB` and `CB`: Set and clear the the Xth bit of the Y register
     - Set and clear the nth bit of the number in the X register.
     - Bits are numbered from 0 to 7, with 0 being the least significant bit (rightmost bit).
     - Example:
@@ -304,7 +307,6 @@ The following is a list of the instructions available in the Saturnine Assembly 
         - `0b1010`; `CB 1`: X == 0b1000
 - `MASKL` and `MASKR`: Creates a left or right justified string of n 1s, where n is the number in the X register
     - Used to mask off the left or right n bits of a number with a logical operations
-    - Can also use the `MASKL #` and `MASKR #` pseudo-instructions create a mask of n 1s
     - Example (in 2's complement mode with an 8-bit word size):
         - `3`; `MASKL`: X == 0b11100000
         - `3`; `MASKR`: X == 0b00000111
@@ -403,7 +405,6 @@ The following is a list of the instructions available in the Saturnine Assembly 
 ### System Operations
 - `HEX`, `DEC`, `OCT`, `BIN`: Set the base of the number to be subsequently entered to hexadecimal, decimal, octal, or binary, respectively.
 - `WSIZE`: Set the word size of the calculator to the X register.
-    - Can also use the `WSIZE #` pseudo-instruction to set the word size to #.
 - `UNSIGNED`, `1's`, `2's`: Set the complement mode to unsigned, 1's complement, or 2's complement, respectively.
 - `FLOAT #` and `FLOAT .`: Set the calculator to floating-point mode with # decimal places or scientific/engineering notation, respectively.
 - `SHOW HEX`, `SHOW DEC`, `SHOW OCT`, `SHOW BIN`: Momentarily pauses the program and displays the X register in the specified base.
@@ -418,12 +419,6 @@ The following is a list of the instructions available in the Saturnine Assembly 
 ### Pseudo-Instructions
 - `-#`: Enter a negative number. Equivalent to the `#; CHS` instruction sequence. 
 - `ASL`: Equivalent to the `SL` instruction. Shift the number in the X register left by one bit and store the result in the X register.
-- `MASKL #` and `MASKR #`:  Creates a left or right justified string of # 1s.
-    - Equivalent to the `#; MASKL` and `#; MASKR` instruction sequences.
-    - Note that this alters the stack.
-- `WSIZE #`: Set the word size of the calculator to #.
-    - Equivalent to the `#; WSIZE` instruction sequence. 
-    - Note that this alters the stack.
 
 ### Functions not available in the Saturnine Assembler
 Not all of the functions available on the HP-16C are available in programming mode. As such, they are not available in the Saturnine Assembler. These functions are described in this excerpt from the HP-16C manual:
