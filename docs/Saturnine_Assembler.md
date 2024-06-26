@@ -418,6 +418,7 @@ The following is a list of the instructions available in the Saturnine Assembly 
 
 ### Pseudo-Instructions
 - `-#`: Enter a negative number. Equivalent to the `#; CHS` instruction sequence. 
+- `-#E#`: Enter a negative floating point number in scientific notation. Equivalent to the `#; #; CHS` instruction sequence.
 - `ASL`: Equivalent to the `SL` instruction. Shift the number in the X register left by one bit and store the result in the X register.
 
 ### Functions not available in the Saturnine Assembler

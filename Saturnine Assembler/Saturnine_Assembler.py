@@ -26,6 +26,9 @@ import math
 import sys
 from datetime import datetime
 
+# CONSTANTS
+PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program
+
 # Global variables and their default values
 sign_mode = 2 # 0 = Unsigned, 1 = 1's complement, 2 = 2's complement, 3 = floating point
 previous_sign_mode = 2 # Previous sign mode (necessary for floating point numbers because int sign mode is saved)
@@ -42,7 +45,16 @@ bare_keypresses = [] # List of keypress lines
 
 program_length = 0 # Length of the program in bytes
 registers_used = 0 # Number of registers used
-memory_available = 203 # Number of bytes available in memory
+memory_partition = PRGM_MEMORY_AVAILABLE # Partition between program and data memory - trying to address memory over this value will throw an error
+
+# List of valid instructions
+valid_instructions = ['chs','eex','+','-','*','/','rmd','sqrt','1/x','and','or','xor','not','sl','sr','lj','asr','rl','rr','rlc','rrc','rln''rrn','rlcn','rrcn','sb','cb','maskl','maskr','#b','dbl*',"dbl/",'dblrmd','enter','r^','rv','x<>y','x<>i','x<>(i)','clx','sto','rlc','sf','cf','lbl','gto','rtn','dsz','isz','x<=y','x>y',"x==y",'x!=y','x<0','x>0','x==0','x!=0','b?','f?','hex','dec','oct','bin','wsize','unsigned','1\'s','2\'s','float','show','pse','window','<','>','r/s','clear']
+# List of valid pseudo-instructions (these are separate in case I want to add more later)
+valid_pseudo_instructions = ['asl']
+# Map of instructions to their corresponding keypresses
+# Map of pseudo-instructions to their corresponding keypresses
+# Map of arguments to their corresponding instructions
+# Map of arguments to their corresponding keypresses
 
 def main():
     # Determine if in CLI mode or interactive mode, then parse accordingly
@@ -58,9 +70,16 @@ def main():
 
     # Assemble the code into "bare" keypress sequences
     for input_line_number, line in enumerate(assembly_code):
-        bare_line = parse_line(line, input_line_number)
-        if bare_line != None:
-            bare_keypresses.append(bare_line)
+        # Parse the line and get the keypresses
+        parse_line(line, input_line_number)
+
+        # Check if the program is too large for the memory
+        if program_length > PRGM_MEMORY_AVAILABLE:
+            print("Error - Out of Memory: This program is too large for the memory.")
+            print("Memory overflowed at line " + str(input_line_number) + "(the HP-16C only has 203 Bytes of memory).")
+            print("Remember, the best art is made under the tightest constraints!")
+            sys.exit(1)
+
 
     # Output the assembled code in the desired format
     #TODO
@@ -168,7 +187,7 @@ def parse_line(line, input_line_number):
         if is_instruction(tokens[0]):
             return parse_instruction(tokens[0])
         # Check if the token is a number
-        if is_number(tokens[0]):
+        elif is_number(tokens[0]):
             return parse_number(tokens[0], input_line_number)
         else:
             print("Invalid line: " + line + "(line number )"+ input_line_number)
@@ -473,6 +492,29 @@ def is_valid_float(token):
         return False
     
     return True
+
+def parse_instruction(token, input_line_number):
+    # Check if the token is a valid instruction
+    if(is_valid_instruction(token)):
+        # Print the keypress
+        bare_keypresses.append(token + "\n")
+    else:
+        print("Invalid instruction: " + token + "(line number )"+ input_line_number)
+        sys.exit(1)
+
+
+def parse_instruction(token, argument, input_line_number):
+    # Check if the token is a valid instruction with a valid argument
+    pass # TODO: Implement this function
+
+def is_valid_instruction(instr):
+    if instr in valid_instructions:
+        return True
+    elif instr in valid_pseudo_instructions:
+        return True
+    else:
+        return False
+
 
 if __name__ == "__main__":
     main()
