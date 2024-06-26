@@ -48,12 +48,13 @@ registers_used = 0 # Number of registers used
 memory_partition = PRGM_MEMORY_AVAILABLE # Partition between program and data memory - trying to address memory over this value will throw an error
 
 # List of valid instructions
-valid_instructions = ['chs','eex','+','-','*','/','rmd','sqrt','1/x','and','or','xor','not','sl','sr','lj','asr','rl','rr','rlc','rrc','rln''rrn','rlcn','rrcn','sb','cb','maskl','maskr','#b','dbl*',"dbl/",'dblrmd','enter','r^','rv','x<>y','x<>i','x<>(i)','clx','sto','rlc','sf','cf','lbl','gto','rtn','dsz','isz','x<=y','x>y',"x==y",'x!=y','x<0','x>0','x==0','x!=0','b?','f?','hex','dec','oct','bin','wsize','unsigned','1\'s','2\'s','float','show','pse','window','<','>','r/s','clear']
+valid_instructions = ['chs','eex','+','-','*','/','rmd','sqrt','1/x','and','or','xor','not','sl','sr','lj','asr','rl','rr','rlc','rrc','rln','rrn','rlcn','rrcn','sb','cb','maskl','maskr','#b','dbl*',"dbl/",'dblrmd','enter','r^','rv','x<>y','x<>i','x<>(i)','clx','sto','rlc','sf','cf','lbl','gto','gsb','rtn','dsz','isz','x<=y','x>y',"x==y",'x!=y','x<0','x>0','x==0','x!=0','b?','f?','hex','dec','oct','bin','wsize','unsigned','1\'s','2\'s','float','show','pse','window','<','>','r/s','clear']
 # List of valid pseudo-instructions (these are separate in case I want to add more later)
 valid_pseudo_instructions = ['asl']
+# List of valid instructions that take arguments
+instructions_with_arguments = ['sto','rcl','sf','cf','lbl','gto','gsb','b?','f?','show','float','window','clear']
 # Map of instructions to their corresponding keypresses
 # Map of pseudo-instructions to their corresponding keypresses
-# Map of arguments to their corresponding instructions
 # Map of arguments to their corresponding keypresses
 
 def main():
@@ -497,21 +498,88 @@ def parse_instruction(token, input_line_number):
     # Check if the token is a valid instruction
     if(is_valid_instruction(token)):
         # Print the keypress
+        #TODO Include 'f' and 'g' modifier keys
         bare_keypresses.append(token + "\n")
     else:
         print("Invalid instruction: " + token + "(line number )"+ input_line_number)
         sys.exit(1)
 
-
 def parse_instruction(token, argument, input_line_number):
     # Check if the token is a valid instruction with a valid argument
-    pass # TODO: Implement this function
+    if(is_valid_instruction(token)):
+        if(is_valid_argument(token, argument)):
+            # Print the keypress
+            #TODO Include 'f' and 'g' modifier keys
+            bare_keypresses.append(token + " " + argument + "\n")
+        else:
+            print("Invalid argument: " + argument + " for instruction: " + token + "(line number )"+ input_line_number)
+            sys.exit(1)
+    else:
+        print("Invalid instruction: " + token + "(line number )"+ input_line_number)
+        sys.exit(1)
 
 def is_valid_instruction(instr):
     if instr in valid_instructions:
         return True
     elif instr in valid_pseudo_instructions:
         return True
+    else:
+        return False
+
+def is_valid_argument(token,arg):
+    # Check if the instruction takes an argument
+    if(instructions_with_arguments.count(token) == 0):
+        return False
+    
+    # Check if the argument is valid
+    if(token == 'sto' or token == 'rcl'):
+        # check if the argument is I or (i)
+        if(arg == 'i' or arg == '(i)'):
+            return True
+        elif(arg.isdigit() and int(arg) >= 0 and int(arg) <= 31):
+            return True
+        else:
+            return False
+    elif(token == 'sf' or token == 'cf' or 'f?'):
+        if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 5):
+            return True
+        else:
+            return False
+    elif(token == 'sb' or token == 'cb' or 'b?'):
+        if(arg.isdigit() and int(arg) >= 0 and int(arg) <= word_size):
+            return True
+        else:
+            return False
+    elif(token == 'lbl' or token == 'gto' or token == 'gsb'):
+        if(arg.isdigit() and int(arg) >= 0 and int(arg) < 16):
+            return True
+        elif(arg in 'abcdef'):
+            return True
+        else:
+            return False
+    elif(token == 'show'):
+        if(arg == 'hex' or arg == 'dec' or arg == 'oct' or arg == 'bin'):
+            return True
+        else:
+            return False
+    elif(token == 'float'):
+        if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 9):
+            return True
+        elif(arg == '.'):
+            return True
+        else:
+            return False
+    elif(token == 'window'):
+        # This doesn't exclude all invalid arguments, but this instruction will be used so rarely that it doesn't matter
+        if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 7):
+            return True
+        else:
+            return False
+    elif(token == 'clear'):
+        if(arg == 'mem'):
+            return True
+        else:
+            return False
     else:
         return False
 
