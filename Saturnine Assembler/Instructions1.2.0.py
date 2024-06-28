@@ -29,29 +29,7 @@ class instr:
         self.input_line_number = input_line_number
         self.calculator_state = calculator_state
 
-        # Separate the line into tokens
-        self.tokens = line.split()
-
-        # Check if the line has multiple instructions
-        if len(self.tokens) == 1:
-            has_argument = False
-        elif len(self.tokens) == 2:
-            has_argument = True
-        else:
-            print("Invalid line: " + line + "(line number )"+ input_line_number)
-            sys.exit(1)
-
-        # Check if the token is an instruction or a number
-        if is_instruction(self.tokens[0]):
-            instruction_or_number = True
-            self.parse_instruction()
-        # Check if the token is a number
-        elif is_number(self.tokens[0]):
-            instruction_or_number = False
-            self.parse_number()
-        else:
-            print("Invalid line: " + line + "(line number )"+ input_line_number)
-            sys.exit(1)
+        
 
 
     # Methods
@@ -232,101 +210,8 @@ class instr:
 
 
 # Utility functions
-def is_number(token):
-    # Check if the token is a number
-
-    # Does token contain any characters other than -,.,0-9,A-F,a-f,b,o,x?
-    acceptable_chars = "0123456789abcdefox-."
-
-    for char in token:
-        if(char not in acceptable_chars):
-            return False
-
-    # Does token contain more than one decimal point?
-    if token.count(".") > 1:
-        return False
-    
-    # Does token contain more than two negative signs?
-    if token.count("-") > 2:
-        return False
-    
-    # Does token contain more than one binary, octal, or hexadecimal prefix?
-    if token.count("0b") > 1 or token.count("0o") > 1 or token.count("0x") > 1:
-        return False
-    
-    # Does token contain more than one base prefix?
-    if token.count("b") > 1 or token.count("o") > 1 or token.count("x") > 1:
-        return False
-    
-    # Does token contain a prefix and a decimal point (floats are always base 10)?
-    if (token.find("0b") != -1 and token.find(".")) or (token.find("0b") != -1 and token.find(".")) or (token.find("0x") != -1 and token.find(".")) or (token.find("0d") != -1 and token.find(".")):
-        return False
-
-    return True
 
 
-def is_valid_integer(token):
-    # Check if the number is valid
-    # Does the token contain the correct characters for the base?
-    acceptable_hex_chars = "0123456789abcdef"
-    acceptable_dec_chars = "0123456789"
-    acceptable_oct_chars = "01234567"
-    acceptable_bin_chars = "01"
-
-    if base == 16:
-        for char in token:
-            if char not in acceptable_hex_chars:
-                return False
-    elif base == 10:
-        for char in token:
-            if char not in acceptable_dec_chars:
-                return False
-    elif base == 8:
-        for char in token:
-            if char not in acceptable_oct_chars:
-                return False
-    elif base == 2:
-        for char in token:
-            if char not in acceptable_bin_chars:
-                return False
-
-    # Is the number within the range of the word size?
-    num = int(num,base)
-    if num < 0:
-        return False
-    if num >= 2 ** word_size:
-        return False
-    
-    return True
-
-
-def is_valid_float(token):
-    # Check if the number is valid
-    # Does the token contain the correct characters for a floating point number?
-    acceptable_float_chars = "0123456789.e-"
-    contains_e = False
-
-    for char in token:
-        if char == "e":
-            contains_e = True
-        if char not in acceptable_float_chars:
-            return False
-
-
-    # Is the number within the range of a float?
-    if contains_e:
-        # The number is in scientific notation
-        # Split the number into the mantissa and the exponent
-        mantissa, exponent = token.split("e")
-        if not is_valid_integer(mantissa):
-            return False
-        if not is_valid_integer(exponent):
-            return False
-    num = mantissa ^ exponent
-    if num > 9.999999999 * 10^99 or num < -9.999999999 * 10^99:
-        return False
-    
-    return True
 
 def is_valid_argument(instr, arg, word_size):
     # Check if the instruction takes an argument
