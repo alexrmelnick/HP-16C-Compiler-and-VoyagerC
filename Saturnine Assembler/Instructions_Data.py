@@ -97,7 +97,7 @@ button_positions = {
     '*': '20',
     'R/S': '31',
     'SST': '32',
-    'R\/': '33',
+    'Rv': '33',
     'X<=>Y': '34',
     'BSP': '35',
     'ENTER': '36', #? Enter key takes up 2 spaces, so I am not sure if this is correct

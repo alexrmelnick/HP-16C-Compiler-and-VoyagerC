@@ -29,8 +29,6 @@ class CalculatorState:
     output_mode = None # Output mode (16c or pdf)
 
     # Methods
-    def __init__(self): # Default constructor for the class
-        pass
     def __init__(self, sign_mode, word_size, base):
         self.sign_mode = sign_mode
         self.word_size = word_size

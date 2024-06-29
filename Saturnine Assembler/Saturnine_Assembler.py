@@ -29,13 +29,14 @@ from datetime import datetime
 from Calculator_State import CalculatorState
 from Instructions import instr
 from Instructions_Data import *
+from Utils import is_number
 
 # CONSTANTS
 PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program
 
 def main():
     input_file = None # File object for the input file
-    calculator_state = CalculatorState() # Create a new instance of the CalculatorState class
+    calculator_state = CalculatorState(2, 16, 10) # Create a new instance of the CalculatorState class with default values
 
     # Determine if in CLI mode or interactive mode, then parse accordingly
     if(len(sys.argv) == 1):
@@ -98,24 +99,40 @@ def parse_interactive(calculator_state):
 
     print("Enter the sign mode (0 = Unsigned, 1 = 1's complement, 2 = 2's complement).")
     print("If you are unsure, enter 0 for unsigned mode or 2 if you want to use signed numbers.")
-    sign_mode = int(input("Sign mode (0, 1, or 2): "))
-    while(sign_mode < 0 or sign_mode > 2):
-        print("Invalid sign mode. Please enter the sign mode (0 = Unsigned, 1 = 1's complement, 2 = 2's complement).")
-        sign_mode = int(input("Sign mode: "))
+    # Checking if sign_mode input is a number
+    while True:
+        try:
+            sign_mode = int(input("Sign mode (0 = Unsigned, 1 = 1's complement, 2 = 2's complement): "))
+            if 0 <= sign_mode <= 2:
+                break  # Exit loop if input is a valid number within range
+            else:
+                print("Invalid sign mode. Please enter a valid number (0, 1, or 2).")
+        except ValueError:
+            print("Please enter a number.")
 
     print("Enter the word size (number of bits in a word) between 4 bits and 64 bits.")
     print("If you are unsure, enter 16 for the standard word size. It has a good balance of register size and memory usage.")
-    word_size = int(input("Word size: "))
-    while(word_size < 4 or word_size > 64):
-        print("Invalid word size. Please enter a word size between 4 and 64 bits.")
-        word_size = int(input("Word size: "))
+    while True:
+        try:
+            word_size = int(input("Word size (between 4 bits and 64 bits): "))
+            if 4 <= word_size <= 64:
+                break  # Exit loop if input is a valid number within range
+            else:
+                print("Invalid word size. Please enter a number between 4 and 64.")
+        except ValueError:
+            print("Please enter a number.")
 
     print("Enter the starting base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal).")
     print("If you are unsure, enter 10 for decimal. It is the most common base for entering numbers.")
-    base = int(input("Base: "))
-    while(base != 2 and base != 8 and base != 10 and base != 16):
-        print("Invalid base. Please enter the base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal).")
-        base = int(input("Base: "))
+    while True:
+        try:
+            base = int(input("Base: "))
+            if base in [2, 8, 10, 16]:
+                break  # Exit loop if input is a valid number within the specified options
+            else:
+                print("Invalid base. Please enter the base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal).")
+        except ValueError:
+            print("Please enter a number.")
 
     # Set the calculator state to the user's input
     calculator_state.sign_mode = sign_mode
@@ -460,39 +477,6 @@ def is_valid_float(token, calculator_state):
     if num > 9.999999999 * 10^99 or num < -9.999999999 * 10^99:
         return False
     
-    return True
-
-
-def is_number(token):
-    # Check if the token is a number
-
-    # Does token contain any characters other than -,.,0-9,A-F,a-f,b,o,x?
-    acceptable_chars = "0123456789abcdefox-."
-
-    for char in token:
-        if(char not in acceptable_chars):
-            return False
-
-    # Does token contain more than one decimal point?
-    if token.count(".") > 1:
-        return False
-    
-    # Does token contain more than two negative signs?
-    if token.count("-") > 2:
-        return False
-    
-    # Does token contain more than one binary, octal, or hexadecimal prefix?
-    if token.count("0b") > 1 or token.count("0o") > 1 or token.count("0x") > 1:
-        return False
-    
-    # Does token contain more than one base prefix?
-    if token.count("b") > 1 or token.count("o") > 1 or token.count("x") > 1:
-        return False
-    
-    # Does token contain a prefix and a decimal point (floats are always base 10)?
-    if (token.find("0b") != -1 and token.find(".")) or (token.find("0b") != -1 and token.find(".")) or (token.find("0x") != -1 and token.find(".")) or (token.find("0d") != -1 and token.find(".")):
-        return False
-
     return True
 
 

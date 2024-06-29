@@ -1,7 +1,7 @@
 import sys
 
 from Calculator_State import CalculatorState
-from Saturnine_Assembler import is_number
+from Utils import is_number
 from Instructions_Data import *
 
 # Class definition for an input object
