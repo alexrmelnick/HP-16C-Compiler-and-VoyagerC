@@ -28,11 +28,13 @@ import sys
 from datetime import datetime
 from Calculator_State import CalculatorState
 from Instructions import instr
-from Instructions_Data import *
+from Instructions_Data import mnemonic_to_instr, instructions_with_arguments
 from Utils import is_number
 
 # CONSTANTS
 PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program
+
+DEBUG = True
 
 def main():
     input_file = None # File object for the input file
@@ -45,7 +47,8 @@ def main():
         parse_cli(sys.argv, calculator_state)
 
     # Open the input file, read it, then close it
-    input_file = open(CalculatorState.input_file_name, "r") # Open the file in read mode
+    if DEBUG: print("Opening file: " + calculator_state.input_file_name + " of type " + str(type(calculator_state.input_file_name)))
+    input_file = open(calculator_state.input_file_name, "r") # Open the file in read mode
     assembly_code = input_file.readlines() # Read all the lines of the input file into a list
     input_file.close()
 
@@ -146,8 +149,8 @@ def parse_interactive(calculator_state):
 
 def parse_cli(argv, calculator_state):
     # Check if the user has entered the correct number of arguments
-    if len(argv) != 6:
-        print("Usage: python Saturnine_Assembler.py <input filename> <output file name> <output mode (16c/pdf)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>")
+    if len(argv) != 7:
+        print("Usage: python Saturnine_Assembler.py <input filename> <output file name (no extension)> <output mode (16c/pdf)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>")
         sys.exit(1)
     
     # Parse the command line arguments
@@ -159,6 +162,9 @@ def parse_cli(argv, calculator_state):
     base = int(argv[6])
 
     # Check if arguments are valid
+    if(not input_file_name.endswith(".sat")):
+        print("Invalid file type. Please enter a .sat file.")
+        sys.exit(1)
     if(output_mode != "16c" and output_mode != "pdf"):
         print("Invalid output mode. Please use either '16c' or 'pdf'.")
         sys.exit(1)
@@ -212,7 +218,7 @@ def parse_line(line, input_line_number, calculator_state):
     elif is_number(tokens[0]):
         parse_number(tokens[0], calculator_state, input_line_number)
     else:
-        print("Invalid line: " + line + "(line number )"+ input_line_number)
+        print("Invalid line: ", line, "(line number )", input_line_number)
         sys.exit(1)
 
 
@@ -245,7 +251,7 @@ def parse_instruction(tokens, input_line_number, calculator_state):
 
             calculator_state.program.append(instr(tokens[0], tokens[1], calculator_state))
         else:
-            calculator_state.program.append(instr(tokens[0], calculator_state))
+            calculator_state.program.append(instr(tokens[0], None, calculator_state))
     else:
         print("Invalid instruction: " + tokens[0] + "(line number )"+ input_line_number)
         sys.exit(1)
@@ -331,88 +337,88 @@ def parse_number(token, calculator_state, input_line_number):
 
     # For floats
     if (is_float and change_mode): # Switch to floating point mode
-        calculator_state.program.append(instr("FLOAT", calculator_state))
-        calculator_state.program.append(instr(".", calculator_state))
+        calculator_state.program.append(instr("FLOAT", None, calculator_state))
+        calculator_state.program.append(instr(".", None, calculator_state))
         calculator_state.program_length += 2
 
         if(is_float_in_sci_notation): # Floating point number in scientific notation
             if(negative):
-                calculator_state.program.append(instr(token, calculator_state))
-                calculator_state.program.append(instr("CHS", calculator_state))
+                calculator_state.program.append(instr(token, None, calculator_state))
+                calculator_state.program.append(instr("CHS", None, calculator_state))
                 calculator_state.program_length += 2
             else:
-                calculator_state.program.append(instr(token, calculator_state))
+                calculator_state.program.append(instr(token, None, calculator_state))
                 calculator_state.program_length += 1
 
             if(negative_exponent): 
-                calculator_state.program.append(instr("EEX", calculator_state))
-                calculator_state.program.append(instr(exponent, calculator_state))
-                calculator_state.program.append(instr("CHS", calculator_state))
+                calculator_state.program.append(instr("EEX", None, calculator_state))
+                calculator_state.program.append(instr(exponent, None, calculator_state))
+                calculator_state.program.append(instr("CHS", None, calculator_state))
                 calculator_state.program_length += 3
             else:
-                calculator_state.program.append(instr("EEX", calculator_state))
-                calculator_state.program.append(instr(exponent, calculator_state))
+                calculator_state.program.append(instr("EEX", None, calculator_state))
+                calculator_state.program.append(instr(exponent, None, calculator_state))
                 calculator_state.program_length += 2
 
         else: # Floating point number
             if(negative):
-                calculator_state.program.append(instr(token, calculator_state))
-                calculator_state.program.append(instr("CHS", calculator_state))
+                calculator_state.program.append(instr(token, None, calculator_state))
+                calculator_state.program.append(instr("CHS", None, calculator_state))
                 calculator_state.program_length += 2
             else:
-                calculator_state.program.append(instr(token, calculator_state))
+                calculator_state.program.append(instr(token, None, calculator_state))
                 calculator_state.program_length += 1
 
     elif (is_float): # Floating point number and already in floating point mode
         if(is_float_in_sci_notation): # Floating point number in scientific notation
             if(negative):
-                calculator_state.program.append(instr(token, calculator_state))
-                calculator_state.program.append(instr("CHS", calculator_state))
+                calculator_state.program.append(instr(token, None, calculator_state))
+                calculator_state.program.append(instr("CHS", None, calculator_state))
                 calculator_state.program_length += 2
             else:
-                calculator_state.program.append(instr(token, calculator_state))
+                calculator_state.program.append(instr(token, None, calculator_state))
                 calculator_state.program_length += 1
 
             if(negative_exponent):
-                calculator_state.program.append(instr("EEX", calculator_state))
-                calculator_state.program.append(instr(exponent, calculator_state))
-                calculator_state.program.append(instr("CHS", calculator_state))
+                calculator_state.program.append(instr("EEX", None, calculator_state))
+                calculator_state.program.append(instr(exponent, None, calculator_state))
+                calculator_state.program.append(instr("CHS", None, calculator_state))
                 calculator_state.program_length += 3
             else:
-                calculator_state.program.append(instr("EEX", calculator_state))
-                calculator_state.program.append(instr(exponent, calculator_state))
+                calculator_state.program.append(instr("EEX", None, calculator_state))
+                calculator_state.program.append(instr(exponent, None, calculator_state))
                 calculator_state.program_length += 2
 
         else: # Floating point number
             if(negative):
-                calculator_state.program.append(instr(token, calculator_state))
-                calculator_state.program.append(instr("CHS", calculator_state))
+                calculator_state.program.append(instr(token, None, calculator_state))
+                calculator_state.program.append(instr("CHS", None, calculator_state))
                 calculator_state.program_length += 2
 
             else:
-                calculator_state.program.append(instr(token, calculator_state))
+                calculator_state.program.append(instr(token, None, calculator_state))
                 calculator_state.program_length += 1
 
     if(change_mode or change_base): # Switching from float to integer mode
                     #  OR already in integer mode, but changing the base
-        calculator_state.program.append(instr(calculator_state.base, calculator_state))
+        calculator_state.program.append(instr(calculator_state.base, None, calculator_state))
         calculator_state.program_length += 1
 
         if (negative):
-            calculator_state.program.append(instr(token, calculator_state))
-            calculator_state.program.append(instr("CHS", calculator_state))
+            calculator_state.program.append(instr(token, None, calculator_state))
+            calculator_state.program.append(instr("CHS", None, calculator_state))
             calculator_state.program_length += 2
         else:
-            calculator_state.program.append(instr(token, calculator_state))
+            calculator_state.program.append(instr(token, None, calculator_state))
             calculator_state.program_length += 1
 
     else: # Already in integer mode and base
         if (negative):
-            calculator_state.program.append(instr(token, calculator_state))
-            calculator_state.program.append(instr("CHS", calculator_state))
+            calculator_state.program.append(instr(token, None, calculator_state))
+            calculator_state.program.append(instr("CHS", None, calculator_state))
             calculator_state.program_length += 2
         else:
-            calculator_state.program.append(instr(token, calculator_state))
+            calculator_state.program.append(instr(token, None, calculator_state))
             calculator_state.program_length += 1
 
 

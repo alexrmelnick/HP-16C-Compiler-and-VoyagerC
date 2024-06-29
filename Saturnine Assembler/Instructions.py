@@ -13,7 +13,6 @@ class instr:
     calculator_state = None # Calculator state
 
     instruction_or_number = False # True if instruction, False if number
-    pseudo_or_real = None # True if pseudo, False if real, None if neither
     has_argument = False
     has_modifier = False
 
@@ -28,32 +27,31 @@ class instr:
 
 
     # Constructor
-    def __init__(self, instr, calculator_state):
-        self.calculator_state = calculator_state
-        self.has_argument = False
+    # def __init__(self, instr, calculator_state):
+    #     self.calculator_state = calculator_state
+    #     self.has_argument = False
         
-        if(is_number(instr)):
-            self.instruction_or_number = False
-            self.pseudo_or_real = None
-            self.has_modifier = False
-        else:
-            self.instruction_or_number = True
+    #     if(is_number(instr)):
+    #         self.instruction_or_number = False
+    #         self.has_modifier = False
+    #     else:
+    #         self.instruction_or_number = True
 
         
-        if(self.instruction_or_number): # If the token is an instruction            
-            # Check if the instruction has a modifier
-            if(self.check_for_modifier() is not None):
-                self.has_modifier = True
-                self.modifier = self.check_for_modifier()
+    #     if(self.instruction_or_number): # If the token is an instruction            
+    #         # Check if the instruction has a modifier
+    #         if(self.check_for_modifier() is not None):
+    #             self.has_modifier = True
+    #             self.modifier = self.check_for_modifier()
 
-            self.instruction = self.check_for_instruction(instr) # Shouldn't matter than this is a string
-            self.instruction_position = self.get_instruction_position()
+    #         self.instruction = self.check_for_instruction(instr) # Shouldn't matter than this is a string
+    #         self.instruction_position = self.get_instruction_position()
 
-        else: # If the token is a number
-            self.instruction = instr
-            self.instruction_position = instr
-        if(self.has_modifier):
-            self.modifier_position = self.get_modifier_position()
+    #     else: # If the token is a number
+    #         self.instruction = instr
+    #         self.instruction_position = instr
+    #     if(self.has_modifier):
+    #         self.modifier_position = self.get_modifier_position()
 
 
     def __init__(self, instr, arg, calculator_state):
@@ -62,14 +60,25 @@ class instr:
         self.instruction_or_number = True # Always an instruction if an argument is provided
         self.instruction = self.check_for_instruction(instr)
         self.argument = arg
-            
+        
+        # Check is argument is not None
+        if(self.argument is None):
+            if(is_number(instr)):
+                self.instruction_or_number = False
+                self.has_modifier = False
+                self.instruction_position = instr
+        else:
+            self.instruction_or_number = True
+            self.has_argument = True
+            self.argument_position = self.get_argument_position()
+
+
         # Check if the instruction has a modifier
         if(self.check_for_modifier() is not None):
             self.has_modifier = True
             self.modifier = self.check_for_modifier()
 
-        instruction_position = self.get_instruction_position()
-        argument_position = self.get_argument_position()
+        self.instruction_position = self.get_instruction_position()
         if(self.has_modifier):
             self.modifier_position = self.get_modifier_position()
 

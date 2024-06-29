@@ -1,10 +1,10 @@
-g LBL A         # Label this program as "A" (the main program)
+LBL A         # Label this program as "A" (the main program)
     STO 0           # R0 <- Input
     1               # X <- 1
     STO 1           # R1 <- X=1:=Result
-    g LBL B         # Label this loop as "B"
+    LBL B         # Label this loop as "B"
         RCL 0           # X <- R0=Input
-        g x==0           # If X:=Input == 0, then Go To C, else skip the next line
+        x==0           # If X:=Input == 0, then Go To C, else skip the next line
         GTO C
         RCL 1           # Y <- X:=Input, X <- R1:=Result
         *               # X <- (Y:=Input * X:=Result)
@@ -14,5 +14,5 @@ g LBL A         # Label this program as "A" (the main program)
         -               # X <- Y-X:=Input-1
         STO 0           # R0:=Input <- X:=Input-1
         GTO B           # Goto B
-    g LBL C         # Label Done as "C"
+    LBL C         # Label Done as "C"
     RCL 1           # X <- R1:=Result
