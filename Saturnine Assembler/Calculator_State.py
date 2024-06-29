@@ -1,3 +1,7 @@
+import math
+import sys
+
+
 # Class to represent the state of the calculator
 
 PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program
@@ -13,9 +17,11 @@ class CalculatorState:
 
     # Program state
     program_length = 0 # Length of the program in bytes
-    registers_used = 0 # Number of registers used
-    memory_partition = PRGM_MEMORY_AVAILABLE # Partition between program and data memory - trying to address memory over this value will throw an error
+    registers_used = [] # Number of registers used
+    available_registers = 406 # Number of registers available
+    memory_partition = PRGM_MEMORY_AVAILABLE # Partition between program and data memory in bytes
     program = [] # Array of instruction objects representing the program
+
 
     # Assembler state
     input_file_name = None # Input file
@@ -44,3 +50,12 @@ class CalculatorState:
             self.base = "HEX"
         else:
             raise ValueError("Invalid base value")
+
+    def update_memory(self):
+        self.available_registers = math.ceil((PRGM_MEMORY_AVAILABLE - self.program_length) / math.ceil((self.word_size/8)))
+
+        self.memory_partition = 203 - math.ceil(self.program_length / 7) * 7 # Round up program length to nearest multiple of 7
+
+        if (self.registers_used.length > self.available_registers):
+            print("Error: Attempting to use more registers than available")
+            sys.exit(1)

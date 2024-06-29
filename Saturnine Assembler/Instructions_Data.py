@@ -273,3 +273,21 @@ mnemonic_to_instr = {
     'r/s': 'R/S',
     'clear': 'CLEAR'
 }
+
+instructions_with_arguments = [
+    'sto',
+    'rcl',
+    'sf',
+    'cf',
+    'f?',
+    'sb',
+    'cb',
+    'b?',
+    'lbl',
+    'gto',
+    'gsb',
+    'show',
+    'float',
+    'window',
+    'clear'
+]

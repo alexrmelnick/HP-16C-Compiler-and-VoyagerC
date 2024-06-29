@@ -28,15 +28,13 @@ import sys
 from datetime import datetime
 from Calculator_State import CalculatorState
 from Instructions import instr
+from Instructions_Data import *
 
 # CONSTANTS
 PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program
 
 def main():
     input_file = None # File object for the input file
-
-    program = [] # List to store the program
-
     calculator_state = CalculatorState() # Create a new instance of the CalculatorState class
 
     # Determine if in CLI mode or interactive mode, then parse accordingly
@@ -64,10 +62,18 @@ def main():
 
 
     # Output the assembled code in the desired format
-    #TODO
+    if(calculator_state.output_mode == "16c"):
+        output_16c(calculator_state)
+    elif(calculator_state.output_mode == "pdf"):
+        output_pdf(calculator_state)
 
     # Return some useful information to the user
-    #TODO
+    print("Assembly complete! The program has been output to " + calculator_state.output_file_name + "." + calculator_state.output_mode)
+    print("Stats:")
+    print("Calculator status: " + calculator_state.sign_mode + " mode, " + calculator_state.word_size + " bit words, " + calculator_state.base + " base")
+    print("Program length: " + calculator_state.program_length + " bytes")
+    print("Registers used: " + calculator_state.registers_used.length + " registers of " + calculator_state.available_registers + " available")
+    print("Memory partition: " + calculator_state.memory_partition + " bytes")
 
 
 def parse_interactive(calculator_state):
@@ -182,40 +188,51 @@ def parse_line(line, input_line_number, calculator_state):
     # Separate the line into tokens
     tokens = line.split()
 
-    # Check if the line has multiple instructions
-    if len(tokens) == 1:
-        has_argument = False
-    elif len(tokens) == 2:
-        has_argument = True
-    else:
-        print("Invalid line: " + line + "(line number )"+ input_line_number)
-        sys.exit(1)
-
     # Check if the token is an instruction or a number
-    if is_instruction(tokens[0]):
-        instruction_or_number = True
-        parse_instruction(tokens, input_line_number)
+    if is_valid_instruction(tokens[0]):
+        parse_instruction(tokens, input_line_number, calculator_state)
     # Check if the token is a number
     elif is_number(tokens[0]):
-        instruction_or_number = False
         parse_number(tokens[0], calculator_state, input_line_number)
     else:
         print("Invalid line: " + line + "(line number )"+ input_line_number)
         sys.exit(1)
 
-# def parse_instruction(token, argument, input_line_number):
-#     # Check if the token is a valid instruction with a valid argument
-#     if(is_valid_instruction(token)):
-#         if(is_valid_argument(token, argument)):
-#             # Print the keypress
-#             #TODO Include 'f' and 'g' modifier keys
-#             bare_keypresses.append(token + " " + argument + "\n")
-#         else:
-#             print("Invalid argument: " + argument + " for instruction: " + token + "(line number )"+ input_line_number)
-#             sys.exit(1)
-#     else:
-#         print("Invalid instruction: " + token + "(line number )"+ input_line_number)
-#         sys.exit(1)
+
+def parse_instruction(tokens, input_line_number, calculator_state):
+    has_argument = False
+    if (len(tokens) == 2):
+        has_argument = True
+
+    # Check if the token is a valid instruction with a valid argument
+    if(is_valid_instruction(tokens[0])):
+        if(has_argument and is_valid_argument(tokens[0], tokens[1], calculator_state)):
+            # Perform memory checks
+            if tokens[0] == 'sto' or tokens[0] == 'rcl':
+                if tokens[1] != 'i' and tokens[1] != '(i)':
+                    if int(tokens[1]) > 31:
+                        print("Error - Out of direct memory range:")
+                        print("Addresses must be between 0 and 31 for direct addressing.")
+                        print("Line: " + tokens + " (line number: " + input_line_number + " )")
+                        sys.exit(1)
+                    elif(int(tokens[1])*calculator_state.word_size/8 >= calculator_state.memory_partition):
+                        print("Error - Out of memory range:")
+                        print("Addresses must be within the memory partition.")
+                        print("Line: " + tokens + " (line number: " + input_line_number + " )")
+                        sys.exit(1)
+                    else:
+                        if tokens[1] not in calculator_state.registers_used:
+                            calculator_state.registers_used.append(int(tokens[1]))
+                
+                calculator_state.update_memory()
+
+            calculator_state.program.append(instr(tokens[0], tokens[1], calculator_state))
+        else:
+            calculator_state.program.append(instr(tokens[0], calculator_state))
+    else:
+        print("Invalid instruction: " + tokens[0] + "(line number )"+ input_line_number)
+        sys.exit(1)
+
 
 def parse_number(token, calculator_state, input_line_number):
     # Parse the number and return the corresponding keypresses
@@ -226,8 +243,6 @@ def parse_number(token, calculator_state, input_line_number):
     negative_exponent = False
     is_float = False
     is_float_in_sci_notation = False
-
-    acceptable_float_chars = "0123456789.e-"
 
     # Check if the number is negative
     if token[0] == "-":
@@ -249,7 +264,7 @@ def parse_number(token, calculator_state, input_line_number):
             is_float_in_sci_notation = True
 
         # Check if the number is valid
-        if not is_valid_float(token):
+        if not is_valid_float(token, calculator_state):
             print("Invalid floating point number: " + token + "(line number )"+ calculator_state.input_line_number)
             sys.exit(1)
 
@@ -419,7 +434,7 @@ def is_valid_integer(token, calculator_state):
     return True
 
 
-def is_valid_float(token):
+def is_valid_float(token, calculator_state):
     # Check if the number is valid
     # Does the token contain the correct characters for a floating point number?
     acceptable_float_chars = "0123456789.e-"
@@ -437,9 +452,9 @@ def is_valid_float(token):
         # The number is in scientific notation
         # Split the number into the mantissa and the exponent
         mantissa, exponent = token.split("e")
-        if not is_valid_integer(mantissa):
+        if not is_valid_integer(mantissa, calculator_state):
             return False
-        if not is_valid_integer(exponent):
+        if not is_valid_integer(exponent, calculator_state):
             return False
     num = mantissa ^ exponent
     if num > 9.999999999 * 10^99 or num < -9.999999999 * 10^99:
@@ -480,6 +495,110 @@ def is_number(token):
 
     return True
 
+
+def is_valid_instruction(instr):
+    # Check if the instruction is valid
+    if instr in mnemonic_to_instr:
+        return True
+    else:
+        return False
+
+
+def is_valid_argument(instr, arg, calculator_state):
+    # Check if the instruction takes an argument
+    if instr not in instructions_with_arguments:
+        return False
+    
+    # Check if the argument is valid
+    if(instr == 'sto' or instr == 'rcl'):
+        # check if the argument is I or (i)
+        if(arg == 'i' or arg == '(i)'):
+            return True
+        elif(arg.isdigit() and int(arg) >= 0 and int(arg) <= 31):
+            return True
+        else:
+            return False
+    elif(instr == 'sf' or instr == 'cf' or 'f?'):
+        if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 5):
+            return True
+        else:
+            return False
+    elif(instr == 'sb' or instr == 'cb' or 'b?'):
+        if(arg.isdigit() and int(arg) >= 0 and int(arg) <= calculator_state.word_size):
+            return True
+        else:
+            return False
+    elif(instr == 'lbl' or instr == 'gto' or instr == 'gsb'):
+        if(arg.isdigit() and int(arg) >= 0 and int(arg) < 16):
+            return True
+        elif(arg in 'abcdef'):
+            return True
+        else:
+            return False
+    elif(instr == 'show'):
+        if(arg == 'hex' or arg == 'dec' or arg == 'oct' or arg == 'bin'):
+            return True
+        else:
+            return False
+    elif(instr == 'float'):
+        if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 9):
+            return True
+        elif(arg == '.'):
+            return True
+        else:
+            return False
+    elif(instr == 'window'):
+        # This doesn't exclude all invalid arguments, but this instruction will be used so rarely that it doesn't matter
+        if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 7):
+            return True
+        else:
+            return False
+    elif(instr == 'clear'):
+        if(arg == 'mem'):
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+def output_16c(calculator_state):
+    # Output the assembled code in the .16c format
+    output_file = open(calculator_state.output_file_name + ".16c", "w") # Open the file in write mode
+
+    # Write the header to the output file
+    output_file.write("#  Program produced by Alex Melnick's Saturnine Assembler.\n")
+    output_file.write("#  Character encoding: UTF-8\n")
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    output_file.write("#  Generated "+current_time+"\n") # Write the current date and time to the output file
+    output_file.write("# Program occupies " + calculator_state.program_length + " bytes.\n\n")
+
+    # Write the first line of the output file (always the same)
+    output_file.write("   000 {          } \n") # 10 spaces between the curly braces
+
+    # Write the keypresses to the output file
+    for line_number, line in enumerate(calculator_state.program):
+        output_file.write("   "+str(line_number+1).zfill(3)+" { ")
+
+        if line.has_modifier and line.has_argument:
+            output_file.write(line.modifier_position + " " + line.instruction_position + " " + line.argument_position + " } " + line.modifier + " " + line.instruction + " " + line.argument + "\n")
+        elif line.has_modifier:
+            output_file.write("   " + line.modifier_position + " " + line.instruction_position + " } " + line.modifier + " " + line.instruction + "\n")
+        elif line.has_argument:
+            output_file.write("   " + line.instruction_position + " " + line.argument_position + " } " + line.instruction + " " + line.argument + "\n")
+        else:
+            output_file.write("      " + line.instruction_position + " } " + line.instruction + "\n")
+
+    output_file.write("\n# End.\n") # Write end statement to the output file
+
+    # Close the output file
+    output_file.close()
+
+
+def output_pdf(calculator_state):
+    # TODO: Learn how to output as a pdf
+    # TODO: Write this function
+    pass
 
 if __name__ == "__main__":
     main()
