@@ -53,7 +53,7 @@ def main():
     # Assemble the code into "bare" keypress sequences
     for input_line_number, line in enumerate(assembly_code):
         # Parse the line and get the keypresses
-        parse_line(line, input_line_number, program, calculator_state)
+        parse_line(line, input_line_number, calculator_state)
 
         # Check if the program is too large for the memory
         if calculator_state.program_length > PRGM_MEMORY_AVAILABLE:
@@ -194,11 +194,11 @@ def parse_line(line, input_line_number, calculator_state):
     # Check if the token is an instruction or a number
     if is_instruction(tokens[0]):
         instruction_or_number = True
-        parse_instruction()
+        parse_instruction(tokens, input_line_number)
     # Check if the token is a number
-    elif is_number(tokens[0], calculator_state):
+    elif is_number(tokens[0]):
         instruction_or_number = False
-        parse_number()
+        parse_number(tokens[0], calculator_state, input_line_number)
     else:
         print("Invalid line: " + line + "(line number )"+ input_line_number)
         sys.exit(1)
@@ -217,7 +217,7 @@ def parse_line(line, input_line_number, calculator_state):
 #         print("Invalid instruction: " + token + "(line number )"+ input_line_number)
 #         sys.exit(1)
 
-def parse_number(token, calculator_state):
+def parse_number(token, calculator_state, input_line_number):
     # Parse the number and return the corresponding keypresses
     token_base = ""
     change_base = False
@@ -299,88 +299,88 @@ def parse_number(token, calculator_state):
 
     # For floats
     if (is_float and change_mode): # Switch to floating point mode
-        calculator_state.program.append(instr["FLOAT"])
-        calculator_state.program.append(instr["."])
+        calculator_state.program.append(instr("FLOAT", calculator_state))
+        calculator_state.program.append(instr(".", calculator_state))
         calculator_state.program_length += 2
 
         if(is_float_in_sci_notation): # Floating point number in scientific notation
             if(negative):
-                calculator_state.program.append(instr(token))
-                calculator_state.program.append(instr("CHS"))
+                calculator_state.program.append(instr(token, calculator_state))
+                calculator_state.program.append(instr("CHS", calculator_state))
                 calculator_state.program_length += 2
             else:
-                calculator_state.program.append(instr(token))
+                calculator_state.program.append(instr(token, calculator_state))
                 calculator_state.program_length += 1
 
             if(negative_exponent): 
-                calculator_state.program.append(instr("EEX"))
-                calculator_state.program.append(instr(exponent))
-                calculator_state.program.append(instr("CHS"))
+                calculator_state.program.append(instr("EEX", calculator_state))
+                calculator_state.program.append(instr(exponent, calculator_state))
+                calculator_state.program.append(instr("CHS", calculator_state))
                 calculator_state.program_length += 3
             else:
-                calculator_state.program.append(instr("EEX"))
-                calculator_state.program.append(instr(exponent))
+                calculator_state.program.append(instr("EEX", calculator_state))
+                calculator_state.program.append(instr(exponent, calculator_state))
                 calculator_state.program_length += 2
 
         else: # Floating point number
             if(negative):
-                calculator_state.program.append(instr(token))
-                calculator_state.program.append(instr("CHS"))
+                calculator_state.program.append(instr(token, calculator_state))
+                calculator_state.program.append(instr("CHS", calculator_state))
                 calculator_state.program_length += 2
             else:
-                calculator_state.program.append(instr(token))
+                calculator_state.program.append(instr(token, calculator_state))
                 calculator_state.program_length += 1
 
     elif (is_float): # Floating point number and already in floating point mode
         if(is_float_in_sci_notation): # Floating point number in scientific notation
             if(negative):
-                calculator_state.program.append(instr(token))
-                calculator_state.program.append(instr("CHS"))
+                calculator_state.program.append(instr(token, calculator_state))
+                calculator_state.program.append(instr("CHS", calculator_state))
                 calculator_state.program_length += 2
             else:
-                calculator_state.program.append(instr(token))
+                calculator_state.program.append(instr(token, calculator_state))
                 calculator_state.program_length += 1
 
             if(negative_exponent):
-                calculator_state.program.append(instr("EEX"))
-                calculator_state.program.append(instr(exponent))
-                calculator_state.program.append(instr("CHS"))
+                calculator_state.program.append(instr("EEX", calculator_state))
+                calculator_state.program.append(instr(exponent, calculator_state))
+                calculator_state.program.append(instr("CHS", calculator_state))
                 calculator_state.program_length += 3
             else:
-                calculator_state.program.append(instr("EEX"))
-                calculator_state.program.append(instr(exponent))
+                calculator_state.program.append(instr("EEX", calculator_state))
+                calculator_state.program.append(instr(exponent, calculator_state))
                 calculator_state.program_length += 2
 
         else: # Floating point number
             if(negative):
-                calculator_state.program.append(instr(token))
-                calculator_state.program.append(instr("CHS"))
+                calculator_state.program.append(instr(token, calculator_state))
+                calculator_state.program.append(instr("CHS", calculator_state))
                 calculator_state.program_length += 2
 
             else:
-                calculator_state.program.append(instr(token))
+                calculator_state.program.append(instr(token, calculator_state))
                 calculator_state.program_length += 1
 
     if(change_mode or change_base): # Switching from float to integer mode
                     #  OR already in integer mode, but changing the base
-        calculator_state.program.append(instr[calculator_state.base])
+        calculator_state.program.append(instr(calculator_state.base, calculator_state))
         calculator_state.program_length += 1
 
         if (negative):
-            calculator_state.program.append(instr(token))
-            calculator_state.program.append(instr("CHS"))
+            calculator_state.program.append(instr(token, calculator_state))
+            calculator_state.program.append(instr("CHS", calculator_state))
             calculator_state.program_length += 2
         else:
-            calculator_state.program.append(instr(token))
+            calculator_state.program.append(instr(token, calculator_state))
             calculator_state.program_length += 1
 
     else: # Already in integer mode and base
         if (negative):
-            calculator_state.program.append(instr(token))
-            calculator_state.program.append(instr("CHS"))
+            calculator_state.program.append(instr(token, calculator_state))
+            calculator_state.program.append(instr("CHS", calculator_state))
             calculator_state.program_length += 2
         else:
-            calculator_state.program.append(instr(token))
+            calculator_state.program.append(instr(token, calculator_state))
             calculator_state.program_length += 1
 
 
