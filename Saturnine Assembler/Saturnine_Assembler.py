@@ -32,6 +32,11 @@ from Instructions_Data import mnemonic_to_instr, instructions_with_arguments
 from Utils import is_number
 from DEBUG import DEBUG
 
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import LETTER
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+
 # CONSTANTS
 PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program
 
@@ -56,6 +61,10 @@ def main():
         # Parse the line and get the keypresses
         if DEBUG: print("Parsing line: ", line, " (line number: ", input_line_number, ")")
         parse_line(line, input_line_number, calculator_state)
+
+        # Update the program length and memory partition
+        calculator_state.update_program_length()
+        calculator_state.update_memory()
 
         # Check if the program is too large for the memory
         if calculator_state.program_length > PRGM_MEMORY_AVAILABLE:
@@ -582,6 +591,10 @@ def is_valid_argument(instr, arg, calculator_state):
 
 
 def output_16c(calculator_state):
+    # Update the state of the calculator
+    calculator_state.update_memory()
+    calculator_state.update_program_length()
+    
     # Output the assembled code in the .16c format
     output_file = open(calculator_state.output_file_name + ".16c", "w") # Open the file in write mode
 
@@ -618,9 +631,60 @@ def output_16c(calculator_state):
 
 
 def output_pdf(calculator_state):
-    # TODO: Learn how to output as a pdf
-    # TODO: Write this function
-    pass
+    # Parameters for the PDF
+    font_name = "Dot Matrix" # Using a custom font for the program listing for a retro look
+    font_path = "fonts/DOTMATRI.TTF"
+    line_spacing = 20  # Line spacing for the program listing
+
+    c = canvas.Canvas(calculator_state.output_file_name + ".pdf", pagesize=LETTER)
+    pdfmetrics.registerFont(TTFont(font_name, font_path))
+    c.setFont(font_name, 12)  # Using Times-Roman font with size 12 because this is meant to be printed
+
+    # Heading and Stats
+    header = [
+        f"Program Listing for {calculator_state.input_file_name} for the HP-16C Calculator",
+        f"Calculator status (at end of program): {calculator_state.sign_mode} mode, {calculator_state.word_size} bit words, {calculator_state.base} base",
+        f"Program length: {calculator_state.program_length} bytes",
+        f"Registers used: {len(calculator_state.registers_used)} of {calculator_state.available_registers} available",
+        f"Memory partition: {calculator_state.memory_partition} bytes"
+    ]
+        
+    heading_y_position = 792 - 72  # 72 points (1 inch) from the top
+
+    # Draw Heading and Stats
+    for line in header:
+        c.drawString(72, heading_y_position, line)
+        heading_y_position -= line_spacing
+
+    # Draw a line under the heading
+    c.line(72, heading_y_position, 522, heading_y_position)
+    heading_y_position -= line_spacing  # Move down for the next line
+
+    # Column layout settings
+    columns = [(72, heading_y_position), (228, heading_y_position), (384, heading_y_position)]  # Adjusted y position for columns start
+    column_width = 200  # Not used in this example, but useful for text wrapping
+    current_column = 0  # Start with the first column
+
+
+    # Iterate over the program lines and add them to the PDF
+    for line_number, line in enumerate(calculator_state.program, start=1):
+        x_position, y_position = columns[current_column]
+        line_content = f"{line_number-1:03}: {line}"  # Format line content
+        c.drawString(x_position, y_position, line_content)
+        y_position -= line_spacing  # Move down for the next line
+        columns[current_column] = (x_position, y_position)  # Update the y position in the columns array
+
+        # Check if we need to switch columns or pages
+        if y_position < 50:  # Near the bottom of the page
+            current_column += 1  # Move to the next column
+            if current_column > 2:  # If beyond the third column, create a new page
+                c.showPage()
+                c.setFont(font_name, 12)
+                current_column = 0  # Reset to the first column
+                # Reset y position for the new column or page
+                columns = [(50, 750), (250, 750), (450, 750)]
+
+    c.save()  # Save the PDF
 
 if __name__ == "__main__":
     main()

@@ -75,6 +75,7 @@ class instr:
                 if DEBUG: print("Validating number: ", instr, " with no argument and getting position.")
                 self.instruction_or_number = False
                 self.has_modifier = False
+                self.instruction = instr
                 self.instruction_position = instr
             else: # If the token is an instruction
                 if DEBUG: print("Validating instruction: ", instr, " with no argument and getting position.")
@@ -101,6 +102,16 @@ class instr:
 
 
     # Methods
+    def __str__(self): # For printing to pdf
+        if self.has_modifier and self.has_argument:
+            return f"{self.modifier} {self.instruction} {self.argument}"
+        elif self.has_modifier:
+            return f"{self.modifier} {self.instruction}"
+        elif self.has_argument:
+            return f"{self.instruction} {self.argument}"
+        else:
+            return f"{self.instruction}"
+
     def check_for_instruction(self, mnemonic):
         if mnemonic in mnemonic_to_instr:
             if DEBUG: print("Mnemonic: ", mnemonic, " is valid. Instruction: ", mnemonic_to_instr[mnemonic],".")

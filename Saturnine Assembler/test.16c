@@ -1,12 +1,12 @@
 #  Program produced by Alex Melnick's Saturnine Assembler.
 #  Character encoding: UTF-8
-#  Generated 2024-07-01 11:31:13
-# Program occupies 2 bytes.
+#  Generated 2024-07-01 12:21:36
+# Program occupies 18 bytes.
 
    000 {          } 
    001 { 43 22  A } g LBL A
    002 {    44 0 } STO 0
-   003 {       1 } None
+   003 {       1 } 1
    004 {    44 1 } STO 1
    005 { 43 22  B } g LBL B
    006 {    45 0 } RCL 0
@@ -16,7 +16,7 @@
    010 {       20 } *
    011 {    44 1 } STO 1
    012 {    45 0 } RCL 0
-   013 {       1 } None
+   013 {       1 } 1
    014 {       30 } -
    015 {    44 0 } STO 0
    016 {    22  B } GTO B

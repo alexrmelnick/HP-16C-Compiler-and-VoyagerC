@@ -57,3 +57,6 @@ class CalculatorState:
         if (len(self.registers_used) > self.available_registers):
             print("Error: Attempting to use more registers than available")
             sys.exit(1)
+
+    def update_program_length(self):
+        self.program_length = len(self.program)
