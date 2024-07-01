@@ -81,12 +81,12 @@ def main():
         output_pdf(calculator_state)
 
     # Return some useful information to the user
-    print("Assembly complete! The program has been output to ", calculator_state.output_file_name, ".", calculator_state.output_mode)
-    print("Stats:.........................................................")
-    print("Calculator status: ", calculator_state.sign_mode, " mode, ", calculator_state.word_size, " bit words, ", calculator_state.base + " base")
-    print("Program length: ", calculator_state.program_length, " bytes")
-    print("Registers used: ", len(calculator_state.registers_used), " registers of ", calculator_state.available_registers, " available")
-    print("Memory partition: ", calculator_state.memory_partition, " bytes")
+    print(f"Assembly complete! The program has been output to {calculator_state.output_file_name}.{calculator_state.output_mode}")    
+    print("Stats:".ljust(80, '.'))
+    print(f"Calculator status (at end of program): {calculator_state.sign_mode} mode, {calculator_state.word_size}-bit words, {calculator_state.base} base")
+    print(f"Program length: {calculator_state.program_length} Bytes")
+    print(f"Registers used: {len(calculator_state.registers_used)} registers of {calculator_state.available_registers} available")
+    print(f"Memory partition @ {calculator_state.memory_partition} Bytes")
 
 
 def parse_interactive(calculator_state):
@@ -633,29 +633,31 @@ def output_16c(calculator_state):
 def output_pdf(calculator_state):
     # Parameters for the PDF
     font_name = "Dot Matrix" # Using a custom font for the program listing for a retro look
-    font_path = "fonts/DOTMATRI.TTF"
+    font_path = "fonts/Dot-Matrix-Typeface-master/Dot Matrix Regular.TTF" # Thank you Daniel Hark for the font!
     line_spacing = 20  # Line spacing for the program listing
 
     c = canvas.Canvas(calculator_state.output_file_name + ".pdf", pagesize=LETTER)
     pdfmetrics.registerFont(TTFont(font_name, font_path))
     c.setFont(font_name, 12)  # Using Times-Roman font with size 12 because this is meant to be printed
+    heading_y_position = 792 - 72  # 72 points (1 inch) from the top
 
     # Heading and Stats
     header = [
         f"Program Listing for {calculator_state.input_file_name} for the HP-16C Calculator",
-        f"Calculator status (at end of program): {calculator_state.sign_mode} mode, {calculator_state.word_size} bit words, {calculator_state.base} base",
-        f"Program length: {calculator_state.program_length} bytes",
+        f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} with the Saturnine Assembler by Alex Melnick",
+        f"Calculator status (at end of program): {calculator_state.sign_mode} mode, {calculator_state.word_size}-bit words, {calculator_state.base} base",
+        f"Program length: {calculator_state.program_length} Bytes",
         f"Registers used: {len(calculator_state.registers_used)} of {calculator_state.available_registers} available",
-        f"Memory partition: {calculator_state.memory_partition} bytes"
+        f"Memory partition @ {calculator_state.memory_partition} Bytes"
     ]
-        
-    heading_y_position = 792 - 72  # 72 points (1 inch) from the top
 
     # Draw Heading and Stats
     for line in header:
         c.drawString(72, heading_y_position, line)
         heading_y_position -= line_spacing
 
+    # Set the dash pattern for the line: 1 unit on, 3 units off
+    c.setDash(1, 3)
     # Draw a line under the heading
     c.line(72, heading_y_position, 522, heading_y_position)
     heading_y_position -= line_spacing  # Move down for the next line
