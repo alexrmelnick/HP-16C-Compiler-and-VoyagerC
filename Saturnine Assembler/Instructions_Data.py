@@ -170,16 +170,16 @@ button_positions = {
     'PSE': '34',
     'CLx': '35',
     'LSTx': '36', #* This key takes up 2 spaces, so I am not sure if this is correct
-    'x<=y': '37',
-    'x<0': '38',
-    'x>y': '39',
-    'x>0': '30',
+    'X<=Y': '37',
+    'X<0': '38',
+    'X>y': '39',
+    'X>0': '30',
     '<': '44',
     '>': '45',
-    'x!=y': '47',
-    'x!=0': '48',
-    'x==y': '49',
-    'x==0': '40'
+    'X!=Y': '47',
+    'X!=0': '48',
+    'X==Y': '49',
+    'X==0': '40'
 }
 
 mnemonic_to_instr = {

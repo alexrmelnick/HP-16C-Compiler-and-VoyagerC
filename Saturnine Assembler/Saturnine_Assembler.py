@@ -30,11 +30,10 @@ from Calculator_State import CalculatorState
 from Instructions import instr
 from Instructions_Data import mnemonic_to_instr, instructions_with_arguments
 from Utils import is_number
+from DEBUG import DEBUG
 
 # CONSTANTS
 PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program
-
-DEBUG = True
 
 def main():
     input_file = None # File object for the input file
@@ -55,6 +54,7 @@ def main():
     # Assemble the code into "bare" keypress sequences
     for input_line_number, line in enumerate(assembly_code):
         # Parse the line and get the keypresses
+        if DEBUG: print("Parsing line: ", line, " (line number: ", input_line_number, ")")
         parse_line(line, input_line_number, calculator_state)
 
         # Check if the program is too large for the memory
@@ -72,12 +72,12 @@ def main():
         output_pdf(calculator_state)
 
     # Return some useful information to the user
-    print("Assembly complete! The program has been output to " + calculator_state.output_file_name + "." + calculator_state.output_mode)
-    print("Stats:")
-    print("Calculator status: " + calculator_state.sign_mode + " mode, " + calculator_state.word_size + " bit words, " + calculator_state.base + " base")
-    print("Program length: " + calculator_state.program_length + " bytes")
-    print("Registers used: " + calculator_state.registers_used.length + " registers of " + calculator_state.available_registers + " available")
-    print("Memory partition: " + calculator_state.memory_partition + " bytes")
+    print("Assembly complete! The program has been output to ", calculator_state.output_file_name, ".", calculator_state.output_mode)
+    print("Stats:.........................................................")
+    print("Calculator status: ", calculator_state.sign_mode, " mode, ", calculator_state.word_size, " bit words, ", calculator_state.base + " base")
+    print("Program length: ", calculator_state.program_length, " bytes")
+    print("Registers used: ", len(calculator_state.registers_used), " registers of ", calculator_state.available_registers, " available")
+    print("Memory partition: ", calculator_state.memory_partition, " bytes")
 
 
 def parse_interactive(calculator_state):
@@ -212,6 +212,7 @@ def parse_line(line, input_line_number, calculator_state):
     tokens = line.split()
 
     # Check if the token is an instruction or a number
+    if DEBUG: print("Parsing tokens: ", tokens)
     if is_valid_instruction(tokens[0]):
         parse_instruction(tokens, input_line_number, calculator_state)
     # Check if the token is a number
@@ -225,11 +226,16 @@ def parse_line(line, input_line_number, calculator_state):
 def parse_instruction(tokens, input_line_number, calculator_state):
     has_argument = False
     if (len(tokens) == 2):
+        if DEBUG: print("Token: ", tokens[0], " has an argument: ", tokens[1])
         has_argument = True
+    else:
+        if DEBUG: print("Token: ", tokens[0], " has no argument.")
 
     # Check if the token is a valid instruction with a valid argument
     if(is_valid_instruction(tokens[0])):
         if(has_argument and is_valid_argument(tokens[0], tokens[1], calculator_state)):
+            if DEBUG: print("Instr: ", tokens[0], " has a valid with argument: ", tokens[1])
+            
             # Perform memory checks
             if tokens[0] == 'sto' or tokens[0] == 'rcl':
                 if tokens[1] != 'i' and tokens[1] != '(i)':
@@ -249,8 +255,10 @@ def parse_instruction(tokens, input_line_number, calculator_state):
                 
                 calculator_state.update_memory()
 
+            if DEBUG: print("Adding instruction: ", tokens[0], " with argument: ", tokens[1], " to the program.")
             calculator_state.program.append(instr(tokens[0], tokens[1], calculator_state))
         else:
+            if DEBUG: print("Adding instruction: ", tokens[0], " with no argument to the program.")
             calculator_state.program.append(instr(tokens[0], None, calculator_state))
     else:
         print("Invalid instruction: " + tokens[0] + "(line number )"+ input_line_number)
@@ -448,7 +456,7 @@ def is_valid_integer(token, calculator_state):
                 return False
 
     # Is the number within the range of the word size?
-    num = int(num, calculator_state.base_numeric)
+    num = int(token, calculator_state.base_numeric)
     if num < 0:
         return False
     if num >= 2 ** calculator_state.word_size:
@@ -495,12 +503,17 @@ def is_valid_instruction(instr):
 
 
 def is_valid_argument(instr, arg, calculator_state):
+    if DEBUG: print("Checking if argument: ", arg, " is valid for instruction: ", instr)
+    
     # Check if the instruction takes an argument
     if instr not in instructions_with_arguments:
         return False
-    
+    if DEBUG: print("Instruction: ", instr, " takes an argument.")
+
     # Check if the argument is valid
     if(instr == 'sto' or instr == 'rcl'):
+        if DEBUG: print("Checking if argument: ", arg, " is valid for a STO or RCL instruction.")
+        
         # check if the argument is I or (i)
         if(arg == 'i' or arg == '(i)'):
             return True
@@ -508,17 +521,23 @@ def is_valid_argument(instr, arg, calculator_state):
             return True
         else:
             return False
-    elif(instr == 'sf' or instr == 'cf' or 'f?'):
+    elif(instr == 'sf' or instr == 'cf' or instr == 'f?'):
+        if DEBUG: print("Checking if argument: ", arg, " is valid for a SF, CF, or F? instruction.")
+        
         if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 5):
             return True
         else:
             return False
-    elif(instr == 'sb' or instr == 'cb' or 'b?'):
+    elif(instr == 'sb' or instr == 'cb' or instr == 'b?'):
+        if DEBUG: print("Checking if argument: ", arg, " is valid for a SB, CB, or B? instruction.")
+        
         if(arg.isdigit() and int(arg) >= 0 and int(arg) <= calculator_state.word_size):
             return True
         else:
             return False
     elif(instr == 'lbl' or instr == 'gto' or instr == 'gsb'):
+        if DEBUG: print("Checking if argument: ", arg, " is valid for a LBL, GTO, or GSB instruction.")
+        
         if(arg.isdigit() and int(arg) >= 0 and int(arg) < 16):
             return True
         elif(arg in 'abcdef'):
@@ -526,11 +545,15 @@ def is_valid_argument(instr, arg, calculator_state):
         else:
             return False
     elif(instr == 'show'):
+        if DEBUG: print("Checking if argument: ", arg, " is valid for a SHOW instruction.")
+        
         if(arg == 'hex' or arg == 'dec' or arg == 'oct' or arg == 'bin'):
             return True
         else:
             return False
     elif(instr == 'float'):
+        if DEBUG: print("Checking if argument: ", arg, " is valid for a FLOAT instruction.")
+        
         if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 9):
             return True
         elif(arg == '.'):
@@ -538,17 +561,23 @@ def is_valid_argument(instr, arg, calculator_state):
         else:
             return False
     elif(instr == 'window'):
+        if DEBUG: print("Checking if argument: ", arg, " is valid for a WINDOW instruction.")
+        
         # This doesn't exclude all invalid arguments, but this instruction will be used so rarely that it doesn't matter
         if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 7):
             return True
         else:
             return False
     elif(instr == 'clear'):
+        if DEBUG: print("Checking if argument: ", arg, " is valid for a CLEAR instruction.")
+        
         if(arg == 'mem'):
             return True
         else:
             return False
     else:
+        if DEBUG: print("Did not find a valid argument for instruction: ", instr)
+        
         return False
 
 
@@ -560,26 +589,29 @@ def output_16c(calculator_state):
     output_file.write("#  Program produced by Alex Melnick's Saturnine Assembler.\n")
     output_file.write("#  Character encoding: UTF-8\n")
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    output_file.write("#  Generated "+current_time+"\n") # Write the current date and time to the output file
-    output_file.write("# Program occupies " + calculator_state.program_length + " bytes.\n\n")
+    output_file.write(f"#  Generated {current_time}\n")  # Corrected line
+    output_file.write(f"# Program occupies {calculator_state.program_length} bytes.\n\n")  # Corrected line
 
     # Write the first line of the output file (always the same)
     output_file.write("   000 {          } \n") # 10 spaces between the curly braces
 
     # Write the keypresses to the output file
     for line_number, line in enumerate(calculator_state.program):
-        output_file.write("   "+str(line_number+1).zfill(3)+" { ")
-
+        line_number_str = str(line_number + 1).zfill(3)
         if line.has_modifier and line.has_argument:
-            output_file.write(line.modifier_position + " " + line.instruction_position + " " + line.argument_position + " } " + line.modifier + " " + line.instruction + " " + line.argument + "\n")
+            output_line = f"   {line_number_str} {{ {line.modifier_position} {line.instruction_position} {line.argument_position} }} {line.modifier} {line.instruction} {line.argument}\n"
         elif line.has_modifier:
-            output_file.write("   " + line.modifier_position + " " + line.instruction_position + " } " + line.modifier + " " + line.instruction + "\n")
+            output_line = f"   {line_number_str} {{    {line.modifier_position} {line.instruction_position} }} {line.modifier} {line.instruction}\n"
         elif line.has_argument:
-            output_file.write("   " + line.instruction_position + " " + line.argument_position + " } " + line.instruction + " " + line.argument + "\n")
+            output_line = f"   {line_number_str} {{    {line.instruction_position} {line.argument_position} }} {line.instruction} {line.argument}\n"
         else:
-            output_file.write("      " + line.instruction_position + " } " + line.instruction + "\n")
-
-    output_file.write("\n# End.\n") # Write end statement to the output file
+            output_line = f"   {line_number_str} {{       {line.instruction_position} }} {line.instruction}\n"
+        
+        if DEBUG: print("Writing line: ", output_line)
+        
+        output_file.write(output_line)
+    
+    output_file.write("\n# End.\n")  # Write end statement to the output file
 
     # Close the output file
     output_file.close()

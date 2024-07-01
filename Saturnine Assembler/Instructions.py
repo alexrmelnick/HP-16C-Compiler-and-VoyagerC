@@ -3,6 +3,7 @@ import sys
 from Calculator_State import CalculatorState
 from Utils import is_number
 from Instructions_Data import *
+from DEBUG import DEBUG 
 
 # Class definition for an input object
 # This object will be used to store the input data
@@ -55,19 +56,34 @@ class instr:
 
 
     def __init__(self, instr, arg, calculator_state):
+        if DEBUG: print("Creating instruction object with instruction: ", instr, " and argument: ", arg)
+        
         self.calculator_state = calculator_state
         self.has_argument = False
         self.instruction_or_number = True # Always an instruction if an argument is provided
-        self.instruction = self.check_for_instruction(instr)
-        self.argument = arg
-        
+        if arg is not None and is_number(arg):
+            if arg in 'abcdef':
+                self.argument = arg.upper()
+            else:
+                self.argument = arg       
+        else:
+            self.argument = arg
         # Check is argument is not None
+
         if(self.argument is None):
-            if(is_number(instr)):
+            if(is_number(instr)): # If the token is a number
+                if DEBUG: print("Validating number: ", instr, " with no argument and getting position.")
                 self.instruction_or_number = False
                 self.has_modifier = False
                 self.instruction_position = instr
-        else:
+            else: # If the token is an instruction
+                if DEBUG: print("Validating instruction: ", instr, " with no argument and getting position.")
+                self.instruction = self.check_for_instruction(instr)
+                self.instruction_position = self.get_instruction_position()
+        else: # If the token is an instruction with an argument
+            if DEBUG: print("Validating instruction: ", instr, " with argument: ", arg, " and getting position.")
+            self.instruction = self.check_for_instruction(instr)
+            self.instruction_position = self.get_instruction_position()
             self.instruction_or_number = True
             self.has_argument = True
             self.argument_position = self.get_argument_position()
@@ -78,20 +94,25 @@ class instr:
             self.has_modifier = True
             self.modifier = self.check_for_modifier()
 
-        self.instruction_position = self.get_instruction_position()
         if(self.has_modifier):
             self.modifier_position = self.get_modifier_position()
+
+        if DEBUG: print("Instruction object created with instruction: ", self.instruction, " and argument: ", self.argument, " and modifier: ", self.modifier)
 
 
     # Methods
     def check_for_instruction(self, mnemonic):
         if mnemonic in mnemonic_to_instr:
+            if DEBUG: print("Mnemonic: ", mnemonic, " is valid. Instruction: ", mnemonic_to_instr[mnemonic],".")
             return mnemonic_to_instr[mnemonic]
         else:
+            print("Error: Invalid mnemonic. ", mnemonic, " is not a valid mnemonic.")
             raise ValueError("Invalid mnemonic")
 
     def check_for_modifier(self):
-        if self.instruction in f_modifier_instrs:
+        if self.instruction_or_number == False: # If the token is a number
+            return None
+        elif self.instruction in f_modifier_instrs:
             return 'f'
         elif self.instruction in g_modifier_instrs:
             return 'g'
@@ -99,13 +120,22 @@ class instr:
             return None
 
     def get_instruction_position(self):
-        if self.instruction in button_positions:
+        if DEBUG: print("Getting instruction position for: ", self.instruction)
+        if self.instruction_or_number == False: # If the token is a number
+            return self.instruction
+        elif self.instruction in button_positions:
             return button_positions[self.instruction]
         else:
+            print("Error: Invalid instruction. ", self.instruction, " is not a valid instruction.")
             raise ValueError("Invalid instruction")
     
     def get_argument_position(self):
-        if self.argument in button_positions:
+        if is_number(self.argument):
+            if self.argument in 'abcdef':
+                return self.argument.upper()
+            else:
+                return self.argument
+        elif self.argument in button_positions:
             return button_positions[self.argument]
         else:
             raise ValueError("Invalid argument")

@@ -54,6 +54,6 @@ class CalculatorState:
 
         self.memory_partition = 203 - math.ceil(self.program_length / 7) * 7 # Round up program length to nearest multiple of 7
 
-        if (self.registers_used.length > self.available_registers):
+        if (len(self.registers_used) > self.available_registers):
             print("Error: Attempting to use more registers than available")
             sys.exit(1)

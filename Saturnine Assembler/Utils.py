@@ -9,6 +9,10 @@ def is_number(token):
         if(char not in acceptable_chars):
             return False
 
+    # Check that token isn't just "-" or "." or "0x" or "0o" or "0b" or "0d"
+    if token == "-" or token == "." or token == "0x" or token == "0o" or token == "0b" or token == "0d":
+        return False
+
     # Does token contain more than one decimal point?
     if token.count(".") > 1:
         return False
