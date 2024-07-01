@@ -129,13 +129,15 @@ button_positions = {
     'AND': '20',
     '(i)': '31',
     'I': '32',
+    'i': '32', # I dont know why this is being passes as lower case
     'CLEAR PRGM': '33', #* This is a special case because it has a space in the instruction
     'CLEAR REG': '34',
     'CLEAR PREFIX': '35',
     'WINDOW': '36', #? This key takes up 2 spaces, so I am not sure if this is correct
     '1s': '37',
     '2s': '38',
-    'UNSGN': '39',
+    # 'UNSGN': '39',    # I believe there is a bug in JRPN with the UNSGN key position, but this is what the export file outputs for it so thats the way it goes
+    'UNSGN': '3',
     'NOT': '30',
     'WSIZE': '44',
     'FLOAT': '45',
@@ -172,14 +174,16 @@ button_positions = {
     'LSTx': '36', #* This key takes up 2 spaces, so I am not sure if this is correct
     'X<=Y': '37',
     'X<0': '38',
-    'X>y': '39',
+    'X>Y': '39',
     'X>0': '30',
     '<': '44',
     '>': '45',
     'X!=Y': '47',
     'X!=0': '48',
     'X==Y': '49',
-    'X==0': '40'
+    'X==0': '40',
+    'SB': '27',
+    'B?': '29',
 }
 
 mnemonic_to_instr = {
@@ -271,7 +275,10 @@ mnemonic_to_instr = {
     '<': '<',
     '>': '>',
     'r/s': 'R/S',
-    'clear': 'CLEAR'
+    'clear': 'CLEAR',
+    'chs': 'CHS',
+    'eex': 'EEX',  
+    '.': '.',
 }
 
 instructions_with_arguments = [

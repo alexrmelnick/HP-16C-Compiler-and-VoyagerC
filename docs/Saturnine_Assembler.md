@@ -36,6 +36,7 @@ Please note that this documentation is a work in progress and will be updated as
     l. [Functions not available Saturnine](###functions-not-in-saturnine)
 5. [Syntax](##syntax)
 6. [Usage](##usage)
+7. [Limitations](##limitations)
 
 
 ## Introduction
@@ -438,3 +439,7 @@ The Saturnine Assembler can be run from the command line using the following com
 `Saturnine_Assembler.py [input file] [output file] [options]`
 
 You can also run the Saturnine Assembler without any arguments to enter interactive mode. This will walk you through each argument and allow you to assemble a file without needing to remember the command line arguments.
+
+## Limitations
+The Saturnine Assembler is a work in progress and has several limitations. The following is a list of known limitations:
+- The argument parsing for `WINDOW` is not perfect. There are some invalid arguments that are not caught by the parser.

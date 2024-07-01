@@ -30,7 +30,7 @@ from Calculator_State import CalculatorState
 from Instructions import instr
 from Instructions_Data import mnemonic_to_instr, instructions_with_arguments
 from Utils import is_number
-from DEBUG import DEBUG
+from DEBUG import *
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import LETTER
@@ -59,8 +59,8 @@ def main():
     # Assemble the code into "bare" keypress sequences
     for input_line_number, line in enumerate(assembly_code):
         # Parse the line and get the keypresses
-        if DEBUG: print("Parsing line: ", line, " (line number: ", input_line_number, ")")
-        parse_line(line, input_line_number, calculator_state)
+        if DEBUG: print("Parsing line: ", line, " (line number: ", input_line_number+1, ")")
+        parse_line(line, input_line_number+1, calculator_state)
 
         # Update the program length and memory partition
         calculator_state.update_program_length()
@@ -69,7 +69,7 @@ def main():
         # Check if the program is too large for the memory
         if calculator_state.program_length > PRGM_MEMORY_AVAILABLE:
             print("Error - Out of Memory: This program is too large for the memory.")
-            print("Memory overflowed at line " + str(input_line_number) + "(the HP-16C only has 203 Bytes of memory).")
+            print("Memory overflowed at line " + str(input_line_number+1) + "(the HP-16C only has 203 Bytes of memory).")
             print("Remember, the best art is made under the tightest constraints!")
             sys.exit(1)
 
@@ -193,8 +193,7 @@ def parse_cli(argv, calculator_state):
     # Set the calculator state to the command line arguments
     calculator_state.sign_mode = sign_mode
     calculator_state.word_size = word_size
-    calculator_state.base_numeric = base
-    calculator_state.update_base()
+    calculator_state.update_base(base)
     calculator_state.input_file_name = input_file_name
     calculator_state.output_file_name = output_file_name
     calculator_state.output_mode = output_mode
@@ -245,8 +244,8 @@ def parse_instruction(tokens, input_line_number, calculator_state):
         if(has_argument and is_valid_argument(tokens[0], tokens[1], calculator_state)):
             if DEBUG: print("Instr: ", tokens[0], " has a valid with argument: ", tokens[1])
             
-            # Perform memory checks
-            if tokens[0] == 'sto' or tokens[0] == 'rcl':
+            # Perform system checks
+            elif tokens[0] == 'sto' or tokens[0] == 'rcl':
                 if tokens[1] != 'i' and tokens[1] != '(i)':
                     if int(tokens[1]) > 31:
                         print("Error - Out of direct memory range:")
@@ -267,6 +266,10 @@ def parse_instruction(tokens, input_line_number, calculator_state):
             if DEBUG: print("Adding instruction: ", tokens[0], " with argument: ", tokens[1], " to the program.")
             calculator_state.program.append(instr(tokens[0], tokens[1], calculator_state))
         else:
+            if tokens[0] == 'hex' or tokens[0] == 'dec' or tokens[0] == 'oct' or tokens[0] == 'bin': 
+                if DEBUG: print("Changing base to: ", tokens[0])
+                calculator_state.update_base(tokens[0])
+
             if DEBUG: print("Adding instruction: ", tokens[0], " with no argument to the program.")
             calculator_state.program.append(instr(tokens[0], None, calculator_state))
     else:
@@ -343,7 +346,7 @@ def parse_number(token, calculator_state, input_line_number):
             token_base = "DEC"
 
         if not is_valid_integer(token, calculator_state):
-            print("Invalid integer: " + token + "(line number )"+ input_line_number)
+            print(f"Invalid integer: {token} (line number {input_line_number})")
             sys.exit(1)
 
         if token_base != calculator_state.base:
@@ -418,7 +421,7 @@ def parse_number(token, calculator_state, input_line_number):
 
     if(change_mode or change_base): # Switching from float to integer mode
                     #  OR already in integer mode, but changing the base
-        calculator_state.program.append(instr(calculator_state.base, None, calculator_state))
+        calculator_state.program.append(instr(calculator_state.base.upper(), None, calculator_state))
         calculator_state.program_length += 1
 
         if (negative):
@@ -465,7 +468,14 @@ def is_valid_integer(token, calculator_state):
                 return False
 
     # Is the number within the range of the word size?
-    num = int(token, calculator_state.base_numeric)
+    if DEBUG: print("Token: ", token, " Base: ", calculator_state.base_numeric)
+    try:
+        num = int(token, calculator_state.base_numeric)
+    except ValueError:
+        # Handle the error, for example, by setting num to None or logging an error message
+        num = None
+        print(f"Error: '{token}' is not a valid number in base {calculator_state.base_numeric}")
+        return False
     if num < 0:
         return False
     if num >= 2 ** calculator_state.word_size:
@@ -479,11 +489,13 @@ def is_valid_float(token, calculator_state):
     # Does the token contain the correct characters for a floating point number?
     acceptable_float_chars = "0123456789.e-"
     contains_e = False
+    token = token.lower()
 
     for char in token:
         if char == "e":
             contains_e = True
         if char not in acceptable_float_chars:
+            if is_valid_float_DEBUG: print("Invalid character: ", char)
             return False
 
 
@@ -492,14 +504,23 @@ def is_valid_float(token, calculator_state):
         # The number is in scientific notation
         # Split the number into the mantissa and the exponent
         mantissa, exponent = token.split("e")
-        if not is_valid_integer(mantissa, calculator_state):
-            return False
+        if mantissa[0] == "-":
+            mantissa = mantissa[1:]
+        if exponent[0] == "-":
+            exponent = exponent[1:]
+        # if not is_valid_integer(mantissa, calculator_state):
+        #     if is_valid_float_DEBUG: print("Invalid mantissa: ", mantissa)
+        #     return False
+        if DEBUG: print("Checking if exponent: ", exponent, " is valid.")
         if not is_valid_integer(exponent, calculator_state):
+            if is_valid_float_DEBUG: print("Invalid exponent: ", exponent)
             return False
-    num = mantissa ^ exponent
-    if num > 9.999999999 * 10^99 or num < -9.999999999 * 10^99:
+    num = float(mantissa) ** float(exponent)
+    if num > 9.999999999 * 10**99 or num < -9.999999999 * 10**99:
+        if is_valid_float_DEBUG: print("Number out of range: ", num)
         return False
     
+    if is_valid_float_DEBUG: print("Valid floating point number: ", token)
     return True
 
 
@@ -580,7 +601,7 @@ def is_valid_argument(instr, arg, calculator_state):
     elif(instr == 'clear'):
         if DEBUG: print("Checking if argument: ", arg, " is valid for a CLEAR instruction.")
         
-        if(arg == 'mem'):
+        if(arg == 'reg'):
             return True
         else:
             return False

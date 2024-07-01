@@ -1,0 +1,105 @@
+// Saturnine Assembly Test Program
+
+// Basic Instructions
+5
+chs
+eex
++
+-
+*
+/
+rmd
+sqrt
+1/x
+and
+or
+xor
+not
+sl
+sr
+lj
+asr
+rl
+rr
+rlc
+rrc
+rln
+rrn
+rlcn
+rrcn
+sb
+cb
+maskl
+maskr
+#b
+dbl*
+dbl/
+dblrmd
+enter
+r^
+rv
+x<>y
+x<>i
+x<>(i)
+clx
+sto 0 // Using 0 as a placeholder for register
+rlc
+sf 0 // Using 0 as a placeholder for flag
+cf 0 // Using 0 as a placeholder for flag
+lbl 0 // Using 0 as a placeholder for label
+gto 0 // Using 0 as a placeholder for label
+gsb 0 // Using 0 as a placeholder for subroutine
+rtn
+dsz 0 // Using 0 as a placeholder for register
+isz 0 // Using 0 as a placeholder for register
+x<=y
+x>y
+x==y
+x!=y
+x<0
+x>0
+x==0
+x!=0
+b? 0 // Using 0 as a placeholder for flag
+f? 0 // Using 0 as a placeholder for flag
+hex
+dec
+oct
+bin
+wsize
+unsigned
+1's
+2's
+float
+show HEX // Example usage
+pse
+window
+<
+>
+r/s
+clear reg
+
+// Pseudo-Instructions
+DEC
+-12 // Enter a negative number
+-5.4E7 // Enter a negative floating point number in scientific notation
+ASL
+
+// Instructions with arguments
+sto 1
+rcl 1
+sf 1
+cf 1
+lbl 1
+gto 1
+gsb 1
+b? 1
+f? 1
+show DEC
+float 3.14E-5
+window 4
+
+// Comments
+// This is a comment line
+
+// Note: The actual values for labels, registers, flags, and specific numbers should be adjusted based on the assembler's syntax and capabilities.

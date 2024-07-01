@@ -37,15 +37,19 @@ class CalculatorState:
     def __str__(self): # For debugging
         return f"Sign mode: {self.sign_mode}, Word size: {self.word_size}, Base: {self.base}, Program length: {self.program_length}, Registers used: {self.registers_used}, Memory partition: {self.memory_partition}"
     
-    def update_base(self):
-        if self.base_numeric == 2:
-            self.base = "BIN"
-        elif self.base_numeric == 8:
-            self.base = "OCT"
-        elif self.base_numeric == 10:
-            self.base = "DEC"
-        elif self.base_numeric == 16:
-            self.base = "HEX"
+    def update_base(self, new_base):
+        if new_base == 2 or new_base == "bin":
+            self.base = "bin"
+            self.base_numeric = 2
+        elif new_base == 8 or new_base == "oct":
+            self.base = "oct"
+            self.base_numeric = 8
+        elif new_base == 10 or new_base == "dec":
+            self.base = "dec"
+            self.base_numeric = 10
+        elif new_base == 16 or new_base == "hex":
+            self.base = "hex"
+            self.base_numeric = 16
         else:
             raise ValueError("Invalid base value")
 
