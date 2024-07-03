@@ -1,0 +1,21 @@
+LBL D
+UNSGN
+4
+WSIZE
+HEX
+A
+STO I
+0
+enter
+LBL 0
+RCL (i)
+#B
++
+X<=>Y
+0
+rlc     // Rotate left with carry, not recall
++ 
+X<=>Y
+dsz
+GTO 0
+RTN

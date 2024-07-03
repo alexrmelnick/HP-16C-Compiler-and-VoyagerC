@@ -138,6 +138,7 @@ class instr:
         elif self.instruction in button_positions:
             return button_positions[self.instruction]
         elif self.instruction == "SHOW":
+            if DEBUG: print("SHOW instruction: ", self.instruction, self.argument)
             if self.argument == "hex": return 23
             elif self.argument == "dec": return 24
             elif self.argument == "oct": return 25
@@ -157,6 +158,9 @@ class instr:
         if get_argument_position_DEBUG: print("Getting argument position for: ", self.argument)
         if is_number(self.argument):
             if get_argument_position_DEBUG: print("Argument is a number")
+            if self.instruction == 'STO' or self.instruction == 'RCL':
+                if get_argument_position_DEBUG: print("Returning argument position for a register: ", self.argument)
+                self.convert_index()
             if self.argument in 'abcdef':
                 if get_argument_position_DEBUG: print("Returning argument position for a hexadecimal digit: ", self.argument.upper())
                 return button_positions[self.argument.upper()]
@@ -165,8 +169,21 @@ class instr:
                 return self.argument
         elif self.argument == 'hex' or self.argument == 'dec' or self.argument == 'oct' or self.argument == 'bin' or self.argument == 'reg':
             if get_argument_position_DEBUG: print("Special instruction argument: ", self.instruction, self.argument)
+            pos = button_positions[self.argument.upper()]
+            if self.instruction == 'SHOW':
+                self.instruction = 'SHOW ' + self.argument.upper()
+                self.instruction_position = pos
+            elif self.instruction == 'CLEAR':
+                self.instruction = 'CLEAR ' + self.argument.upper()
+                self.instruction_position = pos
+            else:
+                raise ValueError("Reached an invalid special instruction argument - this should not happen")
             self.argument = None
+            self.has_argument = False
             return None
+        elif self.argument == 'i': # Make sure that I is always uppercase
+            self.argument = 'I'
+            return button_positions[self.argument]
         elif self.argument in button_positions:
             if get_argument_position_DEBUG: print("Returning argument position: ", button_positions[self.argument])
             return button_positions[self.argument]
@@ -183,3 +200,22 @@ class instr:
             return 43
         else:
             return ValueError("Invalid modifier")
+        
+    def convert_index(self):
+        number = int(self.argument)
+        if 0 <= number <= 9:
+            self.argument = str(number)
+            self.argument_position = str(number)
+        elif 10 <= number <= 15:
+            self.argument = chr(number - 10 + ord('A'))
+            self.argument_position = chr(number - 10 + ord('A'))
+        elif 16 <= number <= 25:
+            self.argument = '1' + str(number - 16)
+            self.argument_position = '.' + str(number - 16)
+        elif 26 <= number <= 31:
+            self.argument = '1' + chr(number - 26 + ord('A'))
+            self.argument_position = '.' + chr(number - 26 + ord('A'))
+        else:
+            print("Error: Invalid register index. Must be between 0 and 31")
+            print(f"Line: {self.instruction, self.argument} (output line number {self.line_number})")
+            sys.exit(1)

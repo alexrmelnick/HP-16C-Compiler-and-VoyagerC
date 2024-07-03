@@ -232,6 +232,7 @@ def parse_line(line, input_line_number, calculator_state):
 
 
 def parse_instruction(tokens, input_line_number, calculator_state):
+    if DEBUG: print("Parsing instruction: ", tokens[0])
     has_argument = False
     if (len(tokens) == 2):
         if DEBUG: print("Token: ", tokens[0], " has an argument: ", tokens[1])
@@ -265,6 +266,11 @@ def parse_instruction(tokens, input_line_number, calculator_state):
 
             if DEBUG: print("Adding instruction: ", tokens[0], " with argument: ", tokens[1], " to the program.")
             calculator_state.program.append(instr(tokens[0], tokens[1], calculator_state))
+        elif (not has_argument and tokens[0] in instructions_with_arguments):
+            print("Error - Missing argument:")
+            print(f"Instruction: {tokens[0]} requires an argument.")
+            print(f"Line: {tokens} (line number: {input_line_number})")
+            sys.exit(1)
         else:
             if tokens[0] == 'hex' or tokens[0] == 'dec' or tokens[0] == 'oct' or tokens[0] == 'bin': 
                 if DEBUG: print("Changing base to: ", tokens[0])
@@ -273,7 +279,7 @@ def parse_instruction(tokens, input_line_number, calculator_state):
             if DEBUG: print("Adding instruction: ", tokens[0], " with no argument to the program.")
             calculator_state.program.append(instr(tokens[0], None, calculator_state))
     else:
-        print("Invalid instruction: " + tokens[0] + "(line number )"+ input_line_number)
+        print(f"Invalid instruction: {tokens[0]} (line number {input_line_number})")
         sys.exit(1)
 
 
@@ -343,14 +349,16 @@ def parse_number(token, calculator_state, input_line_number):
             token_base = "DEC"
             token = token[2:] # Remove the "0d" prefix
         else:
-            token_base = "DEC"
+            token_base = calculator_state.base
 
         if not is_valid_integer(token, calculator_state):
             print(f"Invalid integer: {token} (line number {input_line_number})")
             sys.exit(1)
 
-        if token_base != calculator_state.base:
+        if token_base.lower() != calculator_state.base.lower():
             change_base = True
+
+        token = token.upper()
 
         # We have a valid integer
         # We are ready to print the keypresses
@@ -421,7 +429,8 @@ def parse_number(token, calculator_state, input_line_number):
 
     if(change_mode or change_base): # Switching from float to integer mode
                     #  OR already in integer mode, but changing the base
-        calculator_state.program.append(instr(calculator_state.base.upper(), None, calculator_state))
+        if DEBUG: print("Changing mode to: ", token_base)
+        calculator_state.program.append(instr(token_base.upper(), None, calculator_state))
         calculator_state.program_length += 1
 
         if (negative):
@@ -558,19 +567,21 @@ def is_valid_argument(instr, arg, calculator_state):
             return True
         else:
             return False
-    elif(instr == 'sb' or instr == 'cb' or instr == 'b?'):
-        if DEBUG: print("Checking if argument: ", arg, " is valid for a SB, CB, or B? instruction.")
+    # elif(instr == 'sb' or instr == 'cb' or instr == 'b?'):
+    #     if DEBUG: print("Checking if argument: ", arg, " is valid for a SB, CB, or B? instruction.")
         
-        if(arg.isdigit() and int(arg) >= 0 and int(arg) <= calculator_state.word_size):
-            return True
-        else:
-            return False
+    #     if(arg.isdigit() and int(arg) >= 0 and int(arg) <= calculator_state.word_size):
+    #         return True
+    #     else:
+    #         return False
     elif(instr == 'lbl' or instr == 'gto' or instr == 'gsb'):
         if DEBUG: print("Checking if argument: ", arg, " is valid for a LBL, GTO, or GSB instruction.")
         
         if(arg.isdigit() and int(arg) >= 0 and int(arg) < 16):
             return True
         elif(arg in 'abcdef'):
+            return True
+        elif(arg == 'i' or arg == '(i)'):
             return True
         else:
             return False
@@ -624,7 +635,7 @@ def output_16c(calculator_state):
     output_file.write("#  Character encoding: UTF-8\n")
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output_file.write(f"#  Generated {current_time}\n")  # Corrected line
-    output_file.write(f"# Program occupies {calculator_state.program_length} bytes.\n\n")  # Corrected line
+    output_file.write(f"#  Program occupies {calculator_state.program_length} bytes.\n\n")  # Corrected line
 
     # Write the first line of the output file (always the same)
     output_file.write("   000 {          } \n") # 10 spaces between the curly braces
@@ -698,14 +709,15 @@ def output_pdf(calculator_state):
         columns[current_column] = (x_position, y_position)  # Update the y position in the columns array
 
         # Check if we need to switch columns or pages
-        if y_position < 50:  # Near the bottom of the page
+        if y_position < 72:  # Near the bottom of the page
             current_column += 1  # Move to the next column
             if current_column > 2:  # If beyond the third column, create a new page
                 c.showPage()
                 c.setFont(font_name, 12)
                 current_column = 0  # Reset to the first column
                 # Reset y position for the new column or page
-                columns = [(50, 750), (250, 750), (450, 750)]
+                heading_y_position = 792 - 72  # 72 points (1 inch) from the top
+                columns = [(72, heading_y_position), (228, heading_y_position), (384, heading_y_position)]  # Adjusted y position for columns start
 
     c.save()  # Save the PDF
 

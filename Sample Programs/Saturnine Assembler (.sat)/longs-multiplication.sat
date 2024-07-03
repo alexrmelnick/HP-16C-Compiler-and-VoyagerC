@@ -1,0 +1,15 @@
+lbl 1
+unsgn
+DBLx
+sto 1
+x<>Y
+sto 2
+x<>Y
+rcl 0
+dblrmd
+rcl 2
+rcl 1
+rcl 0
+dbl/
+dec
+rtn

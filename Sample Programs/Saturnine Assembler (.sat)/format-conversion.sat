@@ -1,0 +1,143 @@
+// Convert from HP-16C floating point to IEEE 754 single precision floating point.
+lbl A
+2s
+HEX
+cf 4
+cf 5
+x=Y
+rtn
+9
+D
++
+x<>Y
+cf 0
+x<0
+sf 0
+abs
+x<>Y
+x<0
+gto 9
+1
++
+lbl 6
+sto i
+rv
+2
+0
+wsize
+8
+0
++
+1
+8
+maskl
+and
+f? 4
+isz
+sl
+rcl i
+F
+F
+x>Y
+gto 7
+x<>Y
+rv
+rv
+clx
+r^
+r^
+sf 5
+lbl 7
+rv
+or
+f? 0
+gsb 8
+9
+rrn
+cf 4
+rtn
+lbl 8
+8
+sb
+rtn
+lbl 9
+abs
+3
+0
+x<=Y
+x<>Y
+rv
+0
+x<>Y
+sb
+/
+0
+gto 6
+
+
+// Convert from IEEE 754 single precision floating point to HP-16C floating point.
+lbl B
+hex
+2's
+2
+0
+wsize
+sl
+enter
+enter
+x=0
+gto 2
+1
+8
+maskr
+and
+xor
+lstx
+x<>y 
+8
+maskl
+x=y 
+gto 4
+rv
+x=0
+gto 3
+x<>y
+1
+8
+sb
+lbl 1
+f? 4
+chs
+x<>Y
+8
+rln
+9
+7
+-
+cf 4
+lbl 2
+float .
+rtn
+lbl 3
+1
+8
+sb
+x<>Y
+gto 1
+lbl 4
+rv
+clx
+x!=Y
+gto 5
+1
+4
+5
+enter
+lbl 5
+x<>Y
+f? 4
+chs
+asr
+x<>Y
+sf 4
+gto 2

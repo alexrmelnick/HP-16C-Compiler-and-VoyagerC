@@ -1,0 +1,91 @@
+lbl A
+8
+wsize
+dec
+unsigned
+1
+sto 0
+-
+sto 2
+sto 3
+3
+sto 1
+lbl 3
+rcl 3
+x!=0
+gto 4
+rcl 0
+pse
+rcl 1
+r/s
+lbl 1
+gsb 9
+sto I
+gto I
+lbl 4
+gsb 7
+0
+gsb 8
+sto 1
+rcl 3
+1
+-
+sto 3
+gto 3
+lbl 0
+gsb 9
+rv
+sto 0
+pse
+rv
+sto 1
+r/s
+4
+gsb 8
+sto 0
+gto 3
+lbl 1
+rcl 3
+1
++
+sto 3
+rcl 2
+x!=Y
+gto 1
+xor
+x<>(I)
+lbl 8
+rcl 0
+or
+sl
+sl
+rcl 1
+or
+sto (i)
+6
+rcl 0
+-
+rcl 1
+-
+rtn 
+lbl 7
+rcl 2
+rcl 3
+-
+4
++
+sto I
+rtn
+lbl 9
+gsb 7
+dsz
+rcl (I)
+gsb 2
+lbl 2
+enter
+enter
+4
+rmd 
+x<>Y
+sr
+sr

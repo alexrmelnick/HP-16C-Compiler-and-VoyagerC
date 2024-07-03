@@ -61,7 +61,6 @@ The Saturnine Assembler provides a number of features that make it easy to write
 - Support for throwing errors if the program is too large for the memory.
 - Support for throwing errors if addresses are out of range.
 - Support for directly addressing the first 32 storage registers in decimal.
-- Support for detecting if subroutines are nested more than 4 levels deep.
 - Support for pseudo-instructions to simplify certain operations.
 
 
@@ -171,7 +170,7 @@ execution to Label E (|-14| == 14 == 0xE). The `GSB I` instruction would transfe
 The `DSZ` and `ISZ` instructions can be used to simplify loop. `DSZ` is used to decrement the value in the I register and skip the next instruction if the value is 0. `ISZ` is used to increment the value in the I register *and then* skip the next instruction if the value is 0. Generally, the next instruction is a `GTO` instruction to go to the start/end of the loop.
 
 ### Subroutines
-The HP-16C can use subroutines to simplify function calls. Instead of using `GTO` to jump to a label, you can use `GSB` to jump to a label and store the return address. The return address is stored in special, non-user accessible registers *(I believe - manual is not clear on this and I do not have my 16C on hand to check)*. To return from a subroutine, use the `RTN` instruction. This will jump to the program line after the relevant `GSB` instruction. Note that you cannot have nested subroutines more than 4 levels deep. The Saturnine Assembler and HP-16C will throw an error if you try to do this.
+The HP-16C can use subroutines to simplify function calls. Instead of using `GTO` to jump to a label, you can use `GSB` to jump to a label and store the return address. The return address is stored in special, non-user accessible registers *(I believe - manual is not clear on this and I do not have my 16C on hand to check)*. To return from a subroutine, use the `RTN` instruction. This will jump to the program line after the relevant `GSB` instruction. Note that you cannot have nested subroutines more than 4 levels deep. 
 
 ### Flags
 The HP-16C has 6 flags that can be set during programming. Flags 0, 1, and 2 are user flags that can be set, cleared, and tested by the programmer. Flags 3, 4, and 5 are system flags that are set automatically by the calculator. The `SF #` instruction is used to set a flag, the `CF #` instruction is used to clear a flag, and the `F? #` instruction is used to test a flag. The `F?` instruction will skip the next instruction if the specified flag is set. 
@@ -443,3 +442,5 @@ You can also run the Saturnine Assembler without any arguments to enter interact
 ## Limitations
 The Saturnine Assembler is a work in progress and has several limitations. The following is a list of known limitations:
 - The argument parsing for `WINDOW` is not perfect. There are some invalid arguments that are not caught by the parser.
+- If you do not specify a base for a number, it is assumed to be the previous base set. This can cause issues if you are not careful.
+- Sometimes the whitespace in the .16c file is not perfect. This is a known issue, but it does not affect the functionality of the file.

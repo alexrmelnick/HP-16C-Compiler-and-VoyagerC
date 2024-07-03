@@ -70,10 +70,10 @@ wsize
 unsigned
 1's
 2's
-float
+float 4
 show HEX // Example usage
 pse
-window
+window 2
 <
 >
 r/s

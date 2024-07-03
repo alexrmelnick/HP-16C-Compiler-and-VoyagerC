@@ -1,0 +1,28 @@
+// Work in progress on this program
+// Memory Map
+    // R8 := base
+    // R9 := exponent
+    // R10 := result
+    // R11 := i
+    // R12-15 := temp variables
+
+LBL D // Label start of subroutine
+    // Initialize variables
+    1   // X <- 1
+    STO 10  // R10 := result <- X == 1
+    RCL 9   // X <- R9 := exponent
+    STO I   // RI <- X := exponent
+
+    LBL E // Loop top
+        RCL 9   // X <- R9 := exponent
+ 
+        RCL 10  // X <- R10:=result
+        RCL 8   // Y <- R10:=result, X <- R8:=base
+        *       // X <- X * Y
+        STO 10  // R10 <- X := result * base
+        DSZ     // RI--; if RI == 0, skip next line and exit, else loop again
+        GTO E
+
+    RCL 10  // X <- R10 := result
+    SHOW dec  // Display results
+RTN   // Return
