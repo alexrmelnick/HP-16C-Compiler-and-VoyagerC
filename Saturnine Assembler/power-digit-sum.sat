@@ -1,0 +1,37 @@
+// Problem 16 on ProjectEuler.net
+// Prompt:
+    // $2^15 = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.
+    // What is the sum of the digits of the number 2^1000?
+// Approach:
+// 0d2^1000 == 0b1000...0000
+//                   ^^^
+//               1,000 Zeros
+// Is there a relationship between the sum of the digits in binary and in decimal?
+// 0d 2^15 == 0d 32,768 == 0b 1000 0000 0000 0000
+// Maybe we should convert to BCD?
+// 0d 32,768 == 0bcd 0011 0010 0111 0110 1000
+// If we can convert from Binary to BCD quickly, we can solve this problem efficiently. 
+// Let's use the Double Dabble algorithm, then sum up each BCD
+    // If we think this through, we do not need to loop through the whole number because the last 999 digits are 0s, so we will be looping repeatedly
+// BCD                  Binary
+// ...0000 0000 0000    1000 0000 0000...
+// ...0000 0000 0001    0000 0000 0000...
+// ...0000 0000 0010    0000...
+// ...0000 0000 0100    0000...
+// ...0000 0000 1011    0000...             8>5 -> +3
+// ...0000 0001 1001    0000...
+// ...0000 0011 0010
+// ...0000 1001 0100
+// ...0001 0010 1011
+// ...
+
+// I hope we can do this in 203 Bytes!
+// The length of the BCD equivalent is approx. n+4*ceil(n/3) bits - we can calculate this with our HP-15C!
+// 1000+4*(1000/3) = 2334,so we cannot use this method
+
+// The Double Dabble algorithm:
+// 1. Initialize the BCD array
+// 2. For each bit from MSB to LSB of the binary number, 
+    // a. Shift the BCD array left 1 bit
+    // b. If any digit in the BCD array is 5 or greater, add 3 to that digit
+    // c. Insert the next binary bit into the LSB of the BCD array
