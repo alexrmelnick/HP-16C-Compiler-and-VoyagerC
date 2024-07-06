@@ -1,0 +1,117 @@
+// ProjectEuler.net, Problem 14
+// Longest Collatz Sequence
+// The following iterative sequence is defined for the set of positive integers:
+    // n -> n/2 (n is even)
+    // n -> 3n+1 (n is odd)
+// Using the rule above and starting with 13, we generate the following sequence:
+    // 13 -> 40 -> 20 -> 10 -> 5 -> 16 -> 8 -> 4 -> 2 -> 1
+// It can be seen that this sequence (starting at 13 and finishing at 1) contains 10 terms. Although it has not been proved yet (Collatz Problem), it is thought that all starting numbers finish at 1.
+// Which starting number, under one million, produces the longest chain?
+// NOTE: Once the chain starts the terms are allowed to go above one million.
+
+// I have never taken a number theory course, and I don't know how to find this most efficiently.
+// However, lets program the sequence for finding the longest length of Collatz chain for all ints less than x
+// Answer: Starting number: 837799, Length: 196
+// Time to run? LONG AF (The sim set to 0 time delay is still running after 10 minutes, so I cooked it up in Python from my psuedocode and it took 30 seconds), but it will eventually finish. It can solve for small numbers in a reasonable amount of time.
+
+// Psuedocode:
+//  int X = ###
+//  int longest_chain_length = 0
+//  int longest_chain_index = 1
+//  for each int i from 2 to X
+//      temp = Collatz(i)
+//      if temp > longest_chain_length
+//          longest_chain_length = temp
+//          longest_chain_index = i
+//  return longest_chain_index, longest_chain_length
+//
+//  Collatz(num)
+//      int length = 1
+//      while num != 1
+//          if num%2 == 0
+//              num = num/2
+//          else
+//              num = 3n+1
+//          length++
+//      return length
+
+// Memory map:
+//  X_start := the limit for our Collatz sequence
+//  RI := iterator
+//  R0 := longest_chain_length
+//  R1 := longest_chain_index
+//  R2 := Collatz_length
+//  X_subroutine_call := num
+//  X_subroutine_return := length
+//  X_end := the starting number that produces the longest sequence
+//  Y_end := the length of the longest sequence
+
+// Starting settings: unsigned, 32-bit, base irrelevant
+lbl a   // Label the start of our prgm
+    STO i   // I <- X := the limit for our Collatz sequence
+    0       // X <- 0
+    sto 0   // R0 <- 0 := longest_chain_length
+    1       // X <- 1
+    sto 1   // R1 <- 1 := longest_chain_index
+    
+    lbl 0   // Top of loop
+        rcl i   // X <- i
+        gsb B   // Goto subroutine, X <- Collatz(i)
+        rcl 0   // X <- R0 := longest_chain_length, Y <- Collatz(i)
+        x>y     // If longest_chain_length > Collatz(i), skip update, else do it
+            gto 4   // Skip the update
+        x<>Y    // X <- Collatz(i)
+        sto 0   // Store the new longest length in R0
+        rcl I
+        sto 1   // Store the updated longest index in R1
+
+        lbl 4
+        dsz // i--, if i != 0, do the next line
+            gto 0
+    rcl 0 // Recall the returns
+    rcl 1 
+    rtn
+
+lbl B   // label for Collatz function
+    // X <- input
+    1
+    sto 2   // reset Collatz_length
+    x<>Y    // put the input back in X
+    lbl 5
+        0
+        B?    // If X%2==1, Skip the next instruction, else do it
+            GTO 2   // If even, goto else_then (2)
+        GSB 1   // If odd, goto if_then (1)
+        
+        lbl 3   // end_if
+        RCL 2   // X <- R2 := Collatz_length
+                // This might be able to be done without memory calls
+        1
+        +   // X <- Collatz_length++, Y <- num
+        STO 2   // R2 <- X := Collatz_length
+        x<>Y    // X <- num
+        1       // X <- 1, Y <- num
+        X<>Y    // X <- num, Y <- 1
+        x!=Y    // If X==Y, do the next line, else skip it
+            gto 5   // Goto top of loop
+    
+    RCL 2   // recall Collatz_length and return
+    
+    //Show dec
+    rtn   
+
+lbl 1 // if_then
+    // X <- X/2
+    2
+    /
+    rtn
+
+lbl 2 // else_then
+    // X <- 3X+1 
+    3
+    *
+    1
+    +
+    gto 3   // goto end_if
+        
+        

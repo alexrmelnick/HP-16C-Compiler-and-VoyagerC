@@ -149,8 +149,7 @@ def parse_interactive(calculator_state):
     # Set the calculator state to the user's input
     calculator_state.sign_mode = sign_mode
     calculator_state.word_size = word_size
-    calculator_state.base_numeric = base
-    calculator_state.update_base()
+    calculator_state.update_base(base)
     calculator_state.input_file_name = input_file_name
     calculator_state.output_file_name = output_file_name
     calculator_state.output_mode = output_mode
@@ -266,6 +265,11 @@ def parse_instruction(tokens, input_line_number, calculator_state):
 
             if DEBUG: print("Adding instruction: ", tokens[0], " with argument: ", tokens[1], " to the program.")
             calculator_state.program.append(instr(tokens[0], tokens[1], calculator_state))
+        elif (has_argument and not is_valid_argument(tokens[0], tokens[1], calculator_state)):
+            print("Error - Invalid argument:")
+            print(f"Argument: {tokens[1]} is not valid for instruction: {tokens[0]}.")
+            print(f"Line: {tokens} (line number: {input_line_number})")
+            sys.exit(1)
         elif (not has_argument and tokens[0] in instructions_with_arguments):
             print("Error - Missing argument:")
             print(f"Instruction: {tokens[0]} requires an argument.")
@@ -546,12 +550,13 @@ def is_valid_argument(instr, arg, calculator_state):
     
     # Check if the instruction takes an argument
     if instr not in instructions_with_arguments:
+        if is_valid_argument_DEBUG: print("Instruction: ", instr, " does not take an argument.")
         return False
-    if DEBUG: print("Instruction: ", instr, " takes an argument.")
+    if is_valid_argument_DEBUG: print("Instruction: ", instr, " takes an argument.")
 
     # Check if the argument is valid
     if(instr == 'sto' or instr == 'rcl'):
-        if DEBUG: print("Checking if argument: ", arg, " is valid for a STO or RCL instruction.")
+        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a STO or RCL instruction.")
         
         # check if the argument is I or (i)
         if(arg == 'i' or arg == '(i)'):
@@ -561,21 +566,17 @@ def is_valid_argument(instr, arg, calculator_state):
         else:
             return False
     elif(instr == 'sf' or instr == 'cf' or instr == 'f?'):
-        if DEBUG: print("Checking if argument: ", arg, " is valid for a SF, CF, or F? instruction.")
+        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a SF, CF, or F? instruction.")
         
         if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 5):
             return True
         else:
             return False
-    # elif(instr == 'sb' or instr == 'cb' or instr == 'b?'):
-    #     if DEBUG: print("Checking if argument: ", arg, " is valid for a SB, CB, or B? instruction.")
-        
-    #     if(arg.isdigit() and int(arg) >= 0 and int(arg) <= calculator_state.word_size):
-    #         return True
-    #     else:
-    #         return False
+    elif(instr == 'sb' or instr == 'cb' or instr == 'b?'):
+        print("ERROR: Setting/Clearing/Testing a bit does not take an argument")
+        sys.exit(1)
     elif(instr == 'lbl' or instr == 'gto' or instr == 'gsb'):
-        if DEBUG: print("Checking if argument: ", arg, " is valid for a LBL, GTO, or GSB instruction.")
+        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a LBL, GTO, or GSB instruction.")
         
         if(arg.isdigit() and int(arg) >= 0 and int(arg) < 16):
             return True
@@ -586,14 +587,14 @@ def is_valid_argument(instr, arg, calculator_state):
         else:
             return False
     elif(instr == 'show'):
-        if DEBUG: print("Checking if argument: ", arg, " is valid for a SHOW instruction.")
+        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a SHOW instruction.")
         
         if(arg == 'hex' or arg == 'dec' or arg == 'oct' or arg == 'bin'):
             return True
         else:
             return False
     elif(instr == 'float'):
-        if DEBUG: print("Checking if argument: ", arg, " is valid for a FLOAT instruction.")
+        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a FLOAT instruction.")
         
         if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 9):
             return True
@@ -602,7 +603,7 @@ def is_valid_argument(instr, arg, calculator_state):
         else:
             return False
     elif(instr == 'window'):
-        if DEBUG: print("Checking if argument: ", arg, " is valid for a WINDOW instruction.")
+        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a WINDOW instruction.")
         
         # This doesn't exclude all invalid arguments, but this instruction will be used so rarely that it doesn't matter
         if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 7):
@@ -610,14 +611,14 @@ def is_valid_argument(instr, arg, calculator_state):
         else:
             return False
     elif(instr == 'clear'):
-        if DEBUG: print("Checking if argument: ", arg, " is valid for a CLEAR instruction.")
+        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a CLEAR instruction.")
         
         if(arg == 'reg'):
             return True
         else:
             return False
     else:
-        if DEBUG: print("Did not find a valid argument for instruction: ", instr)
+        if is_valid_argument_DEBUG: print("Did not find a valid argument for instruction: ", instr)
         
         return False
 

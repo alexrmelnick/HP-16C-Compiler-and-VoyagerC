@@ -187,7 +187,7 @@ button_positions = {
     'x==0': '40',
     'SB': '4',
     'CB': '5',
-    'B?': '29',
+    'B?': '6',
 }
 
 mnemonic_to_instr = {
