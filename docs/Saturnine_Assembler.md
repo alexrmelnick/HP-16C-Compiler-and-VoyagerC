@@ -54,6 +54,7 @@ The Saturnine Assembler provides a number of features that make it easy to write
 - Support for comments using a `//` prefix.
 - Support for automatic assembly of the `f` and `g` modifier keys.
 - Ability to specify the base of the number being entered (binary, octal, decimal, or hexadecimal).
+- Ability to enter multi-digit numbers as an immediate.
 - Ability to use negative numbers as an immediate.
 - Ability to enter floats in scientific notation.
 - Support for optionally specifying the initial mode settings for the calculator.
@@ -167,7 +168,21 @@ Data registers can be access indirectly by using the `(i)` instruction. Using `S
 By placing an index value in I, you can indirectly branch to a location (`GTO I`) and indirectly call a subroutine (`GSB I`). For instance, if I <- -14, then `GTO I` instruction would transfer program
 execution to Label E (|-14| == 14 == 0xE). The `GSB I` instruction would transfer program execution to Label E and store the return address.
 
-The `DSZ` and `ISZ` instructions can be used to simplify loop. `DSZ` is used to decrement the value in the I register and skip the next instruction if the value is 0. `ISZ` is used to increment the value in the I register *and then* skip the next instruction if the value is 0. Generally, the next instruction is a `GTO` instruction to go to the start/end of the loop.
+The `DSZ` and `ISZ` instructions can be used to simplify loop. `DSZ` is used to decrement the value in the I register and does the next instruction if the value is 0. `ISZ` is used to increment the value in the I register *and then* does the next instruction if the value is 0. Generally, the next instruction is a `GTO` instruction to go to the start/end of the loop.
+
+### Comparison Operations
+The HP-16C has 12 comparison instructions that can be used to control the flow of a program. These operations test either:
+- The values in the X and Y registers
+    - `X<=Y`, `X>Y`, `X==Y`, and `X!=Y`
+- The value in the X register
+    - `X<0`, `X>0`, `X==0`, and `X!=0`
+- The value in the I register
+    - `DSZ` and `ISZ`
+- Bits in the X register
+    - `B?`
+- Flags
+    - `F?`
+These instructions operate on a **"DO IF TRUE"** basis. If the condition is true, the next instruction is executed. If the condition is false, the next instruction is skipped.**
 
 ### Subroutines
 The HP-16C can use subroutines to simplify function calls. Instead of using `GTO` to jump to a label, you can use `GSB` to jump to a label and store the return address. The return address is stored in special, non-user accessible registers *(I believe - manual is not clear on this and I do not have my 16C on hand to check)*. To return from a subroutine, use the `RTN` instruction. This will jump to the program line after the relevant `GSB` instruction. Note that you cannot have nested subroutines more than 4 levels deep. 
@@ -390,13 +405,13 @@ The following is a list of the instructions available in the Saturnine Assembly 
 - `RTN`: Return
     - Return from the current subroutine to the line after the last `GSB` instruction.
     - Halts the program and resets the PC to 0 if you are not in a subroutine. 
-- `DSZ` and `ISZ`: Decrement and increment the I register and skip the next instruction if I == 0
+- `DSZ` and `ISZ`: Decrement and increment the I register and do the next instruction if I == 0 (Skip if I != 0)
 - `X<=Y`, `X>Y`, `X==Y`, and `X!=Y`: Compare the X and Y registers
-    - Compare the numbers in the X and Y registers and skips the next instruction if the condition is met.
+    - Compare the numbers in the X and Y registers and does the next instruction if the condition is met (skips if not met).
     - Example:
         - `5`; `3`; `X<=Y`: Skip the next instruction because 3 <= 5
 - `X<0`, `X>0`, `X==0`, and `X!=0`: Test the X register
-    - Test the number in the X register and skips the next instruction if the condition is met.
+    - Test the number in the X register and does the next instruction if the condition is met (skips if not met).
     - Example:
         - `5`; `X>0`: Skip the next instruction because 5 > 0
 - `B? #` - Test the #-th bit. If it is set, the next instruction is skipped.

@@ -296,6 +296,8 @@ def parse_number(token, calculator_state, input_line_number):
     negative_exponent = False
     is_float = False
     is_float_in_sci_notation = False
+    multiple_digits = False
+    multiple_digits_exponent = False
 
     # Check if the number is negative
     if token[0] == "-":
@@ -328,6 +330,14 @@ def parse_number(token, calculator_state, input_line_number):
             if exponent[0] == "-":
                 negative_exponent = True
                 exponent = exponent[1:]
+
+        # Does the mantissa contain multiple digits?
+        if len(mantissa) > 1:
+            multiple_digits = True
+        
+        # Does the exponent contain multiple digits?
+        if len(exponent) > 1:
+            multiple_digits_exponent = True
         
         # We are ready to print the keypresses
 
@@ -364,6 +374,10 @@ def parse_number(token, calculator_state, input_line_number):
 
         token = token.upper()
 
+        # Does the number contain multiple digits?
+        if len(token) > 1:
+            multiple_digits = True
+
         # We have a valid integer
         # We are ready to print the keypresses
 
@@ -375,61 +389,81 @@ def parse_number(token, calculator_state, input_line_number):
 
         if(is_float_in_sci_notation): # Floating point number in scientific notation
             if(negative):
-                calculator_state.program.append(instr(token, None, calculator_state))
+                for digit in token:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
                 calculator_state.program.append(instr("CHS", None, calculator_state))
-                calculator_state.program_length += 2
-            else:
-                calculator_state.program.append(instr(token, None, calculator_state))
                 calculator_state.program_length += 1
+            else:
+                for digit in token:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
 
             if(negative_exponent): 
                 calculator_state.program.append(instr("EEX", None, calculator_state))
-                calculator_state.program.append(instr(exponent, None, calculator_state))
+                for digit in exponent:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
                 calculator_state.program.append(instr("CHS", None, calculator_state))
-                calculator_state.program_length += 3
+                calculator_state.program_length += 2
             else:
                 calculator_state.program.append(instr("EEX", None, calculator_state))
-                calculator_state.program.append(instr(exponent, None, calculator_state))
-                calculator_state.program_length += 2
+                for digit in exponent:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
+                calculator_state.program_length += 1
 
         else: # Floating point number
             if(negative):
-                calculator_state.program.append(instr(token, None, calculator_state))
+                for digit in token:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
                 calculator_state.program.append(instr("CHS", None, calculator_state))
-                calculator_state.program_length += 2
-            else:
-                calculator_state.program.append(instr(token, None, calculator_state))
                 calculator_state.program_length += 1
+            else:
+                for digit in token:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
 
     elif (is_float): # Floating point number and already in floating point mode
         if(is_float_in_sci_notation): # Floating point number in scientific notation
             if(negative):
-                calculator_state.program.append(instr(token, None, calculator_state))
+                for digit in token:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
                 calculator_state.program.append(instr("CHS", None, calculator_state))
-                calculator_state.program_length += 2
-            else:
-                calculator_state.program.append(instr(token, None, calculator_state))
                 calculator_state.program_length += 1
+            else:
+                for digit in token:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
 
             if(negative_exponent):
                 calculator_state.program.append(instr("EEX", None, calculator_state))
-                calculator_state.program.append(instr(exponent, None, calculator_state))
+                for digit in exponent:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
                 calculator_state.program.append(instr("CHS", None, calculator_state))
-                calculator_state.program_length += 3
+                calculator_state.program_length += 2
             else:
                 calculator_state.program.append(instr("EEX", None, calculator_state))
-                calculator_state.program.append(instr(exponent, None, calculator_state))
-                calculator_state.program_length += 2
+                for digit in exponent:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
+                calculator_state.program_length += 1
 
         else: # Floating point number
             if(negative):
-                calculator_state.program.append(instr(token, None, calculator_state))
+                for digit in token:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
                 calculator_state.program.append(instr("CHS", None, calculator_state))
-                calculator_state.program_length += 2
+                calculator_state.program_length += 1
 
             else:
-                calculator_state.program.append(instr(token, None, calculator_state))
-                calculator_state.program_length += 1
+                for digit in token:
+                    calculator_state.program.append(instr(digit, None, calculator_state))
+                    calculator_state.program_length += 1
 
     if(change_mode or change_base): # Switching from float to integer mode
                     #  OR already in integer mode, but changing the base
@@ -438,22 +472,27 @@ def parse_number(token, calculator_state, input_line_number):
         calculator_state.program_length += 1
 
         if (negative):
-            calculator_state.program.append(instr(token, None, calculator_state))
+            for digit in token:
+                calculator_state.program.append(instr(digit, None, calculator_state))
+                calculator_state.program_length += 1
             calculator_state.program.append(instr("CHS", None, calculator_state))
-            calculator_state.program_length += 2
-        else:
-            calculator_state.program.append(instr(token, None, calculator_state))
             calculator_state.program_length += 1
+        else:
+            for digit in token:
+                calculator_state.program.append(instr(digit, None, calculator_state))
+                calculator_state.program_length += 1
 
     else: # Already in integer mode and base
         if (negative):
-            calculator_state.program.append(instr(token, None, calculator_state))
+            for digit in token:
+                calculator_state.program.append(instr(digit, None, calculator_state))
+                calculator_state.program_length += 1
             calculator_state.program.append(instr("CHS", None, calculator_state))
-            calculator_state.program_length += 2
-        else:
-            calculator_state.program.append(instr(token, None, calculator_state))
             calculator_state.program_length += 1
-
+        else:
+            for digit in token:
+                calculator_state.program.append(instr(digit, None, calculator_state))
+                calculator_state.program_length += 1
 
 def is_valid_integer(token, calculator_state):
     # Check if the number is valid

@@ -1,55 +1,83 @@
-# HP-16C Compiler and VoyagerC
+# HP-16C VoyagerC Compiler and Saturnine Assembler
 
-This project is a compiler that translates VoyagerC, a C-based high-level language, into HP-16C "assembly" keystroke programming.
+This project is a Clang-based compiler that translates C/C++/ObjectiveC/ObjectiveC++ into HP-16C "assembly" keystroke programming.
 
 ## Description
 
-The HP-16C Compiler allows users to write programs in VoyagerC and compile them into plaintext for typing into the HP-16C calculator or into the .16c format to be run on the JRPN HP-16C simulator. The HP-16C is a computer scientist's calculator produced from 1982 until 1989. It is still highly regarded and sought after by assembly programmers. This project aims to provide a user-friendly way to extend the usefulness of the HP-16C by allowing users to write programs in a C-like language and compile them into HP-16C keystroke programming.
+The HP-16C Compiler allows users to write programs in C, its derivatives, and other languages that utilize Clang and compile them into plaintext for typing into the HP-16C calculator or into the .16c format to be run on the JRPN HP-16C simulator. The HP-16C is a computer scientist's calculator produced from 1982 until 1989. It is still highly regarded and sought after by assembly programmers. This project aims to provide a user-friendly way to extend the usefulness of the HP-16C by allowing users to write programs in a higher-level language and compile them into HP-16C keystroke programming.
 
-## Philosophy
-There are two potential paths for this project:
-
-1. **Create a Compiler to Use the HP-16C as a General-Purpose Computer**
-2. **Create a Compiler to Extend the Usefulness of the HP-16C as a Calculator**
-
-These two goals are quite different. Using the HP-16C as a general-purpose computer would require developing a hyper-optimized compiler capable of handling a wide range of C programs. The HP-16C has a total of 203 bytes of user accessible combined program and data memory. While this isn't impossible—consider the niche of Boot Sector Programs, which aim to create programs with a maximum size of 510 bytes (many impressive games have been made within this constraint, [check out these examples](https://gist.github.com/XlogicX/8204cf17c432cc2b968d138eb639494e))—running general-purpose programs on the HP-16C would mean programming in less than half that space. This is an extraordinarily challenging task and serves no practical purpose.
-
-**The HP-16C is a calculator,** and it should be used as such. Therefore, the goal of this project is to extend the usefulness of the HP-16C as a calculator. This means creating a compiler that can handle complex programs that are specifically useful for its intended purpose - calculating!  
-
-VoyagerC is a C-like language designed specifically for the HP-16C calculator. It is not a full implementation of the C programming language, but a subset tailored for the HP-16C. VoyagerC provides a wide range of functions optimized for the HP-16C, allowing programmers to use traditional higher-level paradigms such as if/else if/else control logic, for and while loops, and functions. It is intended to be used with the HP-16C Compiler to write programs that can be compiled into HP-16C keystroke programming.
+The Saturnine Assembler is a tool that allows users to write programs in a custom assembly language and assemble them into plaintext for typing into the HP-16C calculator or into the .16c format to be run on the JRPN HP-16C simulator. Together, the VoyagerC Compiler and Saturnine Assembler provide a powerful toolset for programming the HP-16C. 
 
 ## Roadmap
-
-This project is a work in progress and has a *very* long road ahead of it. Below is a rough roadmap:
-1. Learn how to write HP-16C programs in keystroke programming. *In progress*
-  - This is a necessary step to understand how to compile VoyagerC into HP-16C keystroke programming.
-  - This will also help in understanding the limitations of the HP-16C and how to design VoyagerC to work within those constraints.
-  - Write some programs in HP-16C keystroke programming to get a feel for the language.
-2. Develop Saturnine Assembly Language and Assembler *In progress*
-  - A prototype of the Saturnine Assembly Language and Assembler has been developed. However, it needs to be refined and extended to support more complex programs.
-  - Specifically, a complete instruction set and feature list needs to be defined first. 
-  - Then the assembler needs to be developed to translate Saturnine Assembly Language into HP-16C keystroke programming and .16c format.
-  - I also want it to be able to generate a printable PDF with the sequences of keystrokes for manual input to the HP-16C for retro enthusiasts.
-  - *Current Status*: Verify that the Saturnine Assembly Language and Assembler can handle complex programs and that the generated keystroke sequences are correct. I especially want to test and make sure that all instructions are working as intended.
-3. Develop VoyagerC language *Subject to change*
-  - VoyagerC is planned to be a C-based programming language designed around specific HP-16C buttons and functions. 
-4. Develop the VoyagerC Compiler in Python(? - language subject to change)
-  - Begin by compiling into the .16c format used by the JRPN simulator since the simulator can import programs from files, which is convenient for testing.
-  - Once the compiler can generate .16c files, add functionality to produce a more human-readable format for viewing and printing out on paper for manual input to the HP-16C. 
-5. Extend VoyagerC to support other HP calculators?
-  - The HP-16C is the first target, but VoyagerC could be extended to support other HP calculators, such as the HP-12C or HP-15C.
-  - This is a very long-term goal and will depend on the success of the HP-16C compiler.
-
-### Prerequisites
-
-- Knowledge of VoyagerC for writing HP-16C programs.
-- An HP-16C calculator or the [JRPN HP-16C Simulator](https://jrpn.jovial.com/).
-- A Python environment to run the VoyagerC compiler. (NOT YET IMPLEMENTED)
-
-### Usage
-- Write your program in VoyagerC.
-- Use the compiler to translate your program into HP-16C "assembly" keystroke programming.
-- Load the compiled program into the JRPN HP-16C Simulator or type it into your HP-16C calculator.
+This project is a work in progress and has a *very* long road ahead of it. Below is a rough roadmap (generated by ChatGPT):
+### 1. Understand the HP-16C Architecture **(complete)**
+- Research HP-16C Specifications:
+  - Learn about its memory constraints (203 bytes for program and data).
+  - Understand its instruction set and keypress programming method.
+  - Study its reverse polish notation (RPN) input method.
+### 1. Develop the Saturnine Assembler **(in progress)**
+- Define Assembly Language Syntax:
+  - Design a simple assembly language that maps to HP-16C keypress sequences.
+  - Define the syntax for arithmetic, logical, and control flow operations.
+- Implement Assembler:
+  - Develop a tool to parse assembly code and generate HP-16C keystroke sequences.
+  - Handle memory constraints and ensure generated code fits within the 203-byte limit.
+- Test Assembler:
+  - Write assembly programs to test the assembler’s functionality.
+  - Verify that the generated keystroke sequences produce the expected results.
+### 2. Set Up Development Environment
+- Install Clang and LLVM:
+  - Install Clang and LLVM on your development machine.
+  - Familiarize yourself with LLVM’s architecture and intermediate representation (IR).
+### 3. Design the Compiler Architecture
+- Define the Project Scope:
+  - Determine which subset of C you will support, given the HP-16C’s constraints.
+  - Plan for how to handle memory management, given the limited memory.
+- Set Up Project Structure:
+  - Organize directories for source code, IR code, and target code.
+  - Create a build system (e.g., using CMake) to manage compilation steps.
+### 4. Frontend Development
+- Lexical Analysis and Parsing:
+  - Use Clang’s frontend capabilities to parse C code.
+  - Modify Clang’s AST (Abstract Syntax Tree) to fit the HP-16C’s architecture.
+- Semantic Analysis:
+  - Implement semantic checks to ensure the source code adheres to your defined C subset.
+### 5. Intermediate Representation (IR) Generation
+- Generate LLVM IR:
+  - Translate the Clang AST into LLVM IR.
+  - Ensure the IR represents operations compatible with the HP-16C’s capabilities.
+### 6. Backend Development
+- Instruction Selection:
+  - Map LLVM IR instructions to HP-16C keypress sequences.
+  - Develop algorithms to handle arithmetic, logical, and control flow operations.
+- Register Allocation and Memory Management:
+  - Implement a register allocator suitable for the HP-16C’s architecture.
+  - Design strategies for efficient memory use within the 203-byte limit.
+### 7. Code Generation
+- Generate Keypress Sequences:
+  - Convert the LLVM IR (or an intermediary form) into keypress sequences.
+  - Ensure generated code is optimized for memory usage and execution speed.
+### 8. Testing and Debugging
+- Develop Test Cases:
+  - Write C programs that exercise different features of your compiler.
+  - Create unit tests to verify the correctness of each component of the compiler.
+- Simulate HP-16C Execution:
+  - Develop or find a simulator for the HP-16C to test your generated code.
+  - Debug and fix issues in the code generation process.
+### 9. Optimization
+- Code Optimization:
+  - Implement optimizations specific to the HP-16C’s architecture.
+  - Focus on reducing memory footprint and improving execution speed.
+- Refine Compiler Performance:
+  - Profile the compiler to identify and resolve performance bottlenecks.
+### 10. Documentation and Finalization
+- Write Documentation:
+  - Document the design and implementation of your compiler.
+  - Provide user guides for compiling C programs and loading them onto the HP-16C.
+  - Hopefully this will be completed as the project progresses.
+- Package and Distribute:
+  - Prepare your compiler for distribution.
+  - Create installation scripts and user manuals.
 
 ### Acknowledgements
 
