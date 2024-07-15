@@ -1,0 +1,115 @@
+// Project Euler problem 3
+// The prime factors of 13195 are 5, 7, 13 and 29.
+// What is the largest prime factor of the number 600851475143?
+
+//  Pre-work: convert 600851475143 to hex so we can use dbl% for extra program lines
+//      U 64-bit dec
+//      600851475143 d
+//      hex
+//      8be589eac7 h
+// Then find out sqrt in hex
+//      sqrt
+//      bd3ea h
+
+// Method: using trial division
+//  int number = 600851475143
+//  int limit = sqrt(number)
+//  int i = limit
+//  while(true)
+//      if(number%i==0) // if isFactor
+//          if(isPrime(i))
+//              return i
+//      else
+//          i--
+
+// Starting settings: unsigned 24-bit hex
+// Memory Map:
+//  RI = limit/number we are testing
+//
+//  R0 = 89eac7 h (little end)
+//  R1 = 008be5 h (big end)
+//  R2 = subLimit = 0bd3ea h
+
+//
+//  F0 = isPrime result
+
+lbl a   // Start of program 
+    // Initialize variables
+    0x89eac7    // R0 <- little_end(number)
+    sto 0
+    0x008be5    // R1 <- big_end(number)
+    sto 1
+    0xbd3ea     // RI <- sqrt(number) := limit
+    sto I
+    cf 0    // Clear F0
+
+    lbl 0   // LOOP TOP
+        rcl 0   // X <- big_end | little_end % limit
+        rcl 1
+        rcl I
+        dblrmd     // X <- number % limit
+        x!=0    // If X!=0, do next line, else skip
+            gto 2   // goto ELSE
+
+        gsb B   // goto subroutine isPrime
+        f? 0    // if F0 is set (i.e., i is prime), do next line, else skip
+            gto 3 // goto RETURN
+        
+        lbl 2   // ELSE
+        dsz     // I-- (test is irrelevant, but this saves 2 program lines compared to rcl/sto)
+        gto 0   // goto LOOP TOP
+
+    lbl 3   // RETURN
+    rcl i   // print I
+    show dec
+    rtn     // return
+
+//  isPrime(num)
+//      if num%2 == 0
+//          return false
+//      subLimit = sqrt(num)
+//      while(subLimit > 2)
+//          if num%subLimit==0
+//              return false
+//          subLimit -= 2
+//      return true
+
+// Argument = I
+// Sublimit = R2
+lbl b   // isPrime
+    rcl I // Check if I is even
+    0
+    b?  // if I is odd, do next line, else skip it
+        gto 6   // GOTO END IF
+    RTN // if even, return false
+    
+    lbl 6   // END IF
+    x<>Y    // X <- I, y <- 0
+    sqrt    // X <- Sqrt(I) := subLimit
+    sto 2   // R2 <- subLimit
+
+    lbl 4   // LOOP TOP
+        rcl I   // X <- I%subLimit
+        rcl 2
+        rmd
+
+        x==0    // if X==0, do next line, else skip
+            rtn     // return false
+
+        X<>y    // X <- subLimit
+        2       // X <- 2, Y <- subLimit
+        -       // X <- subLimit-2, Y <- 2
+        sto 2   // R2 <- subLimit
+
+        // Check loop condition
+        x>Y // if subLimit > 2, do next line
+            gto 4   // goto LOOP TOP
+    
+    lbl 5   // RETURN TRUE
+    sf 0    // F0 <- 1
+    rtn     // return true
+    
+
+
+
+
