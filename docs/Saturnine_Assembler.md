@@ -414,8 +414,8 @@ The following is a list of the instructions available in the Saturnine Assembly 
     - Test the number in the X register and does the next instruction if the condition is met (skips if not met).
     - Example:
         - `5`; `X>0`: Skip the next instruction because 5 > 0
-- `B? #` - Test the #-th bit. If it is set, the next instruction is skipped.
-- `F? #` - Test the #-th flag. If it is set, the next instruction is skipped.
+- `B?` - Test the X-th bit of the Y register. If it is set, the next instruction is skipped.
+- `F?` - Test the #-th flag. If it is set, the next instruction is skipped.
 
 ### System Operations
 - `HEX`, `DEC`, `OCT`, `BIN`: Set the base of the number to be subsequently entered to hexadecimal, decimal, octal, or binary, respectively.
