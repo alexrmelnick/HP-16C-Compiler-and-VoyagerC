@@ -27,3 +27,4 @@
 ## Helpful Resources I Came Across While Working on This Project
 - [I wrote a programming language. Here’s how you can, too.](https://www.freecodecamp.org/news/the-programming-language-pipeline-91d3f449c919/)
 - [Building Your Own Programming Language From Scratch](https://hackernoon.com/building-your-own-programming-language-from-scratch)
+- [How LLVM & Clang Work](https://www.youtube.com/watch?v=IR_L1xf4PrU)
