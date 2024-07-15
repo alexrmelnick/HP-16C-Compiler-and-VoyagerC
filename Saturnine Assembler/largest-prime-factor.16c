@@ -1,7 +1,7 @@
 #  Program produced by Alex Melnick's Saturnine Assembler.
 #  Character encoding: UTF-8
-#  Generated 2024-07-15 14:30:34
-#  Program occupies 65 bytes.
+#  Generated 2024-07-15 16:20:01
+#  Program occupies 70 bytes.
 
    000 {          } 
    001 { 43 22 A } g LBL A
@@ -44,30 +44,35 @@
    038 {    42 24 } f SHOW DEC
    039 {    43 21 } g RTN
    040 { 43 22 B } g LBL B
-   041 {       31 } R/S
-   042 {    45 32 } RCL I
-   043 {       0 } 0
-   044 {    42 6 } f B?
-   045 {    22 6 } GTO 6
-   046 {    43 21 } g RTN
-   047 { 43 22 6 } g LBL 6
-   048 {       34 } X<=>Y
-   049 {    43 25 } g SQRTx
-   050 {    44 2 } STO 2
-   051 { 43 22 4 } g LBL 4
-   052 {    45 32 } RCL I
-   053 {    45 2 } RCL 2
-   054 {    42 9 } f RMD
-   055 {    43 40 } g x==0
-   056 {    43 21 } g RTN
-   057 {       34 } X<=>Y
-   058 {       2 } 2
-   059 {       30 } -
-   060 {    44 2 } STO 2
-   061 {    43 3 } g x>y
-   062 {    22 4 } GTO 4
-   063 { 43 22 5 } g LBL 5
-   064 { 43 4 0 } g SF 0
-   065 {    43 21 } g RTN
+   041 {    45 32 } RCL I
+   042 {       0 } 0
+   043 {    42 6 } f B?
+   044 {    22 6 } GTO 6
+   045 {    43 21 } g RTN
+   046 { 43 22 6 } g LBL 6
+   047 {    43 25 } g SQRTx
+   048 {       0 } 0
+   049 {    42 6 } f B?
+   050 {    22 5 } GTO 5
+   051 {       1 } 1
+   052 {       40 } +
+   053 { 43 22 5 } g LBL 5
+   054 {    44 2 } STO 2
+   055 { 43 22 4 } g LBL 4
+   056 {    45 32 } RCL I
+   057 {    45 2 } RCL 2
+   058 {    42 9 } f RMD
+   059 {    43 40 } g x==0
+   060 {    43 21 } g RTN
+   061 {       34 } X<=>Y
+   062 {       2 } 2
+   063 {       30 } -
+   064 {    44 2 } STO 2
+   065 {       2 } 2
+   066 {    45 2 } RCL 2
+   067 {    43 3 } g x>y
+   068 {    22 4 } GTO 4
+   069 { 43 4 0 } g SF 0
+   070 {    43 21 } g RTN
 
 # End.
