@@ -20,7 +20,7 @@ This project is a work in progress and has a *very* long road ahead of it. Below
   - Learn about its memory constraints (203 bytes for program and data).
   - Understand its instruction set and keypress programming method.
   - Study its reverse polish notation (RPN) input method.
-### 1. Develop the Saturnine Assembler **(in progress)**
+### 1. Develop the Saturnine Assembler **(complete)**
 - Define Assembly Language Syntax:
   - Design a simple assembly language that maps to HP-16C keypress sequences.
   - Define the syntax for arithmetic, logical, and control flow operations.
@@ -30,7 +30,7 @@ This project is a work in progress and has a *very* long road ahead of it. Below
 - Test Assembler:
   - Write assembly programs to test the assembler’s functionality.
   - Verify that the generated keystroke sequences produce the expected results.
-### 2. Set Up Development Environment
+### 2. Set Up Development Environment *(in progress)*
 - Install Clang and LLVM:
   - Install Clang and LLVM on your development machine.
   - Familiarize yourself with LLVM’s architecture and intermediate representation (IR).
