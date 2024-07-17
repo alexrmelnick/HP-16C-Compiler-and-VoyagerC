@@ -443,16 +443,17 @@ Not all of the functions available on the HP-16C are available in programming mo
 ## Syntax
 The syntax for the Saturnine Assembler is based on the examples in the HP-16C manual and is detailed above. Each line of code in a Saturnine program corresponds to a series of key presses on the HP-16C calculator. Each instruction is written on a separate line and comments are allowed using `//`. One key difference is that writing the `f` and `g` keys is unnecessary. The Saturnine Assembler will add them automatically when assembling. It is recommended that you specify your initial settings at the beginning of your program. Otherwise, the Saturnine Assembler will assume the default settings (2's complement and 16-bit word size). All Saturnine Assembly files should have the `.sat` extension.
 
-The following is an example of the syntax for a Saturnine program:
-**WIP**
+See the Sample Programs folder for examples of Saturnine Assembly programs.
 
 ## Usage
 The Saturnine Assembler is a command line tool that can be used to assemble Saturnine Assembly files into a format that can be imported to the JRPN HP-16C calculator simulator (.16c) or printed out and typed into a physical HP-16C. The Saturnine Assembler is written in Python 3.12.3 (other versions may work, but no compatibility is guaranteed). 
 
-The Saturnine Assembler can be run from the command line using the following command:
-`Saturnine_Assembler.py [input file] [output file] [options]`
+At the moment, running the Saturnine Assembler requires the following command line arguments:
+`python Saturnine_Assembler.py <input filename> <output file name (no extension)> <output mode (16c/pdf)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>`
 
-You can also run the Saturnine Assembler without any arguments to enter interactive mode. This will walk you through each argument and allow you to assemble a file without needing to remember the command line arguments.
+You can run the Saturnine Assembler without any arguments to enter interactive mode. This will walk you through each argument and allow you to assemble a file without needing to remember the command line arguments.
+
+Alternatively, you can "install" the Saturnine Assembler by adding the `/HP-16C-Compiler-and-VoyagerC/Saturnine Assembler` folder to your path and running `[System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Users\alexa\OneDrive\Documents\Personal Projects\HP-16C-Compiler-and-VoyagerC", [System.EnvironmentVariableTarget]::User)` in PowerShell as an administrator. This will allow you to run the Saturnine Assembler from any directory by typing `saturnine` in the command line.
 
 ## Limitations
 The Saturnine Assembler is a work in progress and has several limitations. The following is a list of known limitations:

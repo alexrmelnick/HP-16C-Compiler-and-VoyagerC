@@ -21,6 +21,8 @@ The Saturnine Assembler is a single-pass assembler featuring:
 The Saturnine Assembler is written in Python 3.12.3 and developed by Alex Melnick.
 '''
 
+#!/usr/bin/env python3
+
 # Imports
 import math
 import sys
