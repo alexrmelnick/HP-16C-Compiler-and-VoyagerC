@@ -88,6 +88,11 @@ def main():
     print(f"Registers used: {len(calculator_state.registers_used)} registers of {calculator_state.available_registers} available")
     print(f"Memory partition @ {calculator_state.memory_partition} Bytes")
 
+    if DEBUG: 
+        print("DEBUG: Registers used:")
+        for reg in calculator_state.registers_used:
+            print(f"DEBUG: Register {reg} used.")
+
 
 def parse_interactive(calculator_state):
     print("Welcome to the Saturnine Assembler - the first and only assembler for the HP-16C calculator!")
@@ -245,7 +250,7 @@ def parse_instruction(tokens, input_line_number, calculator_state):
             if DEBUG: print("Instr: ", tokens[0], " has a valid with argument: ", tokens[1])
             
             # Perform system checks
-            elif tokens[0] == 'sto' or tokens[0] == 'rcl':
+            if tokens[0] == 'sto' or tokens[0] == 'rcl':
                 if tokens[1] != 'i' and tokens[1] != '(i)':
                     if int(tokens[1]) > 31:
                         print("Error - Out of direct memory range:")
@@ -258,7 +263,8 @@ def parse_instruction(tokens, input_line_number, calculator_state):
                         print("Line: " + tokens + " (line number: " + input_line_number + " )")
                         sys.exit(1)
                     else:
-                        if tokens[1] not in calculator_state.registers_used:
+                        if int(tokens[1]) not in calculator_state.registers_used:
+                            if DEBUG: print("Adding register: ", tokens[1], " to the list of registers used.")
                             calculator_state.registers_used.append(int(tokens[1]))
                 
                 calculator_state.update_memory()

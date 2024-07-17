@@ -4,15 +4,6 @@
 
 // Answer: 6857
 
-//  Pre-work: convert 600851475143 to hex so we can use dbl% for extra program lines
-//      U 64-bit dec
-//      600851475143 d
-//      hex
-//      8be589eac7 h
-// Then find out sqrt in hex
-//      sqrt
-//      bd3ea h
-
 // Method: using trial division
 //  int number = 600851475143
 //  int limit = sqrt(number)
@@ -24,7 +15,7 @@
 //      else
 //          i--
 
-// Starting settings: unsigned 24-bit hex
+// Starting settings: unsigned 48-bit dec
 // Memory Map:
 //  RI = limit/number we are testing
 //
@@ -36,14 +27,22 @@
 //  F0 = isPrime result
 
 lbl a   // Start of program 
+    // Initialize settings
+    dec             // Set the modes because it is important to this program
+    48
+    WSIZE
+    unsigned
+
     // Initialize variables
-    0x89eac7    // R0 <- little_end(number)
-    sto 0
-    0x008be5    // R1 <- big_end(number)
-    sto 1
-    0xbd3ea     // RI <- sqrt(number) := limit
-    sto I
-    cf 0    // Clear F0
+    600851475143    // X <- our number
+    sto 0           // R0 <- our number
+    sqrt
+    sto I           // RI <- our limit 
+    
+    24              // Set our word size to 24-bits (3 Bytes)
+    WSIZE           // R0 <- 24 LSB, R1 <- 24 MSB
+
+    cf 0            // Clear F0
 
     lbl 0   // LOOP TOP
         rcl 0   // X <- big_end | little_end % limit
