@@ -1,4 +1,4 @@
-# Useful Links for HP-16C Compiler and VoyagerC Project
+# Useful Links for HP-16C Jovial Assembler
 
 ## Documentation
 
@@ -12,19 +12,14 @@
 - [eBay](https://www.ebay.com/sch/i.html?_nkw=hp-16c) - This is how I got mine. They are not cheap, but they are worth it and will last forever. 
 - [SwissMicro DM16L](https://www.swissmicros.com/product/dm16l) - A modern clone of the HP-16C
 - [PX16C Kit](https://www.tindie.com/products/hobbystone/px16c-an-hp16c-programmers-calculator-emulator/) - This is a Raspberry Pi-based emulator of the HP-16C. It is a kit that you have to assemble yourself. It is currently out of stock. 
-    - I plan on getting on of these at some point. I would like to maybe try to port the VoyagerC compiler to it, but it isn't open source, so I don't know if that will be possible. Of course, I could always make a C interpreter for VoyagerC and run it on the Raspberry Pi, but that just isn't the same. 
+    - I plan on getting on of these at some point. I would like to maybe try to port the Jovial Assembler to output to it, but it isn't open source, so I don't know if that will be possible. It could be a fun project to try reverse engineering it though.
     - I would love to see someone replace the Raspberry Pi with an FPGA to make it more authentic. I believe people have replicated the HP nut processor in Verilog and/or VHDL, so it should be possible.
 
 ## Other Tools
 
 - [JRPN HP-16C Simulator](https://jrpn.jovial.com/)
-    - This is the primary tool I am using to test VoyagerC programs. It is seems to be a little buggy (I have had some program editing features not work as expected), but it is open source and the exported programs are in a human-readable format.
+    - This is the primary tool I am using to test Jovial assembly programs. It is seems to be a little buggy, but it is open source and the exported programs are in a human-readable format. This is also the simulator that I have on my phone for everyday use if I don't have my physical HP-16C with me.
 - [HP-16C Emulator by Jamie O'Connell](http://www.hp16c.org/)
-    - I find this one to be more robust than the JRPN simulator. It also has stack, register, and program views. However, it is closed source and the format of the exported programs is not easily decipherable. Therefore, programs must be typed in manually.
+    - I find this one to be more robust than the JRPN simulator. It also has stack, register, and program views, which aid strongly in debugging your program. However, it is closed source and the format of the exported programs is not easily decipherable. Therefore, programs must be typed in manually unless I/someone reverse engineers the it. The project is Donationware, but the forum is still up and running, so it may be possible to get the original creator to share the source code. 
 - [HP16C Emulator by The Joseph M. Newcomer Co.](http://flounder.com/hp16c.htm)
-    - I haven't tried this one out yet, but it supports the Palm Pilot!
-
-## Helpful Resources I Came Across While Working on This Project
-- [I wrote a programming language. Here’s how you can, too.](https://www.freecodecamp.org/news/the-programming-language-pipeline-91d3f449c919/)
-- [Building Your Own Programming Language From Scratch](https://hackernoon.com/building-your-own-programming-language-from-scratch)
-- [How LLVM & Clang Work](https://www.youtube.com/watch?v=IR_L1xf4PrU)
+    - I haven't tried this one out, but it supports the Palm Pilot! That alone was cool enough to include it. However it is not a full implementation. 

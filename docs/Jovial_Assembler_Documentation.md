@@ -1,57 +1,68 @@
-# Welcome to the official documentation for the Saturnine Assembler
-This documentation will provide an overview of the Saturnine Assembler, including the features it provides, the syntax it uses, and how to use it to write programs for the HP-16C Simulator and the JRPN HP-16C Simulator.
+# Welcome to the official documentation for the Jovial Assembler
+This documentation will provide an overview of the Jovial Assembler, including the features it provides, the syntax it uses, and how to use it to write programs for the HP-16C and the JRPN HP-16C Simulator.
 
-Please note that this documentation is a work in progress and will be updated as the SRPN Assembler project progresses. If you have any questions or suggestions for the documentation (or the project in general), please feel free to reach out.
+Please note that this documentation is a work in progress and will be updated as the Jovial Assembler project progresses. If you have any questions or suggestions for the documentation (or the project in general), please feel free to reach out.
 
 
 ## Table of Contents
 1. [Introduction](##introduction)
-2. [Features](##features)
-3. [System Architecture](##system-architecture)
-    a. [Registers](###registers)
-    b. [Numerical Representation Modes](###numerical-representation-modes)
-        i. [Integer Mode](####integer-mode)
-        ii. [Floating Point Mode](####floating-point-mode)
-    c. [Memory](###memory)
-        i. [Memory Map](####memory-map)
-        ii. [Direct Addressing](####direct-addressing)
-        iii. [Indirect Addressing](####indirect-addressing)
-    d. [Flags](###flags)
-        i. [User Flags](####user-flags)
-        ii. [System Flags](####system-flags)
-    e. [Subroutines](###subroutines)
-    f. [`STATUS` and `MEM`](###status-and-mem)
-4. [Instruction Set](##instruction-set)
-    a. [Numeric Input](###numeric-input)
-    b. [Arithmetic Operations](###arithmetic-operations)
-    c. [Logical Operations](###logical-operations)
-    d. [Bitwise Operations](###bitwise-operations)
-    e. [Double Operations](###double-operations)
-    f. [Stack Operations](###stack-operations)
-    g. [Memory Operations](###memory-operations)
-    h. [Flag Operations](###flag-operations)
-    i. [Control Operations](###control-operations)
-    j. [System Operations](###system-operations)
-    k. [Pseudo-Instructions](###pseudo-instructions)
-    l. [Functions not available Saturnine](###functions-not-in-saturnine)
-5. [Syntax](##syntax)
-6. [Usage](##usage)
-7. [Limitations](##limitations)
+1. [Features](##features)
+1. [Usage](##usage)
+1. [System Architecture](##system-architecture)
+    1. [Registers](###registers)
+    1. [Numerical Representation Modes](###numerical-representation-modes)
+        1. [Integer Mode](####integer-mode)
+        1. [Floating Point Mode](####floating-point-mode)
+    1. [Memory](###memory)
+        1. [Memory Map](####memory-map)
+        1. [Direct Addressing](####direct-addressing)
+        1. [Indirect Addressing](####indirect-addressing)
+    1. [Flags](###flags)
+        1. [User Flags](####user-flags)
+        1. [System Flags](####system-flags)
+    1. [Subroutines](###subroutines)
+    1. [`STATUS` and `MEM`](###status-and-mem)
+1. [Syntax](##syntax)
+1. [Instruction Set](##instruction-set)
+    1. [Numeric Input](###numeric-input)
+    1. [Arithmetic Operations](###arithmetic-operations)
+    1. [Logical Operations](###logical-operations)
+    1. [Bitwise Operations](###bitwise-operations)
+    1. [Double Operations](###double-operations)
+    1. [Stack Operations](###stack-operations)
+    1. [Memory Operations](###memory-operations)
+    1. [Flag Operations](###flag-operations)
+    1. [Control Operations](###control-operations)
+    1. [System Operations](###system-operations)
+    1. [Pseudo-Instructions](###pseudo-instructions)
+    1. [Functions not available Jovial](###functions-not-in-jovial)
+1. [Limitations](##limitations)
 
 
 ## Introduction
-Saturnine is a custom assembly language designed specifically for the HP-16C calculator. It is intended to be used with the JRPN HP-16C Simulator to write programs that can be run on the simulator. It is modeled on the HP-16C keystroke programming language provided in the HP-16C manual with some small simplifications for ease of programming. The Saturnine Assembler is a single-pass assembler designed to be easy to use and to provide a familiar programming environment for those who are already familiar with the HP-16C calculator.
+Jovial is a custom assembly language designed specifically for the HP-16C calculator. It is intended to be used with the JRPN HP-16C Simulator to write programs that can be run on the simulator or typed manually into a physical HP-16C. It is modeled on the HP-16C keystroke programming language provided in the HP-16C manual with some small simplifications for ease of programming. The Jovial Assembler is a single-pass assembler designed to be easy to use and to provide a familiar programming environment for those who are already familiar with the HP-16C calculator.
 
-The Saturnine Assembler gets its name from the JRPN HP-16C Simulator. JRPN stands for Jovial Reverse Polish Notation. One meaning of "Jovial" is "of Jupiter". The next planet after Jupiter is Saturn, so the name "Saturnine" was chosen. The word "Saturnine" has a few meanings, one of which is "gloomy or sullen in temperament". This is a appropriate given the HP-16C's challenge to program.
+The Jovial Assembler gets its name from the JRPN HP-16C Simulator. JRPN stands for Jovial Reverse Polish Notation. It was originally called the "Saturnine Assembler", since the next planet after Jupiter is Saturn. However, some later HP calculators (notably the HP-41) contained the Saturn processor, so the name was changed to avoid confusion. I have tried to remove all references, but you may see references to the "Saturnine Assembler" in the code or documentation. Don't worry, the Jovial Assembler and "Saturnine Assembler" are the same thing. 
 
 This guide will repeat lots of information from the HP-16C manual. Half of the reason for its existence is to serve as my notes while learning the HP-16C keystroke programming language. I hope it will be useful to others as well.
 
 
+## Usage
+The Jovial Assembler is a command line tool that can be used to assemble Jovial Assembly files into a format that can be imported to the JRPN HP-16C calculator simulator (.16c) or printed out and typed into a physical HP-16C. The Jovial Assembler is written in Python 3.12.3 (other versions may work, but no compatibility is guaranteed). 
+
+At the moment, running the Jovial Assembler requires the following command line arguments:
+`python Jovial_Assembler.py <input filename> <output file name (no extension)> <output mode (16c/pdf)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>`
+
+You can run the Jovial Assembler without any arguments to enter interactive mode. This will walk you through each argument and allow you to assemble a file without needing to remember the command line arguments.
+
+Alternatively, you can install the Jovial Assembler on Windows by adding the `/HP-16C-Jovial-Assembler/src` folder to your path and running `[System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";<ABSOLUTE FILE PATH TO REPO>", [System.EnvironmentVariableTarget]::User)` in PowerShell as an administrator. This will allow you to run the Jovial Assembler from any directory by typing `jovial` in the command line.
+
+
 ## Features
-The Saturnine Assembler provides a number of features that make it easy to write programs for the HP-16C calculator. These features include:
+The Jovial Assembler provides a number of features that make it easy to write programs for the HP-16C calculator. These features include:
 - A simple and intuitive syntax based on the sample programs in the HP-16C manual.
 - A comprehensive instruction set that covers all of the operations available on the HP-16C calculator.
-- Support for comments using a `//` prefix.
+- Support for comments using the `;` or `//` prefix.
 - Support for automatic assembly of the `f` and `g` modifier keys.
 - Ability to specify the base of the number being entered (binary, octal, decimal, or hexadecimal).
 - Ability to enter multi-digit numbers as an immediate.
@@ -97,13 +108,11 @@ Additionally, there are 2 more registers, however they are not part of the stack
 The HP-16C has 2 main modes: integer, and floating point. The vast majority of calculations are done in integer mode since it is far more fully featured. The two modes are mostly incompatible with each other - the numbers in each do not have the necessarily same cardinality (i.e., numerical value) in each format. Converting between the two is possible, but not always straightforward. See the [Floating Point Mode](####Floating-Point-Mode) section for more information. 
 
 #### Integer Mode
-In integer mode, the HP-16C can store numbers in 4 different bases: `binary`, `octal`, `decimal`, and `hexadecimal`. For the Saturnine Assembler, to specify the base of the number, use `0b###` for `binary`, `0o###` for `octal`, `0d###` for `decimal`, and `0x###` for `hexadecimal`. If no base is specified, the number is assumed to be in `decimal`.
+In integer mode, the HP-16C can store numbers in 4 different bases: `binary`, `octal`, `decimal`, and `hexadecimal`. For the Jovial Assembler, to specify the base of the number, use `0b###` for `binary`, `0o###` for `octal`, `0d###` for `decimal`, and `0x###` for `hexadecimal`. If no base is specified, the number is assumed to be in `decimal`.
 
-#TODO: Understand how the starting base affects the program. Will probably need to wait until I have access to a physical 16C to test this.
+The HP-16C can store integers in 180 different combinations of encodings. The original purpose of this is so you can set your HP-16C to whatever encoding your computer uses. The HP-16C was primarily a debugging tool for computer engineers working in assembly, so this feature was useful, but not so relevant for the Jovial Assembler. 
 
-The HP-16C can store integers in 180 different combinations of encodings. The original purpose of this is so you can set your HP-16C to whatever encoding your computer uses. The HP-16C was primarily a debugging tool for computer engineers working in assembly, so this feature was useful, but not so relevant for the Saturnine Assembler. 
-
-The HP-16C stores integers in 1 of 3 different encodings: `unsigned`, `1's complement`, and `2's complement`. The encoding set in Saturnine by using the `UNSIGNED`, `1's`, `2's` instructions, respectively. The default is `2's complement`. For most purposes, you should set the HP-16C to `2's complement` encoding for signed integers, or `unsigned` for unsigned integers. `1's complement` mode arithmetic is weird and is effected by the carry flag and has -0. While you might find it useful for debugging a UNIVAC, I will not be discussing it further as it is not useful for programming.  
+The HP-16C stores integers in 1 of 3 different encodings: `unsigned`, `1's complement`, and `2's complement`. The encoding set in Jovial by using the `UNSIGNED`, `1's`, `2's` instructions, respectively. The default is `2's complement`. For most purposes, you should set the HP-16C to `2's complement` encoding for signed integers, or `unsigned` for unsigned integers. `1's complement` mode arithmetic is weird and is effected by the carry flag and has -0. While you might find it useful for debugging a UNIVAC, I will not be discussing it further as it is not useful for programming.  
 
 The HP-16C can store integers in any word size between `4-` and `64-bits`. This means it is still actually useful for modern 64-bit computers. By default, the HP-16C is set to `16-bit` word size. The word size can be set using the `WORD` instruction. For most purposes, you should set the HP-16C to either `4-bit`, `8-bit`, `16-bit`, `32-bit`, or `64-bit` word size, depending on the size of the integers you are working with. I am unaware of any reason to use the other word sizes for integers. Maybe if you wanted to store `7-bit` integers for ASCII characters, but that seems like a stretch. Numbers that are too large to fit in the word size cannot be entered. Results of calculations with values larger than 2^[WORD SIZE] will cause an out-of-range error (flag 5 / `G` annunciator). The X register's value will be the result of the operation modulo 2^[WORD SIZE].
 
@@ -120,7 +129,7 @@ To enter floating point mode, use the `FLOAT #` instruction, where `#` is the nu
 Numbers can be entered in scientific notion using the `EEX` button to set the exponent. 
 - Example: `FLOAT 2`; `3`; `EEX`; `2`: DISPLAY == 300.00
 - Example: `FLOAT .`; `3`; `EEX`; `2`: DISPLAY == 3.000000 02 (== 3.000000 * 10^2)
-The Saturnine Assembler also allows floats to be entered in scientific notation using `#E#` where the first `#` is the mantissa and the second `#` is the exponent.
+The Jovial Assembler also allows floats to be entered in scientific notation using `#E#` where the first `#` is the mantissa and the second `#` is the exponent.
 - Example: `FLOAT 2`; `3E2`: DISPLAY == 300.00
 
 Internally, the HP-16C stores floating point numbers with a 10 digit mantissa and a 2 digit exponent (#.### ### ### * 2 ^##). This means that the HP-16C can store floats between +/- 9.999999999 * 10^99. Results of calculations with values larger or smaller than these limits will cause an out-of-range error (flag 5 / `G` annunciator) with X <- +/- +/- 9.999999999 * 10^99. The smallest value that can be stored is 1.000000000 * 10^-99. Any values smaller than this will be rounded to 0.
@@ -156,7 +165,7 @@ Any memory not being used in a program (in multiples of 7 lines) is automaticall
 
 
 #### Direct Addressing
-The first 32 storage registers can be addressed directly for storing and recalling values. The remaining registers can only be access indirectly using the index register (see below). To access a storage register directly, use the `STO #` and `RCL #` instructions, where `#` is the number of the storage register (0-31). The `STO` instruction stores the value in the X register in the specified storage register, and the `RCL` instruction recalls the value from the specified storage register into the X register. The Saturnine Assembler will automatically convert the storage register number to the appropriate key press on the HP-16C. 
+The first 32 storage registers can be addressed directly for storing and recalling values. The remaining registers can only be access indirectly using the index register (see below). To access a storage register directly, use the `STO #` and `RCL #` instructions, where `#` is the number of the storage register (0-31). The `STO` instruction stores the value in the X register in the specified storage register, and the `RCL` instruction recalls the value from the specified storage register into the X register. The Jovial Assembler will automatically convert the storage register number to the appropriate key press on the HP-16C. 
 
 #### Indirect Addressing
 The Index register I is a permanent storage register that can be used to indirectly address other storage registers, indirectly branch to program labels, and hold loop counters for program loop control. Unlike other storage registers, *the Index register is always 68 bits*, regardless of current word size, and it is never converted to lines of program memory.
@@ -200,7 +209,7 @@ See this chart to see which operations affect the carry and out-of-range flags:
 ![Flag Operations Chart](Images/Flags.png)
 
 ### `STATUS` and `MEM`
-This largely does not apply to the Saturnine Assembler, but is useful to know. 
+This largely does not apply to the Jovial Assembler, but is useful to know. 
 
 When in `STATUS` mode, the HP-16C will display the status of the calculator modes. This includes, in order, the complement mode, the word size, and the current status of the `flags 3, 2, 1, and 0`. Note that `flags 4 (carry)` and `5 (out-of-range)` are always displayed by the `C` and `G` annunciators respectively. See the diagram below for the layout of the status display:
 ![Status Display Diagram](Images/Status_Diagram.png)
@@ -208,17 +217,23 @@ When in `STATUS` mode, the HP-16C will display the status of the calculator mode
 When in `MEM` mode, the HP-16C will display the status of the calculator memory. The display will show the number of program lines (`P-#`) used and the number of storage registers available (`r-###`). 
 
 
-## Instruction Set
-Each instruction in the Saturnine Assembly Language corresponds to a key press on the HP-16C calculator. Instructions are all based on the keys of 16C, but with some changes to make them typeable from a standard QWERTY keyboard. **Instructions are not case sensitive.** The documentation below will list them as they are on the HP-16C keys, but you may see them in all lowercase in the other files. 
+## Syntax
+The syntax for the Jovial Assembler is based on the examples in the HP-16C manual and is detailed above. Each line of code in a Jovial program corresponds to a series of key presses on the HP-16C calculator. Each instruction is written on a separate line and comments are allowed using `;` or `//`. One key difference is that writing the `f` and `g` keys is unnecessary. The Jovial Assembler will add them automatically when assembling. It is recommended that you specify your initial settings at the beginning of your program. Otherwise, the Jovial Assembler will assume the default settings (2's complement and 16-bit word size). All Jovial Assembly files should have the `.jov` extension. *Note that instructions are not case sensitive.*
 
-The following is a list of the instructions available in the Saturnine Assembly Language:
+See the Sample Programs folder for examples of Jovial Assembly programs.
+
+
+## Instruction Set
+Each instruction in the Jovial Assembly Language corresponds to a key press on the HP-16C calculator. Instructions are all based on the keys of 16C, but with some changes to make them typeable from a standard QWERTY keyboard. **Instructions are not case sensitive.** The documentation below will list them as they are on the HP-16C keys, but you may see them in all lowercase in the other files. You may see a `#` in the listing. This refers to a number that is entered by the user.
+
+The following is a list of the instructions available in the Jovial Assembly Language:
 ### Numeric Input
 - `0` through `9`: Enter the corresponding digit in base 10.
 - `.`: Enter the decimal point in floating-point mode.
 - `A` through `F`: Enter the corresponding digit in base 16.
-- `CHS`: Set the sign of the number to negative in 1's or 2's complement mode. Note that the Saturnine Assembler allows for negative numbers to be entered directly (`-#`), so the `CHS` instruction is not generally necessary.
+- `CHS`: Set the sign of the number to negative in 1's or 2's complement mode. Note that the Jovial Assembler allows for negative numbers to be entered directly (`-#`), so the `CHS` instruction is not generally necessary.
 - To specify the base of the number, use 0b### for binary, 0o### for octal, 0d### for decimal, and 0x### for hexadecimal. If no base is specified, the number is assumed to be in decimal.
-    - For negative numbers, use -0b### for binary, -0o### for octal, -0d### for decimal, and -0x### for hexadecimal. -### is also acceptable for decimal numbers.
+    - For negative numbers, use -0b### for binary, -0o### for octal, -0d### for decimal, and -0x### for hexadecimal. -### is also acceptable for negative decimal numbers.
 - Note that entering a number is its own operation and requires a separate instruction to do an operation with it.
 - `EEX`: Enter the exponent in floating-point mode. See the [Floating Point Mode](####floating-point-mode) section for more information.
 - Examples (in 2's complement mode with an 8-bit word size):
@@ -291,7 +306,7 @@ The following is a list of the instructions available in the Saturnine Assembly 
     - Shift the number in the X register right by one bit and store the result in the X register.
     - The bit shifted out is stored in the carry flag.
     - A 0 is shifted in from the left if the MSB is clear (positive numbers in `2's complement`) and a 1 is shifted in from the left if the MSB is set (negative numbers in `2's complement`).
-    - Note that the `ASL` instruction is a pseudo-instruction. It is not available on the HP-16C calculator, but is included in the Saturnine Assembler for convenience. It is equivalent to the `SL` instruction
+    - Note that the `ASL` instruction is a pseudo-instruction. It is not available on the HP-16C calculator, but is included in the Jovial Assembler for convenience. It is identical to the `SL` instruction
     - Example (in 2's complement mode with an 4-bit word size):
         - `0b1010`; `ASR`: X == 0b1101, carry == 0
         - `0b1101`; `ASR`: X == 0b1110, carry == 1
@@ -353,7 +368,7 @@ The following is a list of the instructions available in the Saturnine Assembly 
 
 ### Stack Operations
 - `ENTER`: Puts the number into the X register and pushes the stack up.
-    - Not generally necessary in the Saturnine Assembler, but can be used to push the stack up.
+    - Not generally necessary in the Jovial Assembler, but can be used to push the stack up.
 - `R^` and `Rv`: Rotate the stack up and down.
     - The order of the stack, from top to bottom, is: T, Z, Y, X
 - `X<>Y`: Swap the X and Y registers.
@@ -426,8 +441,8 @@ The following is a list of the instructions available in the Saturnine Assembly 
     - Think of this as a `print` statement.
 - `PSE`: Pause the program and and display the X register. 
     - Not sure how this is different from `SHOW` instructions.
-- `WINDOW #`: Sets the segment of the X register to display. The X register is divided into up to 8, 8-digit segments, each of which can be displayed. The default view is 0 (the leftmost segment). The rightmost segment is 7. This will most likely not be very useful for those using the Saturnine Assembler for the JRPN simulator (which has a setting to display all digits), but is included for completeness.
-- `<` and `>`: Scroll the display left and right, respectively. This will most likely not be very useful for those using the Saturnine Assembler for the JRPN simulator (which has a setting to display all digits), but is included for completeness.
+- `WINDOW #`: Sets the segment of the X register to display. The X register is divided into up to 8, 8-digit segments, each of which can be displayed. The default view is 0 (the leftmost segment). The rightmost segment is 7. This will most likely not be very useful for those using the Jovial Assembler for the JRPN simulator (which has a setting to display all digits), but is included for completeness.
+- `<` and `>`: Scroll the display left and right, respectively. This will most likely not be very useful for those using the Jovial Assembler for the JRPN simulator (which has a setting to display all digits), but is included for completeness.
 - `R/S`: This pauses the program and allows the user to enter data. This data could be into the stack or into memory. The program will resume after the user presses `R/S` again. 
 - `CLEAR MEM`: Clears all memory registers. 
 
@@ -436,27 +451,12 @@ The following is a list of the instructions available in the Saturnine Assembly 
 - `-#E#`: Enter a negative floating point number in scientific notation. Equivalent to the `#; #; CHS` instruction sequence.
 - `ASL`: Equivalent to the `SL` instruction. Shift the number in the X register left by one bit and store the result in the X register.
 
-### Functions not available in the Saturnine Assembler
-Not all of the functions available on the HP-16C are available in programming mode. As such, they are not available in the Saturnine Assembler. These functions are described in this excerpt from the HP-16C manual:
+### Functions not available in the Jovial Assembler
+Not all of the functions available on the HP-16C are available in programming mode. As such, they are not available in the Jovial Assembler. These functions are described in this excerpt from the HP-16C manual:
 ![Functions not available in programming mode](Images/Nonprogramable_Functions.png)
 
-## Syntax
-The syntax for the Saturnine Assembler is based on the examples in the HP-16C manual and is detailed above. Each line of code in a Saturnine program corresponds to a series of key presses on the HP-16C calculator. Each instruction is written on a separate line and comments are allowed using `//`. One key difference is that writing the `f` and `g` keys is unnecessary. The Saturnine Assembler will add them automatically when assembling. It is recommended that you specify your initial settings at the beginning of your program. Otherwise, the Saturnine Assembler will assume the default settings (2's complement and 16-bit word size). All Saturnine Assembly files should have the `.sat` extension.
-
-See the Sample Programs folder for examples of Saturnine Assembly programs.
-
-## Usage
-The Saturnine Assembler is a command line tool that can be used to assemble Saturnine Assembly files into a format that can be imported to the JRPN HP-16C calculator simulator (.16c) or printed out and typed into a physical HP-16C. The Saturnine Assembler is written in Python 3.12.3 (other versions may work, but no compatibility is guaranteed). 
-
-At the moment, running the Saturnine Assembler requires the following command line arguments:
-`python Saturnine_Assembler.py <input filename> <output file name (no extension)> <output mode (16c/pdf)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>`
-
-You can run the Saturnine Assembler without any arguments to enter interactive mode. This will walk you through each argument and allow you to assemble a file without needing to remember the command line arguments.
-
-Alternatively, you can "install" the Saturnine Assembler by adding the `/HP-16C-Compiler-and-VoyagerC/Saturnine Assembler` folder to your path and running `[System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Users\alexa\OneDrive\Documents\Personal Projects\HP-16C-Compiler-and-VoyagerC", [System.EnvironmentVariableTarget]::User)` in PowerShell as an administrator. This will allow you to run the Saturnine Assembler from any directory by typing `saturnine` in the command line.
-
 ## Limitations
-The Saturnine Assembler is a work in progress and has several limitations. The following is a list of known limitations:
+The Jovial Assembler is a work in progress and has several limitations. The following is a list of known limitations:
 - The argument parsing for `WINDOW` is not perfect. There are some invalid arguments that are not caught by the parser.
-- If you do not specify a base for a number, it is assumed to be the previous base set. This can cause issues if you are not careful.
+- If you do not specify a base for a number, it is assumed to be the previous base set. This can cause issues if you are not careful, especially if you assume it will be in base-10.
 - Sometimes the whitespace in the .16c file is not perfect. This is a known issue, but it does not affect the functionality of the file.

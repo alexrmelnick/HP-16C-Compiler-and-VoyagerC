@@ -1,8 +1,8 @@
 '''
-Welcome to the Saturnine Assembler! This program takes in a .sat file of Saturnine Assembly and outputs either
+Welcome to the Jovial Assembler! This program takes in a .jov file of Jovial Assembly and outputs either
 a .16c file for importing into the JRPN HP-16C simulator or a .pdf file for printing. 
 
-The Saturnine Assembler is a single-pass assembler featuring:
+The Jovial Assembler is a single-pass assembler featuring:
 - A simple and intuitive syntax based on the sample programs in the HP-16C manual.
 - A comprehensive instruction set that covers all of the operations available on the HP-16C calculator.
 - Support for comments using a `//` prefix.
@@ -18,7 +18,7 @@ The Saturnine Assembler is a single-pass assembler featuring:
 - Support for detecting if subroutines are nested more than 4 levels deep.
 - Support for pseudo-instructions to simplify certain operations.
 
-The Saturnine Assembler is written in Python 3.12.3 and developed by Alex Melnick.
+The Jovial Assembler is written in Python 3.12.3 and developed by Alex Melnick.
 '''
 
 #!/usr/bin/env python3
@@ -97,12 +97,12 @@ def main():
 
 
 def parse_interactive(calculator_state):
-    print("Welcome to the Saturnine Assembler - the first and only assembler for the HP-16C calculator!")
+    print("Welcome to the Jovial Assembler - the first and only assembler for the HP-16C calculator!")
     
-    print("Please enter the name or path of the .sat file you would like to assemble.")
+    print("Please enter the name or path of the .jov file you would like to assemble.")
     input_file_name = input("File name: ")
-    while not input_file_name.endswith(".sat"):
-        print("Invalid file type. Please enter a .sat file.")
+    while not input_file_name.endswith(".jov"):
+        print("Invalid file type. Please enter a .jov file.")
         input_file_name = input("File name: ")
     
     print("Please enter the name of the output file you would like to create.")
@@ -165,7 +165,7 @@ def parse_interactive(calculator_state):
 def parse_cli(argv, calculator_state):
     # Check if the user has entered the correct number of arguments
     if len(argv) != 7:
-        print("Usage: python Saturnine_Assembler.py <input filename> <output file name (no extension)> <output mode (16c/pdf)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>")
+        print("Usage: python Jovial_Assembler.py <input filename> <output file name (no extension)> <output mode (16c/pdf)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>")
         sys.exit(1)
     
     # Parse the command line arguments
@@ -177,8 +177,8 @@ def parse_cli(argv, calculator_state):
     base = int(argv[6])
 
     # Check if arguments are valid
-    if(not input_file_name.endswith(".sat")):
-        print("Invalid file type. Please enter a .sat file.")
+    if(not input_file_name.endswith(".jov")):
+        print("Invalid file type. Please enter a .jov file.")
         sys.exit(1)
     if(output_mode != "16c" and output_mode != "pdf"):
         print("Invalid output mode. Please use either '16c' or 'pdf'.")
@@ -212,8 +212,12 @@ def parse_line(line, input_line_number, calculator_state):
     line = line.strip()
 
     # Check for comments and remove them
+    # Check for double slashes and remove anything after them
     if line.find("//") != -1:
         line = line[:line.find("//")]
+    # Check for semicolons and remove anything after them
+    if line.find(";") != -1:
+        line = line[:line.find(";")]
 
     # Check for empty lines
     if len(line) == 0:
@@ -679,7 +683,7 @@ def output_16c(calculator_state):
     output_file = open(calculator_state.output_file_name + ".16c", "w") # Open the file in write mode
 
     # Write the header to the output file
-    output_file.write("#  Program produced by Alex Melnick's Saturnine Assembler.\n")
+    output_file.write("#  Program produced by Alex Melnick's Jovial Assembler.\n")
     output_file.write("#  Character encoding: UTF-8\n")
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output_file.write(f"#  Generated {current_time}\n")  # Corrected line
@@ -724,7 +728,7 @@ def output_pdf(calculator_state):
     # Heading and Stats
     header = [
         f"Program Listing for {calculator_state.input_file_name} for the HP-16C Calculator",
-        f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} with the Saturnine Assembler by Alex Melnick",
+        f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} with the Jovial Assembler by Alex Melnick",
         f"Calculator status (at end of program): {calculator_state.sign_mode} mode, {calculator_state.word_size}-bit words, {calculator_state.base} base",
         f"Program length: {calculator_state.program_length} Bytes",
         f"Registers used: {len(calculator_state.registers_used)} of {calculator_state.available_registers} available",
