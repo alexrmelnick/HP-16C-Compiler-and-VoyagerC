@@ -13,7 +13,7 @@ This project started after I received an HP-16C for my birthday. I was absolutel
   - Learn about its memory constraints (203 bytes for program and data).
   - Understand its instruction set and keypress programming method.
   - Study its reverse polish notation (RPN) input method.
-### 1. Develop the Jovial Assembler **(complete)**
+### 2. Develop the Jovial Assembler **(complete)**
 - Define Assembly Language Syntax:
   - Design a simple assembly language that maps to HP-16C keypress sequences.
   - Define the syntax for arithmetic, logical, and control flow operations.
@@ -23,11 +23,11 @@ This project started after I received an HP-16C for my birthday. I was absolutel
 - Test Assembler:
   - Write assembly programs to test the assembler’s functionality.
   - Verify that the generated keystroke sequences produce the expected results.
-### 1. Write an installer for the Jovial Assembler **(in progress)**
+### 3. Write an installer for the Jovial Assembler **(in progress)**
   - Write a script to install the Jovial Assembler on a user's system.
     - Currently it can be manually installed on Windows
     - I would like to make an automated installer and add support for Linux and MacOS.
-### 1. Extend the Jovial Assembler to new simulators
+### 4. Extend the Jovial Assembler to new simulators
   - Add support for Jamie O'Connell's HP-16C Emulator.
   - Add support for the PX16C Kit. 
     - These are both closed source, so this will require either cooperation from the developers or reverse engineering. 
