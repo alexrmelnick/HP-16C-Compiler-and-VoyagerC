@@ -1,3 +1,5 @@
+; Program taken from PPC #4747, HPCC #1075 by Valentin Albillo
+
 lbl A
 8
 wsize

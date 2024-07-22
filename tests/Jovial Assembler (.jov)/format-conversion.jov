@@ -1,4 +1,5 @@
-// Convert from HP-16C floating point to IEEE 754 single precision floating point.
+; Programs taken from Appendix D of the HP-16C manual
+; Convert from HP-16C floating point to IEEE 754 single precision floating point.
 lbl A
 2s
 HEX
@@ -75,7 +76,7 @@ sb
 gto 6
 
 
-// Convert from IEEE 754 single precision floating point to HP-16C floating point.
+; Convert from IEEE 754 single precision floating point to HP-16C floating point.
 lbl B
 hex
 2's

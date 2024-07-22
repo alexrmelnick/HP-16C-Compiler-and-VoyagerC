@@ -1,31 +1,29 @@
-# Source: https://jrpn.jovial.com/
-
-#  Program produced by JRPN 16C.
-#  Character encoding:  UTF-8
-#  Generated 2024-5-18 21:45 Eastern Daylight Time.
+#  Program produced by Alex Melnick's Jovial Assembler.
+#  Character encoding: UTF-8
+#  Generated 2024-07-22 13:10:45
 #  Program occupies 21 bytes.
 
    000 {          } 
-   001 { 43 22  D } g LBL D
-   002 {    42  3 } f UNSGN
-   003 {        4 } 4
+   001 { 43 22 D } g LBL D
+   002 {    42 3 } f UNSGN
+   003 {       4 } 4
    004 {    42 44 } f WSIZE
    005 {       23 } HEX
-   006 {        A } A
+   006 {       A } A
    007 {    44 32 } STO I
-   008 {        0 } 0
+   008 {       0 } 0
    009 {       36 } ENTER
-   010 { 43 22  0 } g LBL 0
+   010 { 43 22 0 } g LBL 0
    011 {    45 31 } RCL (i)
-   012 {    43  7 } g #B
+   012 {    43 7 } g #B
    013 {       40 } +
    014 {       34 } X<=>Y
-   015 {        0 } 0
-   016 {    43  C } g RLC
+   015 {       0 } 0
+   016 {    43 C } g RLC
    017 {       40 } +
    018 {       34 } X<=>Y
    019 {    43 23 } g DSZ
-   020 {    22  0 } GTO 0
+   020 {    22 0 } GTO 0
    021 {    43 21 } g RTN
 
 # End.

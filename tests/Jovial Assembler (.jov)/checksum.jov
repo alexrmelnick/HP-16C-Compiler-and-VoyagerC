@@ -1,3 +1,5 @@
+; Program can be found on pages 90-93 of the HP-16C manual
+
 LBL D
 UNSGN
 4
@@ -13,7 +15,7 @@ RCL (i)
 +
 X<=>Y
 0
-rlc     // Rotate left with carry, not recall
+rlc     ; Rotate left with carry, not recall
 + 
 X<=>Y
 dsz
