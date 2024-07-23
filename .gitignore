@@ -1,6 +1,11 @@
 # User-specific files
 .vscode/
 
+# Pyinstaller junk
+/build/Jovial_Assembler
+/env
+/Jovial_Assembler.spec
+
 # Documentation
 docs/HP-16C-Owners-Handbook.pdf
 docs/Crafting-Interpreters.pdf

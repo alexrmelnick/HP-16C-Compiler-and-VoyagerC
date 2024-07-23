@@ -7,6 +7,20 @@ The HP-16C is a computer scientist's calculator produced from 1982 until 1989. I
 
 This project started after I received an HP-16C for my birthday. I was absolutely fascinated by the calculator and its programming capabilities. I wanted to write programs for it, but I found the manual programming method to be very cumbersome. I looked online and found various simulators, but none of them offered a connivent way to write programs other than "typing" them in manually. One open-source project, the JRPN 16C simulator, had a human readable format for importing and exporting programs, so I decided to write an assembler targeting it first. This gave me the opportunity to learn about the HP-16C's architecture and assembly capabilities. As well, it gave me to opportunity to contribute to the open-source community.
 
+
+## Usage/Installation
+The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may work, but they have not been tested. You can use the Jovial Assembler by using the following methods. Options 2 and 3 require python to be installed on your system.:
+
+1. Run the `Jovial_Assembler.exe` file. This is a standalone executable that does not require Python to be installed. 
+  - This file is created using PyInstaller and is located in the `dist` folder. 
+  - The assembled file will be saved in the same directory as the executable.
+  - This file is only available for Windows. If you would like to run the assembler on another operating system, you will need to install Python 3.12 and run the assembler from the command line.
+  - Updated versions of the executable can be built by running the following command:
+    - `pyinstaller src/Jovial_Assembler.py --clean --onefile --path src --log-level WARN`
+2. Clone the repository and run the assembler from the command line.
+  - `python assembler.py --help` will show you the available options.
+3. **WIP** I am working on an automatic installer so you can install the assembler on your system and run it from the terminal with a simple `jovial` command.
+
 ## Roadmap
 ### 1. Understand the HP-16C Architecture **(complete)**
 - Research HP-16C Specifications:
