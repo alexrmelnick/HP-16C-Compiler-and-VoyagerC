@@ -10,7 +10,7 @@
 
 ; This program could be sped up significantly by using a faster algorithm to truncate the floats.
 ; Without a remainder or floor function, I simply iteratively subtracted by 1 until I reached a value less than 1.
-; This is very slow for large numbers, but I can't think of a way to speed it up without doing some witchcraft and switching between float and integer modes.
+; This is slow for large numbers, but I can't think of a way to speed it up without doing some witchcraft and switching between float and integer modes.
 ; It's only O(n) as opposed to the rest of the program which is O(1), but we are running on very old hardware. 
 ; I challenge someone else to find a more efficient way to do this. 
 
@@ -88,8 +88,8 @@ LBL B	; Convert from decimal degrees to sexagesimal
 	STO 3 	; R3 <- seconds
 	RTN		; End program
 
-; Algorithim
-; This alogrithim is needlessly slow, but it's all I could think of without a floor or remainder functions in float mode
+; Algorithm
+; This algorithm is needlessly slow, but it's all I could think of without a floor or remainder functions in float mode
 ;	trunc(x,0)
 ;		y = x
 ;		while (y>1)
