@@ -11,15 +11,16 @@ This project started after I received an HP-16C for my birthday. I was absolutel
 ## Usage/Installation
 The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may work, but they have not been tested. You can use the Jovial Assembler by using the following methods. Options 2 and 3 require python to be installed on your system.:
 
-1. Run the `Jovial_Assembler.exe` file. This is a standalone executable that does not require Python to be installed. 
+1. Download the `jovial.exe` file in the `dist` folder or clone the repo. 
+2. Run the `jovial.exe` file. This is a standalone executable that does not require Python to be installed. 
   - This file is created using PyInstaller and is located in the `dist` folder. 
   - The assembled file will be saved in the same directory as the executable.
   - This file is only available for Windows. If you would like to run the assembler on another operating system, you will need to install Python 3.12 and run the assembler from the command line.
   - Updated versions of the executable can be built by running the following command:
-    - `pyinstaller src/Jovial_Assembler.py --clean --onefile --path src --log-level WARN`
-2. Clone the repository and run the assembler from the command line.
-  - `python assembler.py --help` will show you the available options.
-3. **WIP** I am working on an automatic installer so you can install the assembler on your system and run it from the terminal with a simple `jovial` command.
+    - `pyinstaller src/Jovial_Assembler.py --clean --onefile --path src --name jovial
+3. If you want to run the assembler from the command line using the `jovial` with arguments, add the folder containing the `jovial.exe` file to your system's PATH variable.
+  - Follow [these instructions here if you are unfamiliar with this process](https://stackoverflow.com/questions/4822400/register-an-exe-so-you-can-run-it-from-any-command-line-in-windows).
+
 
 ## Roadmap
 ### 1. Understand the HP-16C Architecture **(complete)**

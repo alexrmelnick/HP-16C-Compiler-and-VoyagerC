@@ -2,9 +2,9 @@
 .vscode/
 
 # Pyinstaller junk
-/build/Jovial_Assembler
+/build/jovial
 /env
-/Jovial_Assembler.spec
+/jovial.spec
 
 # Documentation
 docs/HP-16C-Owners-Handbook.pdf
