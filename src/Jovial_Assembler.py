@@ -79,6 +79,8 @@ def main():
     # Output the assembled code in the desired format
     if(calculator_state.output_mode == "16c"):
         output_16c(calculator_state)
+    elif(calculator_state.output_mode == "txt"):
+        output_txt(calculator_state)
     elif(calculator_state.output_mode == "pdf"):
         output_pdf(calculator_state)
 
@@ -595,9 +597,7 @@ def is_valid_float(token, calculator_state):
             mantissa = mantissa[1:]
         if exponent[0] == "-":
             exponent = exponent[1:]
-        # if not is_valid_integer(mantissa, calculator_state):
-        #     if is_valid_float_DEBUG: print("Invalid mantissa: ", mantissa)
-        #     return False
+
         if DEBUG: print("Checking if exponent: ", exponent, " is valid.")
         if not is_valid_integer(exponent, calculator_state):
             if is_valid_float_DEBUG: print("Invalid exponent: ", exponent)
@@ -736,8 +736,13 @@ def output_16c(calculator_state):
     # Close the output file
     output_file.close()
 
+def output_txt(calculator_state):
+    # TODO: WRITE ME
+    print("WIP")
 
 def output_pdf(calculator_state):
+    #TODO Include calculator listings
+    
     # Parameters for the PDF
     font_name = "Dot Matrix" # Using a custom font for the program listing for a retro look
     font_path = "fonts/Dot-Matrix-Typeface-master/Dot Matrix Regular.TTF" # Thank you Daniel Hark for the font!

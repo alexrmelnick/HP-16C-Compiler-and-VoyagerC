@@ -38,18 +38,19 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
 - Test Assembler:
   - Write assembly programs to test the assembler’s functionality.
   - Verify that the generated keystroke sequences produce the expected results.
-### 3. Write an installer for the Jovial Assembler **(in progress)**
-  - Write a script to install the Jovial Assembler on a user's system.
-    - Currently it can be manually installed on Windows
-    - I would like to make an automated installer and add support for Linux and MacOS.
-### 4. Extend the Jovial Assembler to new simulators
+### 3. Write an installer for the Jovial Assembler **(complete for now)**
+  - I have a working executable that can be run on Windows. 
+  - You can add it to your path to run it from the command line.
+  - I hope to one day make a proper installer for the program so this is automated.
+### 4. Extend the Jovial Assembler to new simulators ** (in progress)**
   - Add support for Jamie O'Connell's HP-16C Emulator.
+### 5. Future hopes and dreams
   - Add support for the PX16C Kit. 
-    - These are both closed source, so this will require either cooperation from the developers or reverse engineering. 
+    - This is closed source, so this will require either cooperation from the developer or reverse engineering. 
 
 ### Acknowledgements
 
-This project designed to work with the [JRPN HP-16C Simulator](https://jrpn.jovial.com/) developed by William Foote.
+This project designed to work with the [JRPN HP-16C Simulator](https://jrpn.jovial.com/) developed by William Foote and the [HP16C Emulator](http://www.hp16c.org/) developed by Jamie O'Connell. 
 
 ### License
 
