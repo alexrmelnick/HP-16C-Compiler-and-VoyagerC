@@ -119,7 +119,7 @@ def parse_number(token, calculator_state, input_line_number):
         token = token[1:]
 
     # Check if the number is a floating point number
-    if token.find(".") != -1:
+    if token.find(".") != -1 or calculator_state.sign_mode == 3:
         is_float = True
 
         # Check if we need to change the sign mode to floating point mode
@@ -145,14 +145,14 @@ def parse_number(token, calculator_state, input_line_number):
                 negative_exponent = True
                 exponent = exponent[1:]
 
-        # Does the mantissa contain multiple digits?
-        if len(mantissa) > 1:
-            multiple_digits = True
-        
-        # Does the exponent contain multiple digits?
-        if len(exponent) > 1:
-            multiple_digits_exponent = True
-        
+            # Does the mantissa contain multiple digits?
+            if len(mantissa) > 1:
+                multiple_digits = True
+            
+            # Does the exponent contain multiple digits?
+            if len(exponent) > 1:
+                multiple_digits_exponent = True
+            
         # We are ready to print the keypresses
 
     else: # The number is an integer
@@ -279,7 +279,7 @@ def parse_number(token, calculator_state, input_line_number):
                     calculator_state.program.append(instr(digit, None, calculator_state))
                     calculator_state.program_length += 1
 
-    if(change_mode or change_base): # Switching from float to integer mode
+    elif(change_mode or change_base): # Switching from float to integer mode
                     #  OR already in integer mode, but changing the base
         logging.debug(f"Changing mode to: {token_base}")
         calculator_state.program.append(instr(token_base.upper(), None, calculator_state))
@@ -379,7 +379,10 @@ def is_valid_float(token, calculator_state):
         if not is_valid_integer(exponent, calculator_state):
             logging.debug("Invalid exponent: {exponent}")
             return False
-    num = float(mantissa) ** float(exponent)
+        num = float(mantissa) ** float(exponent)
+    else:
+        num = float(token)
+
     if num > 9.999999999 * 10**99 or num < -9.999999999 * 10**99:
         logging.debug("Number out of range: {num}")
         return False

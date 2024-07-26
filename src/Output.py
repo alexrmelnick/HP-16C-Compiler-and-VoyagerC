@@ -69,7 +69,7 @@ def output_txt(calculator_state):
     output_file.write(" 000 -           | \n")
 
     for line_number, line in enumerate(calculator_state.program):
-        logging.debug(f"DEBUG: line no. {line_number+1}. Argument: {line.has_argument}. Modifier: {line.has_modifier}")
+        # logging.debug(f"Line no. {line_number+1}. Argument: {line.has_argument}. Modifier: {line.has_modifier}")
 
         line_number_str = str(line_number + 1).zfill(3)
 
@@ -84,7 +84,7 @@ def output_txt(calculator_state):
         else:
             output_line = f" {line_number_str} - {line.instruction_position:10}| {line.instruction}\n"
         
-        logging.debug(f"Writing line: {output_line}")
+        logging.info(f"Writing line: | {output_line.strip()}")
 
         output_file.write(output_line)
     
@@ -97,11 +97,9 @@ def output_txt(calculator_state):
 
 # For a printable pdf
 def output_pdf(calculator_state):
-    #TODO Include calculator listings
-
     # Parameters for the PDF
     font_name = "Dot Matrix" # Using a custom font for the program listing for a retro look
-    line_spacing = 20  # Line spacing for the program listing
+    line_spacing = 16  # Line spacing for the program listing
 
     # Determine if we are running in a PyInstaller bundle
     if hasattr(sys, '_MEIPASS'):
@@ -109,10 +107,10 @@ def output_pdf(calculator_state):
     else:
         base_path = os.path.abspath(".")
 
-    font_path = os.path.join(base_path, 'fonts\Dot-Matrix-Typeface-master\Dot Matrix Regular.TTF')
+    font_path = os.path.join(base_path, 'fonts\hdad-dotrice-1.001\dotrice-condensed.ttf')
     c = canvas.Canvas(calculator_state.output_file_name + ".pdf", pagesize=LETTER)
     pdfmetrics.registerFont(TTFont(font_name, font_path))
-    c.setFont(font_name, 12)  # Using Times-Roman font with size 12 because this is meant to be printed
+    c.setFont(font_name, 12)  
     heading_y_position = 792 - 72  # 72 points (1 inch) from the top
 
     # Heading and Stats
@@ -145,7 +143,7 @@ def output_pdf(calculator_state):
     # Iterate over the program lines and add them to the PDF
     for line_number, line in enumerate(calculator_state.program, start=1):
         x_position, y_position = columns[current_column]
-        line_content = f"{line_number-1:03}: {line}"  # Format line content
+        line_content = f"{line_number:03}: {line}"  # Format line content
         c.drawString(x_position, y_position, line_content)
         y_position -= line_spacing  # Move down for the next line
         columns[current_column] = (x_position, y_position)  # Update the y position in the columns array

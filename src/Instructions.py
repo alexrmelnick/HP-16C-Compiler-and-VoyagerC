@@ -73,15 +73,27 @@ class instr:
 
 
     # Methods
-    def __str__(self): # For printing to pdf
+    # def __str__(self): # For printing to pdf
+    #     if self.has_modifier and self.has_argument:
+    #         return f"{self.modifier} {self.instruction} {self.argument}"
+    #     elif self.has_modifier:
+    #         return f"{self.modifier} {self.instruction}"
+    #     elif self.has_argument:
+    #         return f"{self.instruction} {self.argument}"
+    #     else:
+    #         return f"{self.instruction}"
+    def __str__(self):
         if self.has_modifier and self.has_argument:
-            return f"{self.modifier} {self.instruction} {self.argument}"
+            output_line = f"{self.modifier_position},{self.instruction_position:>2}, {self.argument_position:3}| {self.modifier} {self.instruction} {self.argument}"
         elif self.has_modifier:
-            return f"{self.modifier} {self.instruction}"
+            output_line = f"{self.modifier_position} {self.instruction_position:7}| {self.modifier} {self.instruction}"
         elif self.has_argument:
-            return f"{self.instruction} {self.argument}"
+            output_line = f"{self.instruction_position} {self.argument_position:7}| {self.instruction} {self.argument}"
         else:
-            return f"{self.instruction}"
+            output_line = f"{self.instruction_position:10}| {self.instruction}"
+
+        logging.debug(output_line)
+        return output_line
 
     def check_for_instruction(self, mnemonic):
         mnemonic = mnemonic.lower()
@@ -186,5 +198,5 @@ class instr:
             self.argument_position = '.' + chr(number - 26 + ord('A'))
         else:
             logging.critical("Error: Invalid register index. Must be between 0 and 31")
-            logging.critical(f"Line: {self.instruction, self.argument} (output line number {self.line_number})")
+            logging.critical(f"Line: {self.instruction, self.argument}")
             sys.exit(1)

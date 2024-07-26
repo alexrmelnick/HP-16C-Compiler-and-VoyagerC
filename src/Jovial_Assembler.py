@@ -90,6 +90,10 @@ def main():
     elif(calculator_state.output_mode == "pdf"):
         output_pdf(calculator_state)
 
+    logging.debug("Registers used:")
+    for reg in calculator_state.registers_used:
+        logging.debug(f"Register {reg} used.")
+
     # Return some useful information to the user
     print(f"Assembly complete! The program has been output to {calculator_state.output_file_name}.{calculator_state.output_mode}")    
     print("Stats:".ljust(80, '.'))
@@ -97,10 +101,6 @@ def main():
     print(f"Program length: {calculator_state.program_length} Bytes")
     print(f"Registers used: {len(calculator_state.registers_used)} registers of {calculator_state.available_registers} available")
     print(f"Memory partition @ {calculator_state.memory_partition} Bytes")
-
-    logging.debug("Registers used:")
-    for reg in calculator_state.registers_used:
-        logging.debug(f"DEBUG: Register {reg} used.")
 
 if __name__ == "__main__":
     main()
