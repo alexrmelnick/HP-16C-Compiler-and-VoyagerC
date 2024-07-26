@@ -5,6 +5,7 @@ from Utils import is_number
 
 from DEBUG import *
 
+# FIXME: Fix a bug that causes this to switch to decimal mode
 
 def parse_line(line, input_line_number, calculator_state):
     # Do some basic parsing of the line
