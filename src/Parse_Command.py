@@ -10,13 +10,13 @@ def parse_interactive(calculator_state):
         print("Invalid file type. Please enter a .jov file.")
         input_file_name = input("File name: ")
     
-    print("Please enter the name of the output file with the desired extension format (.pdf/.16c).")
+    print("Please enter the name of the output file with the desired extension format (.pdf/.16c/.txt).")
     temp = input("Output file name: ").strip()
     # Extract file extension and file name
     output_mode = temp[-4:].lower() if len(temp) > 4 else ""
     output_file_name = temp[:-4] if len(temp) > 4 else ""
-    while output_mode not in [".16c", ".pdf"]:
-        print("Invalid output file name. Please enter either a file with a '.16c' or '.pdf' extension.")
+    while output_mode not in [".16c", ".pdf", ".txt"]:
+        print("Invalid output file name. Please enter either a file with a '.16c','.pdf', or '.txt' extension.")
         temp = input("Output file name: ").strip()
         output_mode = temp[-4:].lower() if len(temp) > 4 else ""
         output_file_name = temp[:-4] if len(temp) > 4 else ""

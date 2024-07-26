@@ -1,3 +1,13 @@
+; HP-16C Manual pages 78-80
+; Settings: 0-64-0000
+; Usage:
+; R0 <- 10000000000000000000
+; Y <- 12345678987654
+; X <- 987654321234567
+; GSB 1
+; Display: "19326320 .d"
+
+
 lbl 1
 unsgn
 DBLx

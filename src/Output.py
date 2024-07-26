@@ -1,4 +1,7 @@
+import os
+from Calculator_State import *
 from DEBUG import DEBUG
+from DEBUG import output_DEBUG
 
 from datetime import datetime
 
@@ -7,7 +10,10 @@ from reportlab.lib.pagesizes import LETTER
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
+# For the JRPN Simulator
 def output_16c(calculator_state):
+    # FIXME: fix program listing spacing 
+
     # Update the state of the calculator
     calculator_state.update_memory()
     calculator_state.update_program_length()
@@ -46,6 +52,7 @@ def output_16c(calculator_state):
     # Close the output file
     output_file.close()
 
+# For the HP16C Emulator
 def output_txt(calculator_state):
     # TODO: WRITE ME
     # Update the state of the calculator
@@ -53,18 +60,58 @@ def output_txt(calculator_state):
     calculator_state.update_program_length()
     
     # Output the assembled code in the .16c format
-    output_file = open(calculator_state.output_file_name + ".16c", "w") # Open the file in write mode
+    output_file = open(calculator_state.output_file_name + ".txt", "w") # Open the file in write mode
 
+    # Header
+    output_file.write(f"HP16C Program Listing: {os.path.basename(calculator_state.input_file_name)} \n\n")
 
+    # Program
+    output_file.write(" Program Code    | Command Text\n")
+    output_file.write(" ================================= \n")
+    output_file.write(" 000 -           | \n")
+
+    for line_number, line in enumerate(calculator_state.program):
+        if output_DEBUG: print(f"DEBUG: line no. {line_number+1}. Argument: {line.has_argument}. Modifier: {line.has_modifier}")
+
+        line_number_str = str(line_number + 1).zfill(3)
+
+        if line.has_modifier and line.has_argument:
+            output_line = f" {line_number_str} - {line.modifier_position},{line.instruction_position:>2}, {line.argument_position:3}| [{line.modifier}][{line.instruction}] {line.argument}\n"
+        elif line.has_modifier:
+            output_line = f" {line_number_str} - {line.modifier_position} {line.instruction_position:7}| [{line.modifier}][{line.instruction}] \n"
+        elif line.has_argument:
+            output_line = f" {line_number_str} - {line.instruction_position} {line.argument_position:7}| [{line.instruction}] {line.argument}\n"
+        elif line.instruction_or_number: # Is instruction
+            output_line = f" {line_number_str} - {line.instruction_position:10}| [{line.instruction}]\n"
+        else:
+            output_line = f" {line_number_str} - {line.instruction_position:10}| {line.instruction}\n"
+        
+        if DEBUG: print("Writing line: ", output_line)
+
+        output_file.write(output_line)
     
+    output_file.write(" ================================= \n\n")
+
+    # Close the output file
+    output_file.close()
+
+
+
+# For a printable pdf
 def output_pdf(calculator_state):
     #TODO Include calculator listings
 
     # Parameters for the PDF
     font_name = "Dot Matrix" # Using a custom font for the program listing for a retro look
-    font_path = "fonts/Dot-Matrix-Typeface-master/Dot Matrix Regular.TTF" # Thank you Daniel Hark for the font!
     line_spacing = 20  # Line spacing for the program listing
 
+    # Determine if we are running in a PyInstaller bundle
+    if hasattr(sys, '_MEIPASS'):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(".")
+
+    font_path = os.path.join(base_path, 'fonts\Dot-Matrix-Typeface-master\Dot Matrix Regular.TTF')
     c = canvas.Canvas(calculator_state.output_file_name + ".pdf", pagesize=LETTER)
     pdfmetrics.registerFont(TTFont(font_name, font_path))
     c.setFont(font_name, 12)  # Using Times-Roman font with size 12 because this is meant to be printed
@@ -72,7 +119,7 @@ def output_pdf(calculator_state):
 
     # Heading and Stats
     header = [
-        f"Program Listing for {calculator_state.input_file_name} for the HP-16C Calculator",
+        f"Program Listing for {os.path.basename(calculator_state.input_file_name)} for the HP-16C Calculator",
         f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} with the Jovial Assembler by Alex Melnick",
         f"Calculator status (at end of program): {calculator_state.sign_mode} mode, {calculator_state.word_size}-bit words, {calculator_state.base} base",
         f"Program length: {calculator_state.program_length} Bytes",

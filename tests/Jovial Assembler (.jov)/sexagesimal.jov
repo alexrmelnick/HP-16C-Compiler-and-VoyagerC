@@ -1,3 +1,5 @@
+; TODO: Fix a bug that causes this to switch to decimal mode
+
 ; These programs convert floating point decimal degrees to/from sexagesimal
 ; Another computer programmer's calculator, the Casio CM-100, had functions for this built-in and we cannot let another calculator upstage our beloved HP-16C. 
 ; Lets write two programs to implement these functionalities!
