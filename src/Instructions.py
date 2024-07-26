@@ -1,9 +1,9 @@
 import sys
+import logging
 
 from Calculator_State import CalculatorState
 from Utils import is_number
 from Instructions_Data import *
-from DEBUG import *
 
 # Class definition for an input object
 # This object will be used to store the input data
@@ -26,37 +26,8 @@ class instr:
     argument_position = None # Position of the argument in the instruction
 
 
-
-    # Constructor
-    # def __init__(self, instr, calculator_state):
-    #     self.calculator_state = calculator_state
-    #     self.has_argument = False
-        
-    #     if(is_number(instr)):
-    #         self.instruction_or_number = False
-    #         self.has_modifier = False
-    #     else:
-    #         self.instruction_or_number = True
-
-        
-    #     if(self.instruction_or_number): # If the token is an instruction            
-    #         # Check if the instruction has a modifier
-    #         if(self.check_for_modifier() is not None):
-    #             self.has_modifier = True
-    #             self.modifier = self.check_for_modifier()
-
-    #         self.instruction = self.check_for_instruction(instr) # Shouldn't matter than this is a string
-    #         self.instruction_position = self.get_instruction_position()
-
-    #     else: # If the token is a number
-    #         self.instruction = instr
-    #         self.instruction_position = instr
-    #     if(self.has_modifier):
-    #         self.modifier_position = self.get_modifier_position()
-
-
     def __init__(self, instr, arg, calculator_state):
-        if DEBUG: print("Creating instruction object with instruction: ", instr, " and argument: ", arg)
+        logging.debug(f"Creating instruction object with instruction: {instr} and argument: {arg}")
         
         self.calculator_state = calculator_state
         self.has_argument = False
@@ -72,17 +43,17 @@ class instr:
 
         if(self.argument is None):
             if(is_number(instr)): # If the token is a number
-                if DEBUG: print("Validating number: ", instr, " with no argument and getting position.")
+                logging.debug(f"Validating number: {instr} with no argument and getting position.")
                 self.instruction_or_number = False
                 self.has_modifier = False
                 self.instruction = instr
                 self.instruction_position = instr
             else: # If the token is an instruction
-                if DEBUG: print("Validating instruction: ", instr, " with no argument and getting position.")
+                logging.debug(f"Validating instruction: {instr} with no argument and getting position.")
                 self.instruction = self.check_for_instruction(instr)
                 self.instruction_position = self.get_instruction_position()
         else: # If the token is an instruction with an argument
-            if DEBUG: print("Validating instruction: ", instr, " with argument: ", arg, " and getting position.")
+            logging.debug(f"Validating instruction: {instr} with argument: {arg} and getting position.")
             self.instruction = self.check_for_instruction(instr)
             self.instruction_position = self.get_instruction_position()
             self.instruction_or_number = True
@@ -98,7 +69,7 @@ class instr:
         if(self.has_modifier):
             self.modifier_position = self.get_modifier_position()
 
-        if DEBUG: print("Instruction object created with instruction: ", self.instruction, " and argument: ", self.argument, " and modifier: ", self.modifier)
+        logging.debug(f"Instruction object created with instruction: {self.instruction} and argument: {self.argument} and modifier: {self.modifier}")
 
 
     # Methods
@@ -115,10 +86,10 @@ class instr:
     def check_for_instruction(self, mnemonic):
         mnemonic = mnemonic.lower()
         if mnemonic in mnemonic_to_instr:
-            if DEBUG: print("Mnemonic: ", mnemonic, " is valid. Instruction: ", mnemonic_to_instr[mnemonic])
+            logging.debug(f"Mnemonic: {mnemonic} is valid. Instruction: {mnemonic_to_instr[mnemonic]}")
             return mnemonic_to_instr[mnemonic]
         else:
-            print("Error: Invalid mnemonic. ", mnemonic, " is not a valid mnemonic.")
+            logging.critical(f"Error: Invalid mnemonic. {mnemonic} is not a valid mnemonic.")
             sys.exit(1)
 
     def check_for_modifier(self):
@@ -132,43 +103,43 @@ class instr:
             return None
 
     def get_instruction_position(self):
-        if DEBUG: print("Getting instruction position for: ", self.instruction, " (with argument: ", self.argument, ")")
+        logging.debug(f"Getting instruction position for: {self.instruction} (with argument: {self.argument})")
         if self.instruction_or_number == False: # If the token is a number
             return self.instruction
         elif self.instruction in button_positions:
             return button_positions[self.instruction]
         elif self.instruction == "SHOW":
-            if DEBUG: print("SHOW instruction: ", self.instruction, self.argument)
+            logging.debug(f"SHOW instruction: {self.instruction}, {self.argument}")
             if self.argument == "hex": return 23
             elif self.argument == "dec": return 24
             elif self.argument == "oct": return 25
             elif self.argument == "bin": return 26
             else:
-                print("Failed to find instruction position - SHOW passed with invalid argument")
+                logging.critical("Failed to find instruction position - SHOW passed with invalid argument")
                 sys.exit(1)
         elif self.instruction == "CLEAR":
             if self.argument == "reg": return 34
             else: 
-                print("Failed to find instruction position - CLEAR passed with invalid argument")
+                logging.critical("Failed to find instruction position - CLEAR passed with invalid argument")
                 sys.exit(1)
         else:
             raise ValueError("Failed to find instruction position")
     
     def get_argument_position(self):
-        if get_argument_position_DEBUG: print("Getting argument position for: ", self.argument)
+        logging.debug(f"Getting argument position for: {self.argument}")
         if is_number(self.argument):
-            if get_argument_position_DEBUG: print("Argument is a number")
+            logging.debug("Argument is a number")
             if self.instruction == 'STO' or self.instruction == 'RCL':
-                if get_argument_position_DEBUG: print("Returning argument position for a register: ", self.argument)
+                logging.debug(f"Returning argument position for a register: {self.argument}")
                 self.convert_index()
             if self.argument in 'abcdef':
-                if get_argument_position_DEBUG: print("Returning argument position for a hexadecimal digit: ", self.argument.upper())
+                logging.debug(f"Returning argument position for a hexadecimal digit: {self.argument.upper()}")
                 return button_positions[self.argument.upper()]
             else:
-                if get_argument_position_DEBUG: print("Returning argument position for digit: ", self.argument)
+                logging.debug(f"Returning argument position for digit: {self.argument}")
                 return self.argument
         elif self.argument == 'hex' or self.argument == 'dec' or self.argument == 'oct' or self.argument == 'bin' or self.argument == 'reg':
-            if get_argument_position_DEBUG: print("Special instruction argument: ", self.instruction, self.argument)
+            logging.debug(f"Special instruction argument: {self.instruction}, {self.argument}")
             pos = button_positions[self.argument.upper()]
             if self.instruction == 'SHOW':
                 self.instruction = 'SHOW ' + self.argument.upper()
@@ -177,7 +148,7 @@ class instr:
                 self.instruction = 'CLEAR ' + self.argument.upper()
                 self.instruction_position = pos
             else:
-                raise ValueError("Reached an invalid special instruction argument - this should not happen")
+                logging.critical("Reached an invalid special instruction argument - this should not happen")
             self.argument = None
             self.has_argument = False
             return None
@@ -185,12 +156,10 @@ class instr:
             self.argument = 'I'
             return button_positions[self.argument]
         elif self.argument in button_positions:
-            if get_argument_position_DEBUG: print("Returning argument position: ", button_positions[self.argument])
+            logging.debug(f"Returning argument position: {button_positions[self.argument]}")
             return button_positions[self.argument]
-        elif DEBUG:
-            raise ValueError("Failed to find argument position")
         else:
-            print("Failed to find argument position")
+            logging.critical("Failed to find argument position")
             sys.exit(1)
     
     def get_modifier_position(self):
@@ -216,6 +185,6 @@ class instr:
             self.argument = '1' + chr(number - 26 + ord('A'))
             self.argument_position = '.' + chr(number - 26 + ord('A'))
         else:
-            print("Error: Invalid register index. Must be between 0 and 31")
-            print(f"Line: {self.instruction, self.argument} (output line number {self.line_number})")
+            logging.critical("Error: Invalid register index. Must be between 0 and 31")
+            logging.critical(f"Line: {self.instruction, self.argument} (output line number {self.line_number})")
             sys.exit(1)

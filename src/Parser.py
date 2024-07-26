@@ -1,9 +1,9 @@
+import logging
 import sys
+
 from Instructions import instr
 from Instructions_Data import mnemonic_to_instr, instructions_with_arguments
 from Utils import is_number
-
-from DEBUG import *
 
 # FIXME: Fix a bug that causes this to switch to decimal mode
 
@@ -32,72 +32,72 @@ def parse_line(line, input_line_number, calculator_state):
     tokens = line.split()
 
     # Check if the token is an instruction or a number
-    if DEBUG: print("Parsing tokens: ", tokens)
+    logging.debug(f"Parsing tokens: {tokens}")
     if is_valid_instruction(tokens[0]):
         parse_instruction(tokens, input_line_number, calculator_state)
     # Check if the token is a number
     elif is_number(tokens[0]):
         parse_number(tokens[0], calculator_state, input_line_number)
     else:
-        print("Invalid line: ", line, "(line number )", input_line_number)
+        logging.critical(f"Invalid line: {line} (line number {input_line_number})")
         sys.exit(1)
 
 
 def parse_instruction(tokens, input_line_number, calculator_state):
-    if DEBUG: print("Parsing instruction: ", tokens[0])
+    logging.debug(f"Parsing instruction: {tokens[0]}")
     has_argument = False
     if (len(tokens) == 2):
-        if DEBUG: print("Token: ", tokens[0], " has an argument: ", tokens[1])
+        logging.debug(f"Token: {tokens[0]} has an argument: {tokens[1]}")
         has_argument = True
     else:
-        if DEBUG: print("Token: ", tokens[0], " has no argument.")
+        logging.debug(f"Token: {tokens[0]} has no argument.")
 
     # Check if the token is a valid instruction with a valid argument
     if(is_valid_instruction(tokens[0])):
         if(has_argument and is_valid_argument(tokens[0], tokens[1])):
-            if DEBUG: print("Instr: ", tokens[0], " has a valid with argument: ", tokens[1])
+            logging.debug(f"Instr: {tokens[0]} has a valid with argument: {tokens[1]}")
             
             # Perform system checks
             if tokens[0] == 'sto' or tokens[0] == 'rcl':
                 if tokens[1] != 'i' and tokens[1] != '(i)':
                     if int(tokens[1]) > 31:
-                        print("Error - Out of direct memory range:")
-                        print("Addresses must be between 0 and 31 for direct addressing.")
-                        print("Line: " + tokens + " (line number: " + input_line_number + " )")
+                        logging.critical("Error - Out of direct memory range:")
+                        logging.critical("Addresses must be between 0 and 31 for direct addressing.")
+                        logging.critical(f"Line: {tokens} (line number: {input_line_number})")
                         sys.exit(1)
                     elif(int(tokens[1])*calculator_state.word_size/8 >= calculator_state.memory_partition):
-                        print("Error - Out of memory range:")
-                        print("Addresses must be within the memory partition.")
-                        print("Line: " + tokens + " (line number: " + input_line_number + " )")
+                        logging.critical("Error - Out of memory range:")
+                        logging.critical("Addresses must be within the memory partition.")
+                        logging.critical(f"Line: {tokens} (line number: {input_line_number})")
                         sys.exit(1)
                     else:
                         if int(tokens[1]) not in calculator_state.registers_used:
-                            if DEBUG: print("Adding register: ", tokens[1], " to the list of registers used.")
+                            logging.debug(f"Adding register: {tokens[1]} to the list of registers used.")
                             calculator_state.registers_used.append(int(tokens[1]))
                 
                 calculator_state.update_memory()
 
-            if DEBUG: print("Adding instruction: ", tokens[0], " with argument: ", tokens[1], " to the program.")
+            logging.info(f"Adding instruction: {tokens[0]} with argument: {tokens[1]} to the program.")
             calculator_state.program.append(instr(tokens[0], tokens[1], calculator_state))
         elif (has_argument and not is_valid_argument(tokens[0], tokens[1])):
-            print("Error - Invalid argument:")
-            print(f"Argument: {tokens[1]} is not valid for instruction: {tokens[0]}.")
-            print(f"Line: {tokens} (line number: {input_line_number})")
+            logging.critical("Error - Invalid argument:")
+            logging.critical(f"Argument: {tokens[1]} is not valid for instruction: {tokens[0]}.")
+            logging.critical(f"Line: {tokens} (line number: {input_line_number})")
             sys.exit(1)
         elif (not has_argument and tokens[0] in instructions_with_arguments):
-            print("Error - Missing argument:")
-            print(f"Instruction: {tokens[0]} requires an argument.")
-            print(f"Line: {tokens} (line number: {input_line_number})")
+            logging.critical("Error - Missing argument:")
+            logging.critical(f"Instruction: {tokens[0]} requires an argument.")
+            logging.critical(f"Line: {tokens} (line number: {input_line_number})")
             sys.exit(1)
         else:
             if tokens[0] == 'hex' or tokens[0] == 'dec' or tokens[0] == 'oct' or tokens[0] == 'bin': 
-                if DEBUG: print("Changing base to: ", tokens[0])
+                logging.debug(f"Changing base to: {tokens[0]}")
                 calculator_state.update_base(tokens[0])
 
-            if DEBUG: print("Adding instruction: ", tokens[0], " with no argument to the program.")
+            logging.info(f"Adding instruction: {tokens[0]} with no argument to the program.")
             calculator_state.program.append(instr(tokens[0], None, calculator_state))
     else:
-        print(f"Invalid instruction: {tokens[0]} (line number {input_line_number})")
+        logging.critical(f"Invalid instruction: {tokens[0]} (line number {input_line_number})")
         sys.exit(1)
 
 
@@ -134,7 +134,7 @@ def parse_number(token, calculator_state, input_line_number):
 
         # Check if the number is valid
         if not is_valid_float(token, calculator_state):
-            print("Invalid floating point number: " + token + "(line number )"+ calculator_state.input_line_number)
+            logging.critical("Invalid floating point number: " + token + "(line number )"+ calculator_state.input_line_number)
             sys.exit(1)
 
         # We have a valid floating point number
@@ -180,7 +180,7 @@ def parse_number(token, calculator_state, input_line_number):
             token_base = calculator_state.base
 
         if not is_valid_integer(token, calculator_state):
-            print(f"Invalid integer: {token} (line number {input_line_number})")
+            logging.critical(f"Invalid integer: {token} (line number {input_line_number})")
             sys.exit(1)
 
         if token_base.lower() != calculator_state.base.lower():
@@ -281,7 +281,7 @@ def parse_number(token, calculator_state, input_line_number):
 
     if(change_mode or change_base): # Switching from float to integer mode
                     #  OR already in integer mode, but changing the base
-        if DEBUG: print("Changing mode to: ", token_base)
+        logging.debug(f"Changing mode to: {token_base}")
         calculator_state.program.append(instr(token_base.upper(), None, calculator_state))
         calculator_state.program_length += 1
 
@@ -334,13 +334,13 @@ def is_valid_integer(token, calculator_state):
                 return False
 
     # Is the number within the range of the word size?
-    if DEBUG: print("Token: ", token, " Base: ", calculator_state.base_numeric)
+    logging.debug(f"Token: {token} Base: {calculator_state.base_numeric}")
     try:
         num = int(token, calculator_state.base_numeric)
     except ValueError:
         # Handle the error, for example, by setting num to None or logging an error message
         num = None
-        print(f"Error: '{token}' is not a valid number in base {calculator_state.base_numeric}")
+        logging.critical(f"Error: {token} is not a valid number in base {calculator_state.base_numeric}")
         return False
     if num < 0:
         return False
@@ -361,7 +361,7 @@ def is_valid_float(token, calculator_state):
         if char == "e":
             contains_e = True
         if char not in acceptable_float_chars:
-            if is_valid_float_DEBUG: print("Invalid character: ", char)
+            logging.debug("Invalid character: {char}")
             return False
 
 
@@ -375,16 +375,16 @@ def is_valid_float(token, calculator_state):
         if exponent[0] == "-":
             exponent = exponent[1:]
 
-        if DEBUG: print("Checking if exponent: ", exponent, " is valid.")
+        logging.debug("Checking if exponent: {exponent} is valid.")
         if not is_valid_integer(exponent, calculator_state):
-            if is_valid_float_DEBUG: print("Invalid exponent: ", exponent)
+            logging.debug("Invalid exponent: {exponent}")
             return False
     num = float(mantissa) ** float(exponent)
     if num > 9.999999999 * 10**99 or num < -9.999999999 * 10**99:
-        if is_valid_float_DEBUG: print("Number out of range: ", num)
+        logging.debug("Number out of range: {num}")
         return False
     
-    if is_valid_float_DEBUG: print("Valid floating point number: ", token)
+    logging.debug("Valid floating point number: {token}")
     return True
 
 
@@ -397,17 +397,17 @@ def is_valid_instruction(instr):
 
 
 def is_valid_argument(instr, arg):
-    if DEBUG: print("Checking if argument: ", arg, " is valid for instruction: ", instr)
+    logging.info("Checking if argument: {arg} is valid for instruction: {instr}")
     
     # Check if the instruction takes an argument
     if instr not in instructions_with_arguments:
-        if is_valid_argument_DEBUG: print("Instruction: ", instr, " does not take an argument.")
+        logging.debug("Instruction: {instr} does not take an argument.")
         return False
-    if is_valid_argument_DEBUG: print("Instruction: ", instr, " takes an argument.")
+    logging.debug("Instruction: {instr} takes an argument.")
 
     # Check if the argument is valid
     if(instr == 'sto' or instr == 'rcl'):
-        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a STO or RCL instruction.")
+        logging.debug("Checking if argument: {arg} is valid for a STO or RCL instruction.")
         
         # check if the argument is I or (i)
         if(arg == 'i' or arg == '(i)'):
@@ -417,17 +417,17 @@ def is_valid_argument(instr, arg):
         else:
             return False
     elif(instr == 'sf' or instr == 'cf' or instr == 'f?'):
-        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a SF, CF, or F? instruction.")
+        logging.debug("Checking if argument: {arg} is valid for a SF, CF, or F? instruction.")
         
         if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 5):
             return True
         else:
             return False
     elif(instr == 'sb' or instr == 'cb' or instr == 'b?'):
-        print("ERROR: Setting/Clearing/Testing a bit does not take an argument")
+        logging.critical("ERROR: Setting/Clearing/Testing a bit does not take an argument")
         sys.exit(1)
     elif(instr == 'lbl' or instr == 'gto' or instr == 'gsb'):
-        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a LBL, GTO, or GSB instruction.")
+        logging.debug("Checking if argument: {arg} is valid for a LBL, GTO, or GSB instruction.")
         
         if(arg.isdigit() and int(arg) >= 0 and int(arg) < 16):
             return True
@@ -438,14 +438,14 @@ def is_valid_argument(instr, arg):
         else:
             return False
     elif(instr == 'show'):
-        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a SHOW instruction.")
+        logging.debug("Checking if argument: {arg} is valid for a SHOW instruction.")
         
         if(arg == 'hex' or arg == 'dec' or arg == 'oct' or arg == 'bin'):
             return True
         else:
             return False
     elif(instr == 'float'):
-        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a FLOAT instruction.")
+        logging.debug("Checking if argument: {arg} is valid for a FLOAT instruction.")
         
         if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 9):
             return True
@@ -454,7 +454,7 @@ def is_valid_argument(instr, arg):
         else:
             return False
     elif(instr == 'window'):
-        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a WINDOW instruction.")
+        logging.debug("Checking if argument: {arg} is valid for a WINDOW instruction.")
         
         # This doesn't exclude all invalid arguments, but this instruction will be used so rarely that it doesn't matter
         if(arg.isdigit() and int(arg) >= 0 and int(arg) <= 7):
@@ -462,13 +462,13 @@ def is_valid_argument(instr, arg):
         else:
             return False
     elif(instr == 'clear'):
-        if is_valid_argument_DEBUG: print("Checking if argument: ", arg, " is valid for a CLEAR instruction.")
+        logging.debug("Checking if argument: {arg} is valid for a CLEAR instruction.")
         
         if(arg == 'reg'):
             return True
         else:
             return False
     else:
-        if is_valid_argument_DEBUG: print("Did not find a valid argument for instruction: ", instr)
+        logging.debug("Did not find a valid argument for instruction: {instr}")
         
         return False

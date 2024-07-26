@@ -1,5 +1,5 @@
+import logging
 import sys
-from DEBUG import DEBUG
 
 def parse_interactive(calculator_state):
     print("Welcome to the Jovial Assembler - the first and only assembler for the HP-16C calculator!")
@@ -21,8 +21,8 @@ def parse_interactive(calculator_state):
         output_mode = temp[-4:].lower() if len(temp) > 4 else ""
         output_file_name = temp[:-4] if len(temp) > 4 else ""
     output_mode = output_mode[1:]  # trim the '.' from output mode
-    if DEBUG: print(f"Output mode determined: {output_mode}")
-    if DEBUG: print(f"Output file name: {output_file_name}")
+    logging.debug(f"Output mode determined: {output_mode}")
+    logging.debug(f"Output file name: {output_file_name}")
 
     print("Please enter the initial settings for the calculator.")
 

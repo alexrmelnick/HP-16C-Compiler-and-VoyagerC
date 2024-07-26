@@ -1,7 +1,5 @@
 import os
 from Calculator_State import *
-from DEBUG import DEBUG
-from DEBUG import output_DEBUG
 
 from datetime import datetime
 
@@ -43,7 +41,7 @@ def output_16c(calculator_state):
         else:
             output_line = f"   {line_number_str} {{       {line.instruction_position} }} {line.instruction}\n"
         
-        if DEBUG: print("Writing line: ", output_line)
+        logging.debug("Writing line: ", output_line)
         
         output_file.write(output_line)
     
@@ -71,7 +69,7 @@ def output_txt(calculator_state):
     output_file.write(" 000 -           | \n")
 
     for line_number, line in enumerate(calculator_state.program):
-        if output_DEBUG: print(f"DEBUG: line no. {line_number+1}. Argument: {line.has_argument}. Modifier: {line.has_modifier}")
+        logging.debug(f"DEBUG: line no. {line_number+1}. Argument: {line.has_argument}. Modifier: {line.has_modifier}")
 
         line_number_str = str(line_number + 1).zfill(3)
 
@@ -86,7 +84,7 @@ def output_txt(calculator_state):
         else:
             output_line = f" {line_number_str} - {line.instruction_position:10}| {line.instruction}\n"
         
-        if DEBUG: print("Writing line: ", output_line)
+        logging.debug(f"Writing line: {output_line}")
 
         output_file.write(output_line)
     

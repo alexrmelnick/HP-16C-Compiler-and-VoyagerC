@@ -23,17 +23,31 @@ The Jovial Assembler is written in Python 3.12.3 and developed by Alex Melnick.
 
 # Imports
 import sys
+import logging
 
 from Calculator_State import CalculatorState
 from Output import *
 from Parse_Command import *
 from Parser import *
-from DEBUG import DEBUG
 
 # CONSTANTS
 PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program
 
 def main():
+    # Set up logging configuration
+    myLevel = logging.DEBUG
+    myFormat = logging.Formatter('%(levelname)s - %(filename)s - %(funcName)s - %(message)s')
+    
+    # Create a console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(myLevel)
+    console_handler.setFormatter(myFormat)
+    
+    # Get the root logger and set its level and handler
+    logger = logging.getLogger()
+    logger.setLevel(myLevel)
+    logger.addHandler(console_handler)
+
     input_file = None # File object for the input file
     calculator_state = CalculatorState(2, 16, 10) # Create a new instance of the CalculatorState class with default values
 
@@ -44,7 +58,7 @@ def main():
         parse_cli(sys.argv, calculator_state)
 
     # Open the input file, read it, then close it
-    if DEBUG: print("Opening file: " + calculator_state.input_file_name + " of type " + str(type(calculator_state.input_file_name)))
+    logging.info(f"Opening file: {calculator_state.input_file_name} of type {str(type(calculator_state.input_file_name))}")
     input_file = open(calculator_state.input_file_name, "r") # Open the file in read mode
     assembly_code = input_file.readlines() # Read all the lines of the input file into a list
     input_file.close()
@@ -52,7 +66,8 @@ def main():
     # Assemble the code into "bare" keypress sequences
     for input_line_number, line in enumerate(assembly_code):
         # Parse the line and get the keypresses
-        if DEBUG: print("Parsing line: ", line, " (line number: ", input_line_number+1, ")")
+        adjusted_line_no = input_line_number+1
+        logging.info(f"Parsing line: {line} (line number: {adjusted_line_no}")
         parse_line(line, input_line_number+1, calculator_state)
 
         # Update the program length and memory partition
@@ -61,9 +76,9 @@ def main():
 
         # Check if the program is too large for the memory
         if calculator_state.program_length > PRGM_MEMORY_AVAILABLE:
-            print("Error - Out of Memory: This program is too large for the memory.")
-            print("Memory overflowed at line " + str(input_line_number+1) + "(the HP-16C only has 203 Bytes of memory).")
-            print("Remember, the best art is made under the tightest constraints!")
+            logging.critical("Error - Out of Memory: This program is too large for the memory.")
+            logging.critical(f"Memory overflowed at line {adjusted_line_no} (the HP-16C only has 203 Bytes of memory).")
+            logging.critical("Remember, the best art is made under the tightest constraints!")
             sys.exit(1)
 
 
@@ -83,10 +98,9 @@ def main():
     print(f"Registers used: {len(calculator_state.registers_used)} registers of {calculator_state.available_registers} available")
     print(f"Memory partition @ {calculator_state.memory_partition} Bytes")
 
-    if DEBUG: 
-        print("DEBUG: Registers used:")
-        for reg in calculator_state.registers_used:
-            print(f"DEBUG: Register {reg} used.")
+    logging.debug("Registers used:")
+    for reg in calculator_state.registers_used:
+        logging.debug(f"DEBUG: Register {reg} used.")
 
 if __name__ == "__main__":
     main()
