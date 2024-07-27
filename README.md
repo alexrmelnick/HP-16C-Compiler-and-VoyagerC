@@ -48,6 +48,8 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
   - Add the ability to combine multiple programs into 1 single file seamlessly so that you can keep a library of programs.
     - Need to be able to handle conflicting labels and memory addresses.
   - Rework command line arguments, possibly using a library that is more robust.
+  - Might reword the requirement for initial settings to be optional. It may be better to have them included in the program itself, so that the program is self-contained.
+    - Could have them be optional and checks will not be done if they are not included and are not yet set.
   - Add support for the PX16C Kit. 
     - This is closed source, so this will require either cooperation from the developer or reverse engineering. 
 
@@ -55,7 +57,7 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
 
 This project designed to work with the [JRPN HP-16C Simulator](https://jrpn.jovial.com/) developed by William Foote and the [HP16C Emulator](http://www.hp16c.org/) developed by Jamie O'Connell. 
 
-Thank you Paul Flo Williams for your [Dotrice Font Family](https://www.1001fonts.com/dotrice-font.html), which I used for the PDF output. 
+Thank you Paul Flo Williams for your [Dotrice Font Family](https://www.1001fonts.com/dotrice-font.html), which I used for the PDF output. I have gone through many font choices for this project, and this is the best one I have found that is open-source, mono-spaced, and in the dot matrix style of the 1980s.
 
 ### License
 
