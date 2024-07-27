@@ -10,8 +10,6 @@ from reportlab.pdfbase import pdfmetrics
 
 # For the JRPN Simulator
 def output_16c(calculator_state):
-    # FIXME: fix program listing spacing 
-
     # Update the state of the calculator
     calculator_state.update_memory()
     calculator_state.update_program_length()
@@ -41,7 +39,7 @@ def output_16c(calculator_state):
         else:
             output_line = f"   {line_number_str} {{       {line.instruction_position} }} {line.instruction}\n"
         
-        logging.debug(f"Writing line: {output_line}")
+        logging.info(f"Writing line: | {output_line.strip()}")
         
         output_file.write(output_line)
     
@@ -52,7 +50,6 @@ def output_16c(calculator_state):
 
 # For the HP16C Emulator
 def output_txt(calculator_state):
-    # TODO: WRITE ME
     # Update the state of the calculator
     calculator_state.update_memory()
     calculator_state.update_program_length()

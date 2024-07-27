@@ -17,7 +17,7 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
   - The assembled file will be saved in the same directory as the executable.
   - This file is only available for Windows. If you would like to run the assembler on another operating system, you will need to install Python 3.12 and run the assembler from the command line.
   - Updated versions of the executable can be built by running the following command:
-    - `pyinstaller src/Jovial_Assembler.py --onefile --path src --name jovial --add-data='.\src\fonts\hdad-dotrice-1.001\dotrice.regular.ttf':'fonts\hdad-dotrice-1.001'`
+    - `pyinstaller src/Jovial_Assembler.py --onefile --path src --name jovial --add-data='.\src\fonts\hdad-dotrice-1.001\dotrice-condensed.ttf':'fonts\hdad-dotrice-1.001'`
 3. If you want to run the assembler from the command line using the `jovial` with arguments, add the folder containing the `jovial.exe` file to your system's PATH variable.
   - Follow [these instructions here if you are unfamiliar with this process](https://stackoverflow.com/questions/4822400/register-an-exe-so-you-can-run-it-from-any-command-line-in-windows).
 

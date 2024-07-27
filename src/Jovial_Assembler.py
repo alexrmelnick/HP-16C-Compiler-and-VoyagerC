@@ -90,10 +90,6 @@ def main():
     elif(calculator_state.output_mode == "pdf"):
         output_pdf(calculator_state)
 
-    logging.debug("Registers used:")
-    for reg in calculator_state.registers_used:
-        logging.debug(f"Register {reg} used.")
-
     # Return some useful information to the user
     print(f"Assembly complete! The program has been output to {calculator_state.output_file_name}.{calculator_state.output_mode}")    
     print("Stats:".ljust(80, '.'))
