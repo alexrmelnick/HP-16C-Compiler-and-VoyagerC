@@ -129,6 +129,12 @@ def output_pdf(calculator_state):
     c.setDash(1, 3)
     # Draw a line under the heading
     c.line(72, heading_y_position, 522, heading_y_position)
+
+    vertical_lines_x = [216, 372]  # X positions for the vertical lines
+    # Draw the vertical lines from under the header to the bottom margin
+    for x in vertical_lines_x:
+        c.line(x, heading_y_position, x, 72)  # Draw from under the header to the bottom margin
+
     heading_y_position -= line_spacing  # Move down for the next line
 
     # Column layout settings
