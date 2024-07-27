@@ -41,7 +41,7 @@ def output_16c(calculator_state):
         else:
             output_line = f"   {line_number_str} {{       {line.instruction_position} }} {line.instruction}\n"
         
-        logging.debug("Writing line: ", output_line)
+        logging.debug(f"Writing line: {output_line}")
         
         output_file.write(output_line)
     

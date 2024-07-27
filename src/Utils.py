@@ -45,6 +45,10 @@ def is_number(token):
     if token == "DEC" or token == "dec":
         logging.debug("Token is a base")
         return False
+    
+    if token == "EEX" or token == "eex":
+        logging.debug("Token is EEX key")
+        return False
 
     logging.debug("Token is a number")
     return True

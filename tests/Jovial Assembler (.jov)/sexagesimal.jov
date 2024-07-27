@@ -1,49 +1,38 @@
-; TODO: Fix a bug that causes this to switch to decimal mode
-
 ; These programs convert floating point decimal degrees to/from sexagesimal
 ; Another computer programmer's calculator, the Casio CM-100, had functions for this built-in and we cannot let another calculator upstage our beloved HP-16C. 
 ; Lets write two programs to implement these functionalities!
+; Note that this program also comes with subroutines to round and take the int part of a float! 
 
 ;	For review, sexagesimal and decimal degrees are both ways of displaying angles or locations using latitude and longitude
 ; 	Example: location of the US Capitol
-; 	Sexagesimal:		38deg 53' 23" N	, 77deg 00' 32" W
-; 	Decimal degrees:	38.8897deg		, -77.0089deg 
+; 	Sexagesimal:		38° 53' 23" N	, 77° 00' 32" W
+; 	Decimal degrees:	38.8897°		, -77.0089° 
 ;		Note: Negative sexagesimal degrees indicate degrees South and degrees West
-
-; This program could be sped up significantly by using a faster algorithm to truncate the floats.
-; Without a remainder or floor function, I simply iteratively subtracted by 1 until I reached a value less than 1.
-; This is slow for large numbers, but I can't think of a way to speed it up without doing some witchcraft and switching between float and integer modes.
-; It's only O(n) as opposed to the rest of the program which is O(1), but we are running on very old hardware. 
-; I challenge someone else to find a more efficient way to do this. 
-
+; 	Example: Eiffel Tower
+;	Sexagesimal:		48° 51′ 30″ N	, 2° 17′ 40″ E
+;	Decimal degrees:	48.858222°		, 2.2945°
 
 
 ; Initial settings: floating point mode
 ; Usage: Store your desired data in the specified registers, then run the relevant program
 ;		GSB A -> Convert from sexagesimal to decimal degrees 
 ;		GSB B -> Convert from decimal degrees to sexagesimal
-;	Inputs/Outputs:	R0 <- decimal degrees
-;					R1 <- degrees
+;	Inputs/Outputs:	R1 <- degrees
 ; 					R2 <- minutes
 ;					R3 <- seconds
-; Note that the result for converting from sexagesimal to decimal degrees is displayed as well as saved
+; Note that decimal degrees are the displayed value
 
 ; Memory Map
-; R0 := decimal degrees input/output
 ; R1 := degrees input/output
 ; R2 := minutes input/output
 ; R3 := seconds input/output
-; R4 := input/output for trunc(x,0)
 
 LBL A 	; Convert from sexagesimal to decimal degrees
 	; Decimal degrees = degrees + minutes/60 + seconds/3600
 	RCL 1 	; X <- R1 := degrees
 	CF 1	; Clear F1 incase it was already set
 
-	; If degrees<0, set flag 1
-	X<0
-		SF 1
-	ABS		; Take the absolute of X
+	GSB 2	; Store sign of X
 
 	RCL 2	; X <- R2 := minutes, Y <- R1 := degrees
 	60		; X <- minutes/60
@@ -56,10 +45,9 @@ LBL A 	; Convert from sexagesimal to decimal degrees
 	+		; X <- degrees + minutes/60 + seconds/3600
 
 	; Set sign if degrees was originally negative
-	F? 1
+	F? 2
 		CHS
 
-	STO 0	; Save final value to R0
 	RTN		; End program
 
 LBL B	; Convert from decimal degrees to sexagesimal
@@ -68,26 +56,25 @@ LBL B	; Convert from decimal degrees to sexagesimal
 	; seconds = 3600*abs(decimal degrees - degrees) - 60*minutes
 
 	; Calculating degrees
-	RCL 0	; X <- Decimal degrees
-	STO 4	; R4 <- decimal degrees
+	; X is the starting value
+	STO I 	; Store decimal degrees for future use
 	GSB 0	; R4 <- trunc(decimal degrees,0)
-	RCL 4	; X <- trunc(decimal degrees,0)
+	F? 2
+		CHS
 	STO 1 	; R1 := degrees <- trunc(decimal degrees,0)
 
 	; Calculating minutes
 	; X <- degrees
-	RCL 0	; X <- decimal degrees; Y <- degrees
+	RCL I	; X <- decimal degrees; Y <- degrees
 	-		; X <- abs(decimal degrees - degrees) (order doesn't matter because of abs)
 	abs
 	60
 	*		; X <- 60*abs(decimal degrees - degrees)
-	STO 4	; R4 <- 60*abs(decimal degrees - degrees)
 	GSB 0	; R4 <- trunc(60*abs(decimal degrees - degrees),0)
-	RCL 4	; X <- trunc(60*abs(decimal degrees - degrees),0)
 	STO 2	; seconds <- trunc(60*abs(decimal degrees - degrees),0)
 
 	; Calculating seconds
-	RCL 0	; 3600*abs(decimal degrees - degrees)
+	RCL I	; 3600*abs(decimal degrees - degrees)
 	RCL 1
 	-
 	abs
@@ -98,48 +85,35 @@ LBL B	; Convert from decimal degrees to sexagesimal
 	*
 	-
 	STO 3 	; R3 <- seconds
+
+	RCL 1	; Recall degrees for display
 	RTN		; End program
 
-; Algorithm
-; This algorithm is needlessly slow, but it's all I could think of without a floor or remainder functions in float mode
-;	trunc(x,0)
-;		y = x
-;		while (y>1)
-;			y--
-;		return x-y
+LBL 0   ; INT part of float
+    GSB 2
+	ENTER
+	ENTER	
+    GSB 3
+    x>y     ; Adjust rounded result by 1
+    	1
+	0	
+    Enter	
+    10	
+    /	
+    -
+    RTN	
 
-; R4 is input and output
-LBL 0	; Trunc(x,0)
-	; Trunc(x,0) = x - x%1
-	RCL 4	; X <- R4:=input
-	CF 0 	; Clear F0 incase it was already set
+LBL 2   ; Subroutine to store sign
+    CF 2	
+    x<0	
+        SF 2	
+    ABS	
+    RTN	
 
-	; If input<0, set flag 0
-	X<0
-		SF 0
-	ABS	; Take the absolute value of X
-	
-	1 		; X <- 1; Y <- input
-
-	LBL 1 	; LOOP TOP
-		X>Y		; If 1 > Input, goto LOOP END, else skip next line
-			GTO 2
-		-		; X <- Input-1
-		1   	; X <- 1; Y <- Input-1
-		GTO 1 	; Goto LOOP TOP
-		
-	LBL 2 	; LOOP END
-
-	; Y <- Decimal Part
-	Rv	; X <- Decimal Part
-	RCL 4	; X <- Input; Y <- Decimal Part
-	ABS		; X <- abs(Input); Y <- Decimal Part
-	X<>Y	; X <- Decimal Part; Y <- abs(Input)
-	-		; X <- trunc(input,0)
-
-	; Set sign if X was originally negative
-	F? 0
-		CHS
-
-	STO 4	; Store answer back to R4
-	RTN
+LBL 3	; Subroutine to round
+    EEX	
+    9	
+    +	
+    LSTx	
+    -	
+    RTN	
