@@ -31,13 +31,13 @@ def output_16c(calculator_state):
     for line_number, line in enumerate(calculator_state.program):
         line_number_str = str(line_number + 1).zfill(3)
         if line.has_modifier and line.has_argument:
-            output_line = f"   {line_number_str} {{ {line.modifier_position} {line.instruction_position} {line.argument_position} }} {line.modifier} {line.instruction} {line.argument}\n"
+            output_line = f"   {line_number_str} {{ {line.modifier_position} {line.instruction_position:2} {line.argument_position:2} }} {line.modifier} {line.instruction} {line.argument}\n"
         elif line.has_modifier:
-            output_line = f"   {line_number_str} {{    {line.modifier_position} {line.instruction_position} }} {line.modifier} {line.instruction}\n"
+            output_line = f"   {line_number_str} {{    {line.modifier_position} {line.instruction_position:2} }} {line.modifier} {line.instruction}\n"
         elif line.has_argument:
-            output_line = f"   {line_number_str} {{    {line.instruction_position} {line.argument_position} }} {line.instruction} {line.argument}\n"
+            output_line = f"   {line_number_str} {{    {line.instruction_position:2} {line.argument_position:2} }} {line.instruction} {line.argument}\n"
         else:
-            output_line = f"   {line_number_str} {{       {line.instruction_position} }} {line.instruction}\n"
+            output_line = f"   {line_number_str} {{       {line.instruction_position:2} }} {line.instruction}\n"
         
         logging.info(f"Writing line: | {output_line.strip()}")
         

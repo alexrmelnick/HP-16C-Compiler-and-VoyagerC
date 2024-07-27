@@ -18,8 +18,9 @@
 ## Other Tools
 
 - [JRPN HP-16C Simulator](https://jrpn.jovial.com/)
-    - This is the primary tool I am using to test Jovial assembly programs. It is seems to be a little buggy, but it is open source and the exported programs are in a human-readable format. This is also the simulator that I have on my phone for everyday use if I don't have my physical HP-16C with me.
+    - This is the simulator that I have on my phone for everyday use if I don't have my physical HP-16C with me.
 - [HP16C Emulator by Jamie O'Connell](http://www.hp16c.org/)
-    - I find this one to be more robust than the JRPN simulator. It also has stack, register, and program views, which aid strongly in debugging your program. However, it is closed source and the format of the exported programs is not easily decipherable. Therefore, programs must be typed in manually unless I/someone reverse engineers the it. The project is Donationware, but the forum is still up and running, so it may be possible to get the original creator to share the source code. 
+    - This is my preferred simulator for debugging. It allows you to see the Program memory, Registers, and Stack all at once. 
 - [HP16C Emulator by The Joseph M. Newcomer Co.](http://flounder.com/hp16c.htm)
-    - I haven't tried this one out, but it supports the Palm Pilot! That alone was cool enough to include it. However it is not a full implementation. 
+    - I haven't tried this one out, but it supports the Palm Pilot! That alone was cool enough to include it in this list of links. 
+    - Note that this is not supported by the Jovial Assembler (it does not even support programming at all), but who doesn't love the Palm Pilot?

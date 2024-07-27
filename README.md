@@ -1,11 +1,11 @@
 # HP-16C Jovial Assembler
 
-The Jovial Assembler is an assembler to assemble a custom assembly programming language into a printable keystroke programming text .pdf or into .16c format for loading directly into the JRPN 16C simulator. 
+The Jovial Assembler is an assembler to assemble a custom assembly programming language into a printable keystroke programming text .pdf, into .16c format for loading directly into the JRPN 16C simulator, or into .txt format for the HP16C Emulator. 
 
 ## Description
 The HP-16C is a computer scientist's calculator produced from 1982 until 1989. It is still highly regarded and sought after by assembly programmers. This project aims to provide a user-friendly way to extend the usefulness of the HP-16C by allowing users to write programs in a text editor and assembler them into keystroke programming sequences. The Jovial assembly language is based on the sample programs found in the HP-16C manual. The assembler is written in Python and is designed to be easily extendible to other simulators.
 
-This project started after I received an HP-16C for my birthday. I was absolutely fascinated by the calculator and its programming capabilities. I wanted to write programs for it, but I found the manual programming method to be very cumbersome. I looked online and found various simulators, but none of them offered a connivent way to write programs other than "typing" them in manually. One open-source project, the JRPN 16C simulator, had a human readable format for importing and exporting programs, so I decided to write an assembler targeting it first. This gave me the opportunity to learn about the HP-16C's architecture and assembly capabilities. As well, it gave me to opportunity to contribute to the open-source community.
+This project started after I received an HP-16C for my birthday. I was absolutely fascinated by the calculator and its programming capabilities. I wanted to write programs for it, but I found the manual programming method to be very cumbersome. I looked online and found various simulators, but none of them offered a connivent way to write programs other than "typing" them in manually. One open-source project, the JRPN 16C simulator, had a human readable format for importing and exporting programs, so I decided to write an assembler targeting it first. I then targeted the HP16C emulator once I realized it had the option to import programs in plain text as well. The HP16C emulator allows you to see the Program memory, Registers, and Stack all at once, so it is extremely useful for debugging. This project gave me the opportunity to learn about the HP-16C's architecture and assembly capabilities. As well, it gave me to opportunity to contribute to the open-source community.
 
 
 ## Usage/Installation
@@ -47,6 +47,7 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
 ### 5. Future hopes and dreams
   - Add the ability to combine multiple programs into 1 single file seamlessly so that you can keep a library of programs.
     - Need to be able to handle conflicting labels and memory addresses.
+  - Rework command line arguments, possibly using a library that is more robust.
   - Add support for the PX16C Kit. 
     - This is closed source, so this will require either cooperation from the developer or reverse engineering. 
 

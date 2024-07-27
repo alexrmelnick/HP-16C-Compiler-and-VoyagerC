@@ -1,5 +1,5 @@
 # Welcome to the official documentation for the Jovial Assembler
-This documentation will provide an overview of the Jovial Assembler, including the features it provides, the syntax it uses, and how to use it to write programs for the HP-16C and the JRPN HP-16C Simulator.
+This documentation will provide an overview of the Jovial Assembler, including the features it provides, the syntax it uses, and how to use it to write programs for the HP-16C, the JRPN HP-16C Simulator, and the HP16C Emulator.
 
 Please note that this documentation is a work in progress and will be updated as the Jovial Assembler project progresses. If you have any questions or suggestions for the documentation (or the project in general), please feel free to reach out.
 
@@ -48,14 +48,14 @@ This guide will repeat lots of information from the HP-16C manual. Half of the r
 
 
 ## Usage
-The Jovial Assembler is a command line tool that can be used to assemble Jovial Assembly files into a format that can be imported to the JRPN HP-16C calculator simulator (.16c) or printed out and typed into a physical HP-16C. The Jovial Assembler is written in Python 3.12.3 (other versions may work, but no compatibility is guaranteed). 
+The Jovial Assembler is a command line tool that can be used to assemble Jovial Assembly files into a format that can be imported to the JRPN HP-16C calculator simulator (.16c), the HP16C Emulator (.txt), or printed out and typed into a physical HP-16C. Note that you may need to change the file type in the HP16C emulator from `HP16C Program` to `HP16C Program Text` on the HP16C Emulator. The Jovial Assembler is written in Python 3.12.3 (other versions may work, but no compatibility is guaranteed). 
 
 At the moment, running the Jovial Assembler requires the following command line arguments:
-`python Jovial_Assembler.py <input filename> <output file name (no extension)> <output mode (16c/pdf)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>`
+`python Jovial_Assembler.py <input file> <output file (.pdf/.16c/.txt)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>`
 
 You can run the Jovial Assembler without any arguments to enter interactive mode. This will walk you through each argument and allow you to assemble a file without needing to remember the command line arguments.
 
-Alternatively, you can install the Jovial Assembler on Windows by adding the `/HP-16C-Jovial-Assembler/src` folder to your path and running `[System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";<ABSOLUTE FILE PATH TO REPO>", [System.EnvironmentVariableTarget]::User)` in PowerShell as an administrator. This will allow you to run the Jovial Assembler from any directory by typing `jovial` in the command line.
+Alternatively, you can install the Jovial Assembler on Windows by running the `jovial.exe` executable or by using the `jovial` command in the command line if you have added the `dist` folder / wherever you have your `jovial.exe` to your path. 
 
 
 ## Features
@@ -67,8 +67,9 @@ The Jovial Assembler provides a number of features that make it easy to write pr
 - Ability to specify the base of the number being entered (binary, octal, decimal, or hexadecimal).
 - Ability to enter multi-digit numbers as an immediate.
 - Ability to use negative numbers as an immediate.
+- Ability to enter floats as immediates in floating point mode.
 - Ability to enter floats in scientific notation.
-- Support for optionally specifying the initial mode settings for the calculator.
+- Support for specifying the initial mode settings for the calculator.
 - Warnings for carry and out-of-range errors and other issues if the initial mode settings are supplied. 
 - Support for throwing errors if the program is too large for the memory.
 - Support for throwing errors if addresses are out of range.
@@ -330,11 +331,10 @@ The following is a list of the instructions available in the Jovial Assembly Lan
     - Example:
         - `0b1000`; `RLn 2`: X == 0b0010, carry == 0
 - `SB` and `CB`: Set and clear the the Xth bit of the Y register
-    - Set and clear the nth bit of the number in the X register.
     - Bits are numbered from 0 to 7, with 0 being the least significant bit (rightmost bit).
     - Example:
-        - `0b1000`; `SB 1`: X == 0b1010
-        - `0b1010`; `CB 1`: X == 0b1000
+        - `0b1000`; `1`; `SB`: X == 0b1010
+        - `0b1010`; `1`; `CB`: X == 0b1000
 - `MASKL` and `MASKR`: Creates a left or right justified string of n 1s, where n is the number in the X register
     - Used to mask off the left or right n bits of a number with a logical operations
     - Example (in 2's complement mode with an 8-bit word size):
@@ -395,6 +395,7 @@ The following is a list of the instructions available in the Jovial Assembly Lan
         - `RCL 3`: X <- R3
 - `STO (i)` and `RCL (i)`: R(I) <- X and X <- R(I)
     - Store and recall the number in the X register in the storage register whose index is stored in the I register.
+    - This is the only way to access storage registers beyond the first 32 and allows for easy indirect addressing and arrays. 
     - Example:
         - `5`; `STO I`; `3`; `STO (i)`: R5 <- 3
 
@@ -459,4 +460,3 @@ Not all of the functions available on the HP-16C are available in programming mo
 The Jovial Assembler is a work in progress and has several limitations. The following is a list of known limitations:
 - The argument parsing for `WINDOW` is not perfect. There are some invalid arguments that are not caught by the parser.
 - If you do not specify a base for a number, it is assumed to be the previous base set. This can cause issues if you are not careful, especially if you assume it will be in base-10.
-- Sometimes the whitespace in the .16c file is not perfect. This is a known issue, but it does not affect the functionality of the file.
