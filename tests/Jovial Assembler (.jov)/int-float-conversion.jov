@@ -1,0 +1,14 @@
+; From https://www.hpmuseum.org/software/16fltint.htm 
+
+LBL A   ; Convert Float to Integer
+    HEX     ; Leaves value in Y and shift count in X
+    RRn     ; Apply shift
+    20      ; 20 Hex gives 32-bit wordsize
+    WSIZE
+    SF 3    ; display leading zeros
+    RTN
+
+LBL 9   ; Convert Integer to Float
+    0
+    FLOAT 3 ; Set # digits after decimal 
+    RTN     ; That was easy

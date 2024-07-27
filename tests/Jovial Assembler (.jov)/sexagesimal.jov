@@ -38,6 +38,12 @@
 LBL A 	; Convert from sexagesimal to decimal degrees
 	; Decimal degrees = degrees + minutes/60 + seconds/3600
 	RCL 1 	; X <- R1 := degrees
+	CF 1	; Clear F1 incase it was already set
+
+	; If degrees<0, set flag 1
+	X<0
+		SF 1
+	ABS		; Take the absolute of X
 
 	RCL 2	; X <- R2 := minutes, Y <- R1 := degrees
 	60		; X <- minutes/60
@@ -48,6 +54,10 @@ LBL A 	; Convert from sexagesimal to decimal degrees
 	3600	; X <- seconds/3600
 	/
 	+		; X <- degrees + minutes/60 + seconds/3600
+
+	; Set sign if degrees was originally negative
+	F? 1
+		CHS
 
 	STO 0	; Save final value to R0
 	RTN		; End program
