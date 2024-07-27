@@ -42,9 +42,11 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
   - I have a working executable that can be run on Windows. 
   - You can add it to your path to run it from the command line.
   - I hope to one day make a proper installer for the program so this is automated.
-### 4. Extend the Jovial Assembler to new simulators ** (in progress)**
+### 4. Extend the Jovial Assembler to new simulators ** (complete)**
   - Add support for Jamie O'Connell's HP-16C Emulator.
 ### 5. Future hopes and dreams
+  - Add the ability to combine multiple programs into 1 single file seamlessly so that you can keep a library of programs.
+    - Need to be able to handle conflicting labels and memory addresses.
   - Add support for the PX16C Kit. 
     - This is closed source, so this will require either cooperation from the developer or reverse engineering. 
 
