@@ -1,5 +1,98 @@
 import logging
 import sys
+import argparse
+import textwrap
+
+def parse_arguments(calculator_state):
+    # Set up parser
+    parser = argparse.ArgumentParser(
+        prog='jovial', 
+        description='My description (WIP)',
+        epilog='If no arguments are provided, the program will run in interactive mode.',
+        formatter_class=argparse.RawTextHelpFormatter
+        )
+
+    parser.add_argument(
+        '-i', '--input_file', 
+        #required=True, 
+        help='Input file to assemble with .jov extension (required)', 
+        type=str,
+        # Eventually gonna add nargs='+' to allow multiple input files
+        )  # Input file argument
+    parser.add_argument(
+        '-o', '--output_file',
+        #required=True, 
+        help=textwrap.dedent('''\
+        Output file with desired extension format (.pdf/.16c/.txt) (required)  
+        .pdf = printable PDF file for typing into a physical HP-16C calculator  
+        .16c = 16C file for the JRPN Simulator (not that this file is not compatible with the HP16C Emulator, despite the identical file extension)  
+        .txt = TXT file for the HP16C Emulator (select filetype 'HP16C Program Text' when loading the file)  
+        '''), 
+        type=str,
+        )  # Output file argument
+    parser.add_argument(
+        '-s', '--sign_mode', 
+        type=int, 
+        choices=[0, 1, 2, 3], 
+        default=2, 
+        help = 'HP-16C starting sign mode (0 = Unsigned, 1 = 1\'s complement, 2 = 2\'s complement, 3 = floating point) (default = 2)',
+        ) # Sign mode argument
+    parser.add_argument(
+        '-w', '--word_size',
+        type=int, 
+        choices=range(4, 65), 
+        metavar='{4-64}',
+        default=16,
+        help='HP-16C starting word size (number of bits in a word) between 4 bits and 64 bits (default = 16)',
+        ) # Word size argument
+    parser.add_argument(
+        '-b', '--base', 
+        type=int, 
+        choices=[2, 8, 10, 16], 
+        default=10,
+        help='Starting base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal) (default = 10) (note that base must be 10 for floating point numbers)',
+        ) # Base argument
+    parser.add_argument(
+        '-v', '--version',
+        action='version',
+        version='%(prog)s 1.2.0',   #! This is where the version number is set
+        ) # Version argument
+    parser.add_argument(
+        '-d', '--debug',
+        type=str,
+        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        default='INFO',
+        help='Set the logging level (default = INFO)',
+        ) # Debug argument
+    
+    # Parse the arguments
+    args = parser.parse_args()
+
+    # Determine if in CLI mode or interactive mode, then parse accordingly
+    if len(sys.argv) == 1:
+        parse_interactive(calculator_state)
+    else:
+        calculator_state.input_file_name = args.input_file if args.input_file is not None else ""
+        calculator_state.output_file_name = args.output_file[:-4] if (args.output_file is not None and len(args.output_file)) > 4 else ""
+        calculator_state.output_mode = args.output_file[-3:] if (args.output_file is not None and len(args.output_file) > 3) else ""
+        calculator_state.sign_mode = args.sign_mode
+        calculator_state.word_size = args.word_size
+        calculator_state.update_base(args.base)
+        calculator_state.logger_level = args.debug
+
+        # Do some error checking
+        if calculator_state.input_file_name == "":
+            logging.critical("No input file provided. Please provide an input file.")
+            sys.exit(1)
+        if not calculator_state.input_file_name.endswith(".jov"):
+            logging.critical("Invalid input file type. Please enter a .jov file.")
+            sys.exit(1)
+        if calculator_state.output_mode == "":
+            logging.critical("No output file provided. Please provide an output file.")
+            sys.exit(1)
+        if calculator_state.output_mode not in ["16c", "pdf", "txt"]:
+            logging.critical("Invalid output file type. Please use either '.16c', '.pdf', or '.txt'.")
+            sys.exit(1)
 
 def parse_interactive(calculator_state):
     print("Welcome to the Jovial Assembler - the first and only assembler for the HP-16C calculator!")
@@ -69,62 +162,6 @@ def parse_interactive(calculator_state):
                 print("Please enter a number.")
 
     # Set the calculator state to the user's input
-    calculator_state.sign_mode = sign_mode
-    calculator_state.word_size = word_size
-    calculator_state.update_base(base)
-    calculator_state.input_file_name = input_file_name
-    calculator_state.output_file_name = output_file_name
-    calculator_state.output_mode = output_mode
-
-
-def parse_cli(argv, calculator_state):
-    # Parse the command line arguments
-    if len(argv) == 3:
-        # Default modes
-        sign_mode = 2
-        word_size = 16
-        base = 10
-
-        input_file_name = argv[1]
-        output_file_name = argv[2][:-4] if len(argv[2]) > 4 else ""
-        output_mode = argv[2][-3:] if len(argv[2]) > 3 else ""
-    elif len(argv) == 6:
-        sign_mode = int(argv[3])
-        word_size = int(argv[4])
-        base = int(argv[5])
-
-        input_file_name = argv[1]
-        output_file_name = argv[2][:-4] if len(argv[2]) > 4 else ""
-        output_mode = argv[2][-3:] if len(argv[2]) > 3 else ""
-    else: 
-        # User entered the wrong number of args
-        print("Usages:")
-        print("python Jovial_Assembler.py [interactive mode - recommended]")
-        print("python Jovial_Assembler.py <input file (.jov)> <output file (.16c/.txt/.pdf)> [assumes  2's complement, 16-bit, decimal]")
-        print("python Jovial_Assembler.py <input file (.jov)> <output file (.16c/.txt/.pdf)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>")
-        sys.exit(1)
-
-    # Check if arguments are valid
-    if(not input_file_name.endswith(".jov")):
-        print("Invalid file type. Please enter a .jov file.")
-        sys.exit(1)
-    if(output_mode != "16c" and output_mode != "pdf" and output_mode != "txt"):
-        print("Invalid output mode. Please use either '.16c', '.pdf', or '.txt'.")
-        sys.exit(1)
-    if(sign_mode < 0 or sign_mode > 3):
-        print("Invalid sign mode. Please use the sign mode (0 = Unsigned, 1 = 1's complement, 2 = 2's complement, 3 = floating point).")
-        sys.exit(1)
-    if(sign_mode == 3 and word_size != 56):
-        # Just set the word size to 56 bits
-        word_size = 56
-    if(word_size < 4 or word_size > 64):
-        print("Invalid word size. Please use a word size between 4 and 64 bits.")
-        sys.exit(1)
-    if(base != 2 and base != 8 and base != 10 and base != 16):
-        print("Invalid base. Please use the base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal).")
-        sys.exit(1)
-
-    # Set the calculator state to the command line arguments
     calculator_state.sign_mode = sign_mode
     calculator_state.word_size = word_size
     calculator_state.update_base(base)

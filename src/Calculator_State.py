@@ -28,12 +28,11 @@ class CalculatorState:
     input_file_name = None # Input file
     output_file_name = None # Output file
     output_mode = None # Output mode (16c or pdf)
+    logger_level = logging.DEBUG
 
     # Methods
-    def __init__(self, sign_mode, word_size, base):
-        self.sign_mode = sign_mode
-        self.word_size = word_size
-        self.base = base
+    def __init__(self):
+        pass
 
     def __str__(self): # For debugging
         return f"Sign mode: {self.sign_mode}, Word size: {self.word_size}, Base: {self.base}, Program length: {self.program_length}, Registers used: {self.registers_used}, Memory partition: {self.memory_partition}"
