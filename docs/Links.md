@@ -15,11 +15,22 @@
     - I plan on getting on of these at some point. I would like to maybe try to port the Jovial Assembler to output to it, but it isn't open source, so I don't know if that will be possible. It could be a fun project to try reverse engineering it though.
     - I would love to see someone replace the Raspberry Pi with an FPGA to make it more authentic. I believe people have replicated the HP nut processor in Verilog and/or VHDL, so it should be possible.
 
-## Other Tools
+## Software
 
 - [JRPN HP-16C Simulator](https://jrpn.jovial.com/)
-    - This is the primary tool I am using to test Jovial assembly programs. It is seems to be a little buggy, but it is open source and the exported programs are in a human-readable format. This is also the simulator that I have on my phone for everyday use if I don't have my physical HP-16C with me.
-- [HP-16C Emulator by Jamie O'Connell](http://www.hp16c.org/)
-    - I find this one to be more robust than the JRPN simulator. It also has stack, register, and program views, which aid strongly in debugging your program. However, it is closed source and the format of the exported programs is not easily decipherable. Therefore, programs must be typed in manually unless I/someone reverse engineers the it. The project is Donationware, but the forum is still up and running, so it may be possible to get the original creator to share the source code. 
+    - This is the simulator that I have on my phone for everyday use if I don't have my physical HP-16C with me.
+- [HP16C Emulator by Jamie O'Connell](http://www.hp16c.org/)
+    - This is my preferred simulator for debugging. It allows you to see the Program memory, Registers, and Stack all at once. 
 - [HP16C Emulator by The Joseph M. Newcomer Co.](http://flounder.com/hp16c.htm)
-    - I haven't tried this one out, but it supports the Palm Pilot! That alone was cool enough to include it. However it is not a full implementation. 
+    - I haven't tried this one out, but it supports the Palm Pilot! That alone was cool enough to include it in this list of links. 
+    - Note that this is not supported by the Jovial Assembler (it does not even support programming at all), but who doesn't love the Palm Pilot?
+
+## Other Computer Scientist's Calculators
+- [Casio CM-100](http://edspi31415.blogspot.com/2017/02/retro-review-casio-cm-100-computer-math.html)
+    - This has one feature that the HP-16C does not, a conversion between decimal degrees and sexagesimal degrees (degrees, minutes, seconds) and vice versa. Of course, I wrote a program to do this on my HP-16C (we can't have the Casio outdoing the HP now can we?), but it executes the conversion much faster than the HP-16C.
+    - It is also solar powered (without a backup battery), which has its pros and cons.
+- [Texas Instruments TI Programmer](http://www.datamath.org/Sci/MAJESTIC/Programmer.htm)
+    - There is also an LCD model and the TI Programmer II which is identical to the LCD model in a different case. They all have the same functionality, just different form factors and display types.
+    - I don't have one of these, but I am aware that you can replace the ancient battery pack with a standard 9V battery!
+- These calculators are much cheaper than the HP-16C, but they are not nearly as powerful. If you are a broke college student, these might be a good alternative if you need something dedicated and physical.  
+- These are the only other two dedicated Computer Scientist's calculators that I know of. If you know of any others, please let me know. I would love to learn more about them.

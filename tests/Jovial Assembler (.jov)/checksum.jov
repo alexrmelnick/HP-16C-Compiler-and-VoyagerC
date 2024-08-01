@@ -1,4 +1,5 @@
 ; Program can be found on pages 90-93 of the HP-16C manual
+; Starting settings: 2-04-0000
 
 LBL D
 UNSGN

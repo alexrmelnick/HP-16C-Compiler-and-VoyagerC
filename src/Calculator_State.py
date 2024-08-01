@@ -1,5 +1,6 @@
 import math
 import sys
+import logging
 
 
 # Class to represent the state of the calculator
@@ -59,7 +60,7 @@ class CalculatorState:
         self.memory_partition = 203 - math.ceil(self.program_length / 7) * 7 # Round up program length to nearest multiple of 7
 
         if (len(self.registers_used) > self.available_registers):
-            print("Error: Attempting to use more registers than available")
+            logging.critical("Error: Attempting to use more registers than available")
             sys.exit(1)
 
     def update_program_length(self):

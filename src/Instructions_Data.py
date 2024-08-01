@@ -29,7 +29,7 @@ f_modifier_instrs = [
     'UNSGN',
     'NOT',
     'EEX',
-    'OR'
+    'OR',
 ]
 
 g_modifier_instrs = [
@@ -66,7 +66,7 @@ g_modifier_instrs = [
     'x!=y',
     'x!=0',
     'x==y',
-    'x==0'
+    'x==0',
 ]
 
 button_positions = {

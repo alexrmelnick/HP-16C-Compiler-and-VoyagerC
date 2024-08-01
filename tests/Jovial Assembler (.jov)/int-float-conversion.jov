@@ -1,0 +1,67 @@
+; https://www.hpmuseum.org/cgi-sys/cgiwrap/hpmuseum/archv018.cgi?read=138626
+
+; Instructions:
+; GSB A Float to Int
+; GSB 9 Int to Float
+; GSB B INT
+; GSB D RND
+
+
+
+LBL 2   ; Subroutine to store sign
+    CF 2	
+    x<0	
+        SF 2	
+    ABS	
+    RTN	
+
+LBL 3	; Subroutine to round
+    EEX	
+    9	
+    +	
+    LSTx	
+    -	
+    RTN	
+
+LBL A	; Float to Int
+    GSB 2	; Store sign
+    HEX     ; Convert
+    ABS
+    STO I	
+    x<>y	
+    LBL 1	
+        ASR	
+        DSZ	
+        GTO 1	
+    0	    ; Set wordsize to 64
+    WSIZE	
+    SF 3	
+    LBL 4	
+    F? 2    ; Restore sign
+        CHS	
+    SF 3	; Show leading zeroes
+    RTN	
+
+LBL B   ; INT
+    GSB 2
+	ENTER
+	ENTER	
+    GSB 3
+    x>y     ; Adjust rounded result by 1
+    	1
+	0	
+    Enter	
+    10	
+    /	
+    -
+    RTN	
+
+LBL D	; RND
+    GSB 2	
+    GSB 3	
+    GTO 4	
+
+LBL 9	; Int to Float
+    0	
+    FLOAT 4     ; Number of decimal places
+    RTN	
