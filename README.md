@@ -50,6 +50,7 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
   - Rework command line arguments, possibly using a library that is more robust.
   - Might reword the requirement for initial settings to be optional. It may be better to have them included in the program itself, so that the program is self-contained.
     - Could have them be optional and checks will not be done if they are not included and are not yet set.
+  - Write a script to automatically update all the files in the `tests` folders when the assembler is updated.
   - Add support for the PX16C Kit. 
     - This is closed source, so this will require either cooperation from the developer or reverse engineering. 
 
