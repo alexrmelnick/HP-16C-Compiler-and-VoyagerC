@@ -1,23 +1,23 @@
 #  Program produced by Alex Melnick's Jovial Assembler.
 #  Character encoding: UTF-8
-#  Generated 2024-07-03 16:39:21
+#  Generated 2024-08-02 11:15:41
 #  Program occupies 16 bytes.
 
    000 {          } 
-   001 { 43 22 D } g LBL D
-   002 {       1 } 1
-   003 {    44 A } STO A
-   004 {    45 9 } RCL 9
+   001 { 43 22 D  } g LBL D
+   002 {       1  } 1
+   003 {    44 A  } STO A
+   004 {    45 9  } RCL 9
    005 {    44 32 } STO I
-   006 { 43 22 E } g LBL E
-   007 {    45 9 } RCL 9
-   008 {    45 A } RCL A
-   009 {    45 8 } RCL 8
+   006 { 43 22 E  } g LBL E
+   007 {    45 9  } RCL 9
+   008 {    45 A  } RCL A
+   009 {    45 8  } RCL 8
    010 {       20 } *
-   011 {    44 A } STO A
+   011 {    44 A  } STO A
    012 {    43 23 } g DSZ
-   013 {    22 E } GTO E
-   014 {    45 A } RCL A
+   013 {    22 E  } GTO E
+   014 {    45 A  } RCL A
    015 {    42 24 } f SHOW DEC
    016 {    43 21 } g RTN
 

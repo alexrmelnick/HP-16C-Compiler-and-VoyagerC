@@ -22,6 +22,12 @@
 // R2 := b
 // Starting conditions: unsigned, 32-bit, dec
 lbl a   // Start of program
+    // Set starting conditions
+    UNSGN
+    DEC
+    32
+    WSIZE
+
     // Initialize variables
     0   // R0 <- 0 := sum
     sto 0

@@ -1,0 +1,18 @@
+#  Program produced by Alex Melnick's Jovial Assembler.
+#  Character encoding: UTF-8
+#  Generated 2024-08-02 11:15:38
+#  Program occupies 10 bytes.
+
+   000 {          } 
+   001 { 43 22 A  } g LBL A
+   002 {       23 } HEX
+   003 {       2  } 2
+   004 {       0  } 0
+   005 {    42 44 } f WSIZE
+   006 {    43 36 } g LSTx
+   007 {    42 B  } f SR
+   008 {    42 E  } f RLn
+   009 {    42 40 } f OR
+   010 {    43 21 } g RTN
+
+# End.

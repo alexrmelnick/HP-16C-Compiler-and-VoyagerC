@@ -48,6 +48,12 @@
 
 // Starting settings: unsigned, 32-bit, base irrelevant
 lbl a   // Label the start of our prgm
+    // Initialize settings
+    UNSGN
+    DEC
+    32
+    WSIZE
+
     STO i   // I <- X := the limit for our Collatz sequence
     0       // X <- 0
     sto 0   // R0 <- 0 := longest_chain_length

@@ -71,7 +71,6 @@ def parse_arguments(calculator_state):
     if len(sys.argv) == 1:
         parse_interactive(calculator_state)
     else:
-        print(args)
         calculator_state.input_file_name = args.input_file if args.input_file is not None else ""
         calculator_state.output_file_name = args.output_file[:-4] if (args.output_file is not None and len(args.output_file)) > 4 else ""
         calculator_state.output_mode = args.output_file[-3:] if (args.output_file is not None and len(args.output_file) > 3) else ""

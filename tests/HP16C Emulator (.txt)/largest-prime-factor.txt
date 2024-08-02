@@ -27,7 +27,7 @@ HP16C Program Listing: largest-prime-factor.jov
  022 - 2         | 2
  023 - 4         | 4
  024 - 42 44     | [f][WSIZE] 
- 025 - 43,5 , 0  | [g][CF] 0
+ 025 - 43, 5, 0  | [g][CF] 0
  026 - 43,22, 0  | [g][LBL] 0
  027 - 45 0      | [RCL] 0
  028 - 45 1      | [RCL] 1
@@ -36,7 +36,7 @@ HP16C Program Listing: largest-prime-factor.jov
  031 - 43 48     | [g][x!=0] 
  032 - 22 2      | [GTO] 2
  033 - 21 B      | [GSB] B
- 034 - 43,6 , 0  | [g][F?] 0
+ 034 - 43, 6, 0  | [g][F?] 0
  035 - 22 3      | [GTO] 3
  036 - 43,22, 2  | [g][LBL] 2
  037 - 43 23     | [g][DSZ] 
@@ -74,7 +74,7 @@ HP16C Program Listing: largest-prime-factor.jov
  069 - 45 2      | [RCL] 2
  070 - 43 3      | [g][x>y] 
  071 - 22 4      | [GTO] 4
- 072 - 43,4 , 0  | [g][SF] 0
+ 072 - 43, 4, 0  | [g][SF] 0
  073 - 43 21     | [g][RTN] 
  ================================= 
 
