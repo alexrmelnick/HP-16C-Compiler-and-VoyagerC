@@ -61,11 +61,14 @@ class CalculatorState:
         if self.word_size is not None:
             self.available_registers = math.ceil((PRGM_MEMORY_AVAILABLE - self.program_length) / math.ceil((self.word_size/8)))
 
-            self.memory_partition = 203 - math.ceil(self.program_length / 7) * 7 # Round up program length to nearest multiple of 7
+            self.memory_partition = PRGM_MEMORY_AVAILABLE - math.ceil(self.program_length / 7) * 7 # Round up program length to nearest multiple of 7
 
             if (len(self.registers_used) > self.available_registers):
                 logging.critical("Error: Attempting to use more registers than available")
                 sys.exit(1)
+        else:
+            logging.debug("Word size not set")
+            self.available_registers = None
 
     def update_program_length(self):
         self.program_length = len(self.program)

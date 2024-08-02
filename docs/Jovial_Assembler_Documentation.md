@@ -50,8 +50,9 @@ This guide will repeat lots of information from the HP-16C manual. Half of the r
 ## Usage
 The Jovial Assembler is a command line tool that can be used to assemble Jovial Assembly files into a format that can be imported to the JRPN HP-16C calculator simulator (.16c), the HP16C Emulator (.txt), or printed out and typed into a physical HP-16C. Note that you may need to change the file type in the HP16C emulator from `HP16C Program` to `HP16C Program Text` on the HP16C Emulator. The Jovial Assembler is written in Python 3.12.3 (other versions may work, but no compatibility is guaranteed). 
 
-At the moment, running the Jovial Assembler requires the following command line arguments:
-`python Jovial_Assembler.py <input file> <output file (.pdf/.16c/.txt)> <sign mode (0/1/2/3)> <word size (4-64)> <base (2/8/10/16)>`
+Running the Jovial Assembler requires the following command line arguments:
+`python Jovial_Assembler.py -i <input file> -o <output file (.pdf/.16c/.txt)>`
+You can also use `-s`, `-w`, and `-b` to specify the initial settings for the calculator. The `-s {0,1,2,3}` specifies that the calculator starts off in `unsigned`, `1's complement`, `2's complement`, or `floating point` mode. The `-w {4-64}` specifies the starting word size of the calculator. If the calculator starts in floating point mode, the word size is automatically set to 56. The `-b {2,8,10,16}` specifies the base of the numbers being entered. If the calculator starts in floating point mode, the base is automatically set to 10. These settings are automatically updated as the assembler runs, but initial settings can be useful for debugging and for ensuring that the program is valid. 
 
 You can run the Jovial Assembler without any arguments to enter interactive mode. This will walk you through each argument and allow you to assemble a file without needing to remember the command line arguments.
 

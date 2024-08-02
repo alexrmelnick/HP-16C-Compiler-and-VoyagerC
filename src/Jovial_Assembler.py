@@ -47,10 +47,13 @@ def main():
     console_handler.setLevel(calculator_state.logger_level)
     console_handler.setFormatter(myFormat)
     
-    # Get the root logger and set its level and handler
+    # Get the root logger
     logger = logging.getLogger()
     logger.setLevel(calculator_state.logger_level)
-    logger.addHandler(console_handler)
+
+    # Check if the logger already has handlers
+    if not logger.handlers:
+        logger.addHandler(console_handler)
 
 
     # Open the input file, read it, then close it

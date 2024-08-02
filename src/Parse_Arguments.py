@@ -13,13 +13,13 @@ def parse_arguments(calculator_state):
         )
 
     parser.add_argument('-i', '--input_file', 
-        #required=True, 
+        required=True, 
         help='Input file to assemble with .jov extension (required)', 
         type=str,
         # Eventually gonna add nargs='+' to allow multiple input files
         )  # Input file argument
     parser.add_argument('-o', '--output_file',
-        #required=True, 
+        required=True, 
         help=textwrap.dedent('''\
         Output file with desired extension format (.pdf/.16c/.txt) (required)  
         .pdf = printable PDF file for typing into a physical HP-16C calculator  
