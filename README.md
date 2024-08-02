@@ -44,7 +44,7 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
   - I hope to one day make a proper installer for the program so this is automated.
 ### 4. Extend the Jovial Assembler to new simulators **(complete)**
   - Add support for Jamie O'Connell's HP-16C Emulator.
-### 5. Rework Argument Parsing **(in progress)**
+### 5. Rework Argument Parsing **(complete)**
   - Rework command line arguments, possibly using a library that is more robust.
   - Might reword the requirement for initial settings to be optional. It may be better to have them included in the program itself, so that the program is self-contained.
     - Could have them be optional and checks will not be done if they are not included and are not yet set.
