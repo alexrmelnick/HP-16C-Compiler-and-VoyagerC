@@ -27,8 +27,8 @@ import logging
 
 from Calculator_State import CalculatorState
 from Output import *
-from Parse_Command import *
-from Parser import *
+from Parse_Arguments import *
+from Parse_File import *
 
 # CONSTANTS
 PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program

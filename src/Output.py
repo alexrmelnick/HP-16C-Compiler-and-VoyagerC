@@ -1,4 +1,5 @@
 import os
+
 from Calculator_State import *
 
 from datetime import datetime
@@ -114,7 +115,7 @@ def output_pdf(calculator_state):
     header = [
         f"Program Listing for {os.path.basename(calculator_state.input_file_name)} for the HP-16C Calculator",
         f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} with the Jovial Assembler by Alex Melnick",
-        f"Calculator status (at end of program): {calculator_state.sign_mode} mode, {calculator_state.word_size}-bit words, {calculator_state.base} base",
+        #f"Calculator status (at end of program): {calculator_state.sign_mode} mode, {calculator_state.word_size}-bit words, {calculator_state.base} base",
         f"Program length: {calculator_state.program_length} Bytes",
         f"Registers used: {len(calculator_state.registers_used)} of {calculator_state.available_registers} available",
         f"Memory partition @ {calculator_state.memory_partition} Bytes"

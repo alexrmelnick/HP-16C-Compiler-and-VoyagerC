@@ -12,15 +12,13 @@ def parse_arguments(calculator_state):
         formatter_class=argparse.RawTextHelpFormatter
         )
 
-    parser.add_argument(
-        '-i', '--input_file', 
+    parser.add_argument('-i', '--input_file', 
         #required=True, 
         help='Input file to assemble with .jov extension (required)', 
         type=str,
         # Eventually gonna add nargs='+' to allow multiple input files
         )  # Input file argument
-    parser.add_argument(
-        '-o', '--output_file',
+    parser.add_argument('-o', '--output_file',
         #required=True, 
         help=textwrap.dedent('''\
         Output file with desired extension format (.pdf/.16c/.txt) (required)  
@@ -30,27 +28,28 @@ def parse_arguments(calculator_state):
         '''), 
         type=str,
         )  # Output file argument
-    parser.add_argument(
-        '-s', '--sign_mode', 
+    parser.add_argument('-s', '--sign_mode', 
         type=int, 
         choices=[0, 1, 2, 3], 
-        default=2, 
-        help = 'HP-16C starting sign mode (0 = Unsigned, 1 = 1\'s complement, 2 = 2\'s complement, 3 = floating point) (default = 2)',
+        #default=2, 
+        #help = 'HP-16C starting sign mode (0 = Unsigned, 1 = 1\'s complement, 2 = 2\'s complement, 3 = floating point) (default = 2)',
+        help = 'HP-16C starting sign mode (0 = Unsigned, 1 = 1\'s complement, 2 = 2\'s complement, 3 = floating point)',
         ) # Sign mode argument
-    parser.add_argument(
-        '-w', '--word_size',
+    parser.add_argument('-w', '--word_size',
         type=int, 
         choices=range(4, 65), 
         metavar='{4-64}',
-        default=16,
-        help='HP-16C starting word size (number of bits in a word) between 4 bits and 64 bits (default = 16)',
+        #default=16,
+        #help='HP-16C starting word size (number of bits in a word) between 4 bits and 64 bits (default = 16)',
+        help='HP-16C starting word size (number of bits in a word) between 4 bits and 64 bits',
         ) # Word size argument
     parser.add_argument(
         '-b', '--base', 
         type=int, 
         choices=[2, 8, 10, 16], 
-        default=10,
-        help='Starting base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal) (default = 10) (note that base must be 10 for floating point numbers)',
+        #default=10,
+        #help='Starting base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal) (default = 10) (note that base must be 10 for floating point numbers)',
+        help='Starting base of the number being entered (2 = binary, 8 = octal, 10 = decimal, 16 = hexadecimal)',
         ) # Base argument
     parser.add_argument(
         '-v', '--version',
@@ -72,6 +71,7 @@ def parse_arguments(calculator_state):
     if len(sys.argv) == 1:
         parse_interactive(calculator_state)
     else:
+        print(args)
         calculator_state.input_file_name = args.input_file if args.input_file is not None else ""
         calculator_state.output_file_name = args.output_file[:-4] if (args.output_file is not None and len(args.output_file)) > 4 else ""
         calculator_state.output_mode = args.output_file[-3:] if (args.output_file is not None and len(args.output_file) > 3) else ""
@@ -93,6 +93,13 @@ def parse_arguments(calculator_state):
         if calculator_state.output_mode not in ["16c", "pdf", "txt"]:
             logging.critical("Invalid output file type. Please use either '.16c', '.pdf', or '.txt'.")
             sys.exit(1)
+
+        if calculator_state.sign_mode == 3 and calculator_state.word_size != 56:
+            logging.warning("Floating point mode selected. Word size automatically set to 56 bits.")
+            calculator_state.word_size = 56
+        if calculator_state.sign_mode != 3 and calculator_state.base != 10:
+            logging.warning("Floating point mode selected. Base automatically set to 10.")
+            calculator_state.update_base(10)
 
 def parse_interactive(calculator_state):
     print("Welcome to the Jovial Assembler - the first and only assembler for the HP-16C calculator!")

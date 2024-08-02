@@ -63,7 +63,7 @@ def parse_instruction(tokens, input_line_number, calculator_state):
                         logging.critical("Addresses must be between 0 and 31 for direct addressing.")
                         logging.critical(f"Line: {tokens} (line number: {input_line_number})")
                         sys.exit(1)
-                    elif(int(tokens[1])*calculator_state.word_size/8 >= calculator_state.memory_partition):
+                    elif(calculator_state.word_size is not None and int(tokens[1])*calculator_state.word_size/8 >= calculator_state.memory_partition):
                         logging.critical("Error - Out of memory range:")
                         logging.critical("Addresses must be within the memory partition.")
                         logging.critical(f"Line: {tokens} (line number: {input_line_number})")
@@ -342,7 +342,7 @@ def is_valid_integer(token, calculator_state):
         return False
     if num < 0:
         return False
-    if num >= 2 ** calculator_state.word_size:
+    if (calculator_state.word_size is not None) and (num >= 2 ** calculator_state.word_size):
         return False
     
     return True
