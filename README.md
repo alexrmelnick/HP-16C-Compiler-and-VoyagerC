@@ -55,8 +55,8 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
   - Add support for a linux and MacOS executable.
   - Add the ability to combine multiple programs into 1 single file seamlessly so that you can keep a library of programs.
     - Need to be able to handle conflicting labels and memory addresses.
-
   - Figure out how to disable the traceback when the task is terminated manually. 
+  - Improve installation process.
 
 ### Acknowledgements
 
