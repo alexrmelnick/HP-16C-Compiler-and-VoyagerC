@@ -17,6 +17,11 @@
 // R0 := sum
 // Default settings: Unsigned, 32-bit, dec
 lbl A   // Start of program
+    UNSGN
+    DEC
+    32
+    WSIZE
+
     999     // X <- 999 := i_start
     sto i   // RI <- X==999 := i_start
     0       // R0 <- 0 := sum

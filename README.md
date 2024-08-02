@@ -42,17 +42,21 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
   - I have a working executable that can be run on Windows. 
   - You can add it to your path to run it from the command line.
   - I hope to one day make a proper installer for the program so this is automated.
-### 4. Extend the Jovial Assembler to new simulators ** (complete)**
+### 4. Extend the Jovial Assembler to new simulators **(complete)**
   - Add support for Jamie O'Connell's HP-16C Emulator.
-### 5. Future hopes and dreams
-  - Add the ability to combine multiple programs into 1 single file seamlessly so that you can keep a library of programs.
-    - Need to be able to handle conflicting labels and memory addresses.
+### 5. Rework Argument Parsing **(complete)**
   - Rework command line arguments, possibly using a library that is more robust.
   - Might reword the requirement for initial settings to be optional. It may be better to have them included in the program itself, so that the program is self-contained.
     - Could have them be optional and checks will not be done if they are not included and are not yet set.
   - Write a script to automatically update all the files in the `tests` folders when the assembler is updated.
+### 6. Future hopes and dreams
   - Add support for the PX16C Kit. 
     - This is closed source, so this will require either cooperation from the developer or reverse engineering. 
+  - Add support for a linux and MacOS executable.
+  - Add the ability to combine multiple programs into 1 single file seamlessly so that you can keep a library of programs.
+    - Need to be able to handle conflicting labels and memory addresses.
+
+  - Figure out how to disable the traceback when the task is terminated manually. 
 
 ### Acknowledgements
 

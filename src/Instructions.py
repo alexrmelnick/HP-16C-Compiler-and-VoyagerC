@@ -1,7 +1,6 @@
 import sys
 import logging
 
-from Calculator_State import CalculatorState
 from Utils import is_number
 from Instructions_Data import *
 

@@ -27,35 +27,31 @@ import logging
 
 from Calculator_State import CalculatorState
 from Output import *
-from Parse_Command import *
-from Parser import *
+from Parse_Arguments import *
+from Parse_File import *
 
 # CONSTANTS
 PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program
 
 def main():
+    input_file = None # File object for the input file
+    calculator_state = CalculatorState() # Create a new instance of the CalculatorState
+
+    parse_arguments(calculator_state) # Parse the command line arguments
+
     # Set up logging configuration
-    myLevel = logging.DEBUG
     myFormat = logging.Formatter('%(levelname)s - %(filename)s - %(funcName)s - %(message)s')
     
     # Create a console handler
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(myLevel)
+    console_handler.setLevel(calculator_state.logger_level)
     console_handler.setFormatter(myFormat)
     
     # Get the root logger and set its level and handler
     logger = logging.getLogger()
-    logger.setLevel(myLevel)
+    logger.setLevel(calculator_state.logger_level)
     logger.addHandler(console_handler)
 
-    input_file = None # File object for the input file
-    calculator_state = CalculatorState(2, 16, 10) # Create a new instance of the CalculatorState class with default values
-
-    # Determine if in CLI mode or interactive mode, then parse accordingly
-    if(len(sys.argv) == 1):
-        parse_interactive(calculator_state)
-    else:
-        parse_cli(sys.argv, calculator_state)
 
     # Open the input file, read it, then close it
     logging.info(f"Opening file: {calculator_state.input_file_name} of type {str(type(calculator_state.input_file_name))}")
