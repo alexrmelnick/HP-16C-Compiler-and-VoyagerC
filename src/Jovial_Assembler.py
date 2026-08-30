@@ -2,10 +2,11 @@
 Welcome to the Jovial Assembler! This program takes in a .jov file of Jovial Assembly and outputs either
 a .16c file for importing into the JRPN HP-16C simulator or a .pdf file for printing. 
 
-The Jovial Assembler is a single-pass assembler featuring:
+The Jovial Assembler is a two-pass assembler featuring:
 - A simple and intuitive syntax based on the sample programs in the HP-16C manual.
 - A comprehensive instruction set that covers all of the operations available on the HP-16C calculator.
 - Support for comments using a `//` prefix.
+- Support for descriptive, case-insensitive symbolic program labels.
 - Support for automatic assembly of the `f` and `g` modifier keys.
 - Ability to specify the base of the number being entered (binary, octal, decimal, or hexadecimal).
 - Ability to use negative numbers as an immediate.
@@ -29,6 +30,7 @@ from Calculator_State import CalculatorState
 from Output import *
 from Parse_Arguments import *
 from Parse_File import *
+from Symbolic_Labels import LabelResolutionError, resolve_symbolic_labels
 
 # CONSTANTS
 PRGM_MEMORY_AVAILABLE = 203 # Number of bytes available in memory for the program
@@ -61,6 +63,20 @@ def main():
     input_file = open(calculator_state.input_file_name, "r") # Open the file in read mode
     assembly_code = input_file.readlines() # Read all the lines of the input file into a list
     input_file.close()
+
+    # Resolve human-readable labels before assembling calculator instructions.
+    # This extra pass allows references to labels declared later in the file.
+    try:
+        assembly_code, symbolic_labels = resolve_symbolic_labels(assembly_code)
+    except LabelResolutionError as error:
+        logging.critical(f"Error - Invalid label: {error}")
+        sys.exit(1)
+
+    for symbolic_label, physical_label in symbolic_labels.items():
+        logging.info(
+            f"Assigned symbolic label '{symbolic_label}' to HP-16C label "
+            f"'{physical_label}'."
+        )
 
     # Assemble the code into "bare" keypress sequences
     for input_line_number, line in enumerate(assembly_code):

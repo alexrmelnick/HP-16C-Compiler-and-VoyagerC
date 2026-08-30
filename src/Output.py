@@ -4,11 +4,6 @@ from Calculator_State import *
 
 from datetime import datetime
 
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import LETTER
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase import pdfmetrics
-
 # For the JRPN Simulator
 def output_16c(calculator_state):
     # Update the state of the calculator
@@ -95,6 +90,13 @@ def output_txt(calculator_state):
 
 # For a printable pdf
 def output_pdf(calculator_state):
+    # PDF support is optional for users who only need simulator output.
+    # Import ReportLab here so .16c and .txt generation does not require it.
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.pagesizes import LETTER
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.pdfbase import pdfmetrics
+
     # Parameters for the PDF
     font_name = "Dot Matrix" # Using a custom font for the program listing for a retro look
     line_spacing = 16  # Line spacing for the program listing
@@ -103,9 +105,11 @@ def output_pdf(calculator_state):
     if hasattr(sys, '_MEIPASS'):
         base_path = sys._MEIPASS
     else:
-        base_path = os.path.abspath(".")
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
-    font_path = os.path.join(base_path, 'fonts\hdad-dotrice-1.001\dotrice-condensed.ttf')
+    font_path = os.path.join(
+        base_path, "fonts", "hdad-dotrice-1.001", "dotrice-condensed.ttf"
+    )
     c = canvas.Canvas(calculator_state.output_file_name + ".pdf", pagesize=LETTER)
     pdfmetrics.registerFont(TTFont(font_name, font_path))
     c.setFont(font_name, 12)  
@@ -159,8 +163,22 @@ def output_pdf(calculator_state):
                 c.showPage()
                 c.setFont(font_name, 12)
                 current_column = 0  # Reset to the first column
-                # Reset y position for the new column or page
-                heading_y_position = 792 - 72  # 72 points (1 inch) from the top
-                columns = [(72, heading_y_position), (228, heading_y_position), (384, heading_y_position)]  # Adjusted y position for columns start
+                heading_y_position = 792 - 72
+                c.drawString(
+                    72,
+                    heading_y_position,
+                    f"Program Listing for {os.path.basename(calculator_state.input_file_name)} (continued)",
+                )
+                heading_y_position -= line_spacing
+                c.setDash(1, 3)
+                c.line(72, heading_y_position, 522, heading_y_position)
+                for x in vertical_lines_x:
+                    c.line(x, heading_y_position, x, 72)
+                heading_y_position -= line_spacing
+                columns = [
+                    (72, heading_y_position),
+                    (228, heading_y_position),
+                    (384, heading_y_position),
+                ]
 
     c.save()  # Save the PDF

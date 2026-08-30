@@ -2,6 +2,19 @@
 
 The Jovial Assembler is an assembler to assemble a custom assembly programming language into a printable keystroke programming text .pdf, into .16c format for loading directly into the JRPN 16C simulator, or into .txt format for the HP16C Emulator. 
 
+Jovial supports descriptive symbolic labels and forward references. A label can use traditional assembler syntax or the calculator-style `LBL` instruction:
+
+```text
+loop:
+    RCL 0
+    GTO loop
+
+LBL helper
+    RTN
+```
+
+Symbols are case-insensitive and are automatically assigned to the HP-16C's 16 physical labels (`0`–`9` and `A`–`F`). Existing programs using physical labels continue to work. `LBL name = A` can pin a symbol to a particular physical label when exact keystroke compatibility matters.
+
 ## Description
 The HP-16C is a computer scientist's calculator produced from 1982 until 1989. It is still highly regarded and sought after by assembly programmers. This project aims to provide a user-friendly way to extend the usefulness of the HP-16C by allowing users to write programs in a text editor and assembler them into keystroke programming sequences. The Jovial assembly language is based on the sample programs found in the HP-16C manual. The assembler is written in Python and is designed to be easily extendible to other simulators.
 

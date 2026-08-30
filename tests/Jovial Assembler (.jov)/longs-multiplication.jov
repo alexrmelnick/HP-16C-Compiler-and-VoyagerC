@@ -4,11 +4,11 @@
 ; R0 <- 10000000000000000000
 ; Y <- 12345678987654
 ; X <- 987654321234567
-; GSB 1
+; GSB multiply_long
 ; Display: "19326320 .d"
 
 
-lbl 1
+multiply_long:
 unsgn
 DBLx
 sto 1

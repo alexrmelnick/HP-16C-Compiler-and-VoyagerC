@@ -21,7 +21,7 @@
 // R1 := a
 // R2 := b
 // Starting conditions: unsigned, 32-bit, dec
-lbl a   // Start of program
+main:   // Start of program
     // Set starting conditions
     UNSGN
     DEC
@@ -36,17 +36,17 @@ lbl a   // Start of program
     2   // R2 <- 2 := b
     sto 2
 
-    lbl 0   // Loop top
+    fibonacci_loop:   // Loop top
         rcl 2   // X <- b
         0       // X <- 3, Y <- b
         B?      // If b[0] == 1, do the next line, else skip it
-            gto 1   // goto END IF
+            gto end_if   // goto END IF
         // If X[0] == 0, we are doing this
         rcl 0   // X <- sum, Y <- b
         +       // X <- sum + b
         sto 0   // R0 <- sum + b
 
-        lbl 1   // END IF
+        end_if:   // END IF
         RCL 1   // X <- a
         rcl 2   // X <- b, Y <- a
         +       // X <- a+b
@@ -58,7 +58,7 @@ lbl a   // Start of program
         X<>Y    // X <- b
         4000000 // X <- 4000000, Y <- B
         X>Y     // If Y < X (B < 4000000), do the next line, else skip it
-            gto 0   // Goto loop top
+            gto fibonacci_loop   // Goto loop top
     
     rcl 0   // print sum
     show dec

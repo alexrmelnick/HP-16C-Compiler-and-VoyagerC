@@ -54,7 +54,7 @@ def parse_arguments(calculator_state):
     parser.add_argument(
         '-v', '--version',
         action='version',
-        version='%(prog)s 1.2.0',   #! This is where the version number is set
+        version='%(prog)s 1.3.0',   #! This is where the version number is set
         ) # Version argument
     parser.add_argument(
         '-d', '--debug',
@@ -96,7 +96,11 @@ def parse_arguments(calculator_state):
         if calculator_state.sign_mode == 3 and calculator_state.word_size != 56:
             logging.warning("Floating point mode selected. Word size automatically set to 56 bits.")
             calculator_state.word_size = 56
-        if calculator_state.sign_mode != 3 and calculator_state.base != 10:
+        if calculator_state.base is None:
+            # Keep the assembler's existing decimal fallback for unprefixed
+            # numbers when the caller does not provide an initial base.
+            calculator_state.update_base(10)
+        elif calculator_state.sign_mode == 3 and calculator_state.base != 10:
             logging.warning("Floating point mode selected. Base automatically set to 10.")
             calculator_state.update_base(10)
 

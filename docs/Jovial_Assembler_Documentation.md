@@ -40,7 +40,7 @@ Please note that this documentation is a work in progress and will be updated as
 
 
 ## Introduction
-Jovial is a custom assembly language designed specifically for the HP-16C calculator. It is intended to be used with the JRPN HP-16C Simulator to write programs that can be run on the simulator or typed manually into a physical HP-16C. It is modeled on the HP-16C keystroke programming language provided in the HP-16C manual with some small simplifications for ease of programming. The Jovial Assembler is a single-pass assembler designed to be easy to use and to provide a familiar programming environment for those who are already familiar with the HP-16C calculator.
+Jovial is a custom assembly language designed specifically for the HP-16C calculator. It is intended to be used with the JRPN HP-16C Simulator to write programs that can be run on the simulator or typed manually into a physical HP-16C. It is modeled on the HP-16C keystroke programming language provided in the HP-16C manual with some small simplifications for ease of programming. The Jovial Assembler uses two passes so that descriptive labels can be referenced before they are declared.
 
 The Jovial Assembler gets its name from the JRPN HP-16C Simulator. JRPN stands for Jovial Reverse Polish Notation. It was originally called the "Saturnine Assembler", since the next planet after Jupiter is Saturn. However, some later HP calculators (notably the HP-41) contained the Saturn processor, so the name was changed to avoid confusion. I have tried to remove all references, but you may see references to the "Saturnine Assembler" in the code or documentation. Don't worry, the Jovial Assembler and "Saturnine Assembler" are the same thing. 
 
@@ -64,6 +64,7 @@ The Jovial Assembler provides a number of features that make it easy to write pr
 - A simple and intuitive syntax based on the sample programs in the HP-16C manual.
 - A comprehensive instruction set that covers all of the operations available on the HP-16C calculator.
 - Support for comments using the `;` or `//` prefix.
+- Support for descriptive, case-insensitive symbolic labels and forward references.
 - Support for automatic assembly of the `f` and `g` modifier keys.
 - Ability to specify the base of the number being entered (binary, octal, decimal, or hexadecimal).
 - Ability to enter multi-digit numbers as an immediate.
@@ -408,17 +409,21 @@ The following is a list of the instructions available in the Jovial Assembly Lan
         - `SF 1`: Set flag 1
 
 ### Control Operations
-- `LBL #`: Label the current program line
-    - Label the current program line with the specified number 0-F. 
-    - The label is the number of the program line.
-    - Most programs start with a `LBL 0` instruction.
+- `name:` or `LBL name`: Label the current program line with a symbol.
+    - Symbolic labels must start with a letter or underscore and may contain letters, digits, and underscores.
+    - Symbols are case-insensitive, can be referenced before their declaration, and are automatically assigned in declaration order to the first available physical label.
+    - The HP-16C has 16 physical program labels: `0` through `9` and `A` through `F`. Physical labels already used by the source are skipped by automatic allocation.
     - Example:
-        - `LBL 5`: Label program line 5
-- `GTO #` and `GSB #`: Go to and go to subroutine the specified label
-    - Jump to the specified label.
-    - The label is the number of the program line to jump to.
-    - Example:
-        - `GTO 5`: Jump to program line 5
+        - `loop:` followed later by `GTO loop`
+        - `LBL calculate` followed earlier or later by `GSB calculate`
+- `LBL name = #`: Declare a symbol pinned to physical label `#`.
+    - Pinning is optional. It is useful when converting an existing program to descriptive names while preserving its exact keystrokes.
+    - Example: `LBL calculate = A` followed by `GSB calculate` assembles as `LBL A` and `GSB A`.
+- `LBL #`, `GTO #`, and `GSB #`: Use a physical calculator label directly.
+    - Legacy programs using `0` through `9` and `A` through `F` remain valid.
+- `GTO name` and `GSB name`: Branch or call a subroutine using a symbolic label.
+    - An undefined symbol, a duplicate symbolic declaration, or more symbols than available physical labels is an assembly error.
+- `GTO I`, `GTO (i)`, `GSB I`, and `GSB (i)`: Branch indirectly using the Index register.
 - `RTN`: Return
     - Return from the current subroutine to the line after the last `GSB` instruction.
     - Halts the program and resets the PC to 0 if you are not in a subroutine. 

@@ -1,6 +1,6 @@
 ; Program taken from PPC #4747, HPCC #1075 by Valentin Albillo
 
-lbl A
+towers_of_hanoi:
 8
 wsize
 dec
@@ -12,30 +12,30 @@ sto 2
 sto 3
 3
 sto 1
-lbl 3
+move_loop:
 rcl 3
 x!=0
-gto 4
+gto ordinary_move
 rcl 0
 pse
 rcl 1
 r/s
-lbl 1
-gsb 9
+lbl dispatch_move = 1
+gsb decode_move
 sto I
 gto I
-lbl 4
-gsb 7
+ordinary_move:
+gsb calculate_index
 0
-gsb 8
+gsb store_move
 sto 1
 rcl 3
 1
 -
 sto 3
-gto 3
-lbl 0
-gsb 9
+gto move_loop
+lbl special_move = 0
+gsb decode_move
 rv
 sto 0
 pse
@@ -43,20 +43,20 @@ rv
 sto 1
 r/s
 4
-gsb 8
+gsb store_move
 sto 0
-gto 3
-lbl 1
+gto move_loop
+lbl advance_disk = 1
 rcl 3
 1
 +
 sto 3
 rcl 2
 x!=Y
-gto 1
+gto dispatch_move
 xor
 x<>(I)
-lbl 8
+store_move:
 rcl 0
 or
 sl
@@ -70,7 +70,7 @@ rcl 0
 rcl 1
 -
 rtn 
-lbl 7
+calculate_index:
 rcl 2
 rcl 3
 -
@@ -78,12 +78,12 @@ rcl 3
 +
 sto I
 rtn
-lbl 9
-gsb 7
+decode_move:
+gsb calculate_index
 dsz
 rcl (I)
-gsb 2
-lbl 2
+gsb split_move
+split_move:
 enter
 enter
 4

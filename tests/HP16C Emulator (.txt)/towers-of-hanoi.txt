@@ -3,7 +3,7 @@ HP16C Program Listing: towers-of-hanoi.jov
  Program Code    | Command Text
  ================================= 
  000 -           | 
- 001 - 43,22, A  | [g][LBL] A
+ 001 - 43,22, 2  | [g][LBL] 2
  002 - 8         | 8
  003 - 42 44     | [f][WSIZE] 
  004 - 24        | [DEC]
@@ -24,13 +24,13 @@ HP16C Program Listing: towers-of-hanoi.jov
  019 - 45 1      | [RCL] 1
  020 - 31        | [R/S]
  021 - 43,22, 1  | [g][LBL] 1
- 022 - 21 9      | [GSB] 9
+ 022 - 21 7      | [GSB] 7
  023 - 44 32     | [STO] I
  024 - 22 32     | [GTO] I
  025 - 43,22, 4  | [g][LBL] 4
- 026 - 21 7      | [GSB] 7
+ 026 - 21 6      | [GSB] 6
  027 - 0         | 0
- 028 - 21 8      | [GSB] 8
+ 028 - 21 5      | [GSB] 5
  029 - 44 1      | [STO] 1
  030 - 45 3      | [RCL] 3
  031 - 1         | 1
@@ -38,7 +38,7 @@ HP16C Program Listing: towers-of-hanoi.jov
  033 - 44 3      | [STO] 3
  034 - 22 3      | [GTO] 3
  035 - 43,22, 0  | [g][LBL] 0
- 036 - 21 9      | [GSB] 9
+ 036 - 21 7      | [GSB] 7
  037 - 33        | [Rv]
  038 - 44 0      | [STO] 0
  039 - 43 34     | [g][PSE] 
@@ -46,7 +46,7 @@ HP16C Program Listing: towers-of-hanoi.jov
  041 - 44 1      | [STO] 1
  042 - 31        | [R/S]
  043 - 4         | 4
- 044 - 21 8      | [GSB] 8
+ 044 - 21 5      | [GSB] 5
  045 - 44 0      | [STO] 0
  046 - 22 3      | [GTO] 3
  047 - 43,22, 1  | [g][LBL] 1
@@ -59,7 +59,7 @@ HP16C Program Listing: towers-of-hanoi.jov
  054 - 22 1      | [GTO] 1
  055 - 42 10     | [f][XOR] 
  056 - 42 21     | [f][X<=>(i)] 
- 057 - 43,22, 8  | [g][LBL] 8
+ 057 - 43,22, 5  | [g][LBL] 5
  058 - 45 0      | [RCL] 0
  059 - 42 40     | [f][OR] 
  060 - 42 A      | [f][SL] 
@@ -73,7 +73,7 @@ HP16C Program Listing: towers-of-hanoi.jov
  068 - 45 1      | [RCL] 1
  069 - 30        | [-]
  070 - 43 21     | [g][RTN] 
- 071 - 43,22, 7  | [g][LBL] 7
+ 071 - 43,22, 6  | [g][LBL] 6
  072 - 45 2      | [RCL] 2
  073 - 45 3      | [RCL] 3
  074 - 30        | [-]
@@ -81,12 +81,12 @@ HP16C Program Listing: towers-of-hanoi.jov
  076 - 40        | [+]
  077 - 44 32     | [STO] I
  078 - 43 21     | [g][RTN] 
- 079 - 43,22, 9  | [g][LBL] 9
- 080 - 21 7      | [GSB] 7
+ 079 - 43,22, 7  | [g][LBL] 7
+ 080 - 21 6      | [GSB] 6
  081 - 43 23     | [g][DSZ] 
  082 - 45 31     | [RCL] (i)
- 083 - 21 2      | [GSB] 2
- 084 - 43,22, 2  | [g][LBL] 2
+ 083 - 21 8      | [GSB] 8
+ 084 - 43,22, 8  | [g][LBL] 8
  085 - 36        | [ENTER]
  086 - 36        | [ENTER]
  087 - 4         | 4

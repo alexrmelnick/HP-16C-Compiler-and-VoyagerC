@@ -1,10 +1,10 @@
 #  Program produced by Alex Melnick's Jovial Assembler.
 #  Character encoding: UTF-8
-#  Generated 2024-08-02 11:15:53
+#  Generated 2026-08-30 19:47:26
 #  Program occupies 15 bytes.
 
    000 {          } 
-   001 { 43 22 1  } g LBL 1
+   001 { 43 22 0  } g LBL 0
    002 {    42 3  } f UNSGN
    003 {    43 20 } g DBLx
    004 {    44 1  } STO 1

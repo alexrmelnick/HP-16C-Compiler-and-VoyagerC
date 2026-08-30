@@ -26,7 +26,7 @@
 //
 //  F0 = isPrime result
 
-lbl a   // Start of program 
+main:
     // Initialize settings
     dec             // Set the modes because it is important to this program
     48
@@ -44,23 +44,23 @@ lbl a   // Start of program
 
     cf 0            // Clear F0
 
-    lbl 0   // LOOP TOP
+    factor_loop:
         rcl 0   // X <- big_end | little_end % limit
         rcl 1
         rcl I
         dblrmd     // X <- number % limit
         x!=0    // If X!=0, do next line, else skip
-            gto 2   // goto ELSE
+            gto not_a_factor
 
-        gsb B   // goto subroutine isPrime
+        gsb is_prime
         f? 0    // if F0 is set (i.e., i is prime), do next line, else skip
-            gto 3 // goto RETURN
+            gto return_factor
         
-        lbl 2   // ELSE
+        not_a_factor:
         dsz     // I-- (test is irrelevant, but this saves 2 program lines compared to rcl/sto)
-        gto 0   // goto LOOP TOP
+        gto factor_loop
 
-    lbl 3   // RETURN
+    return_factor:
     rcl i   // print I
     show dec
     rtn     // return
@@ -77,27 +77,27 @@ lbl a   // Start of program
 
 // Argument = I
 // subLimit = R2
-lbl b   // isPrime
+is_prime:
     rcl I // Check if I is even
     0
     b?  // if I is odd, do next line, else skip it
-        gto 6   // GOTO END IF
+        gto candidate_is_odd
     RTN // if even, return false
     
-    lbl 6   // END IF
+    candidate_is_odd:
     sqrt    // X <- Sqrt(I) := subLimit
     // Check if subLimit is odd
     0
     b?  // if I is odd, do next line, else skip it
-        gto 5
+        gto divisor_ready
     
     1   // +1 if subLimit is odd
     +
 
-    lbl 5 // END IF
+    divisor_ready:
     sto 2   // R2 <- subLimit
 
-    lbl 4   // LOOP TOP
+    divisor_loop:
         rcl I   // X <- I%subLimit
         rcl 2
         rmd
@@ -114,7 +114,7 @@ lbl b   // isPrime
         2
         rcl 2
         x>Y // if subLimit > 2, do next line
-            gto 4   // goto LOOP TOP
+            gto divisor_loop
     
     sf 0    // F0 <- 1
     rtn     // return true

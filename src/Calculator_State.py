@@ -32,7 +32,23 @@ class CalculatorState:
 
     # Methods
     def __init__(self):
-        pass
+        # These values must belong to each assembly independently. Defining the
+        # defaults above documents the state, while assigning them here avoids
+        # sharing mutable program/register lists between instances.
+        self.sign_mode = None
+        self.previous_sign_mode = None
+        self.word_size = None
+        self.base = None
+        self.base_numeric = None
+        self.program_length = 0
+        self.registers_used = []
+        self.available_registers = 406
+        self.memory_partition = PRGM_MEMORY_AVAILABLE
+        self.program = []
+        self.input_file_name = None
+        self.output_file_name = None
+        self.output_mode = None
+        self.logger_level = logging.DEBUG
 
     def __str__(self): # For debugging
         return f"Sign mode: {self.sign_mode}, Word size: {self.word_size}, Base: {self.base}, Program length: {self.program_length}, Registers used: {self.registers_used}, Memory partition: {self.memory_partition}"

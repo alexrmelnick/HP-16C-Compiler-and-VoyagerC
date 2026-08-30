@@ -15,8 +15,8 @@
 
 ; Initial settings: floating point mode
 ; Usage: Store your desired data in the specified registers, then run the relevant program
-;		GSB A -> Convert from sexagesimal to decimal degrees 
-;		GSB B -> Convert from decimal degrees to sexagesimal
+;		GSB sexagesimal_to_decimal
+;		GSB decimal_to_sexagesimal
 ;	Inputs/Outputs:	R1 <- degrees
 ; 					R2 <- minutes
 ;					R3 <- seconds
@@ -27,12 +27,12 @@
 ; R2 := minutes input/output
 ; R3 := seconds input/output
 
-LBL A 	; Convert from sexagesimal to decimal degrees
+sexagesimal_to_decimal:
 	; Decimal degrees = degrees + minutes/60 + seconds/3600
 	RCL 1 	; X <- R1 := degrees
 	CF 1	; Clear F1 incase it was already set
 
-	GSB 2	; Store sign of X
+	GSB store_sign
 
 	RCL 2	; X <- R2 := minutes, Y <- R1 := degrees
 	60		; X <- minutes/60
@@ -50,7 +50,7 @@ LBL A 	; Convert from sexagesimal to decimal degrees
 
 	RTN		; End program
 
-LBL B	; Convert from decimal degrees to sexagesimal
+decimal_to_sexagesimal:
 	; degrees = trunc(decimal degrees, 0)
 	; minutes = trunc(60*abs(decimal degrees - degrees),0)
 	; seconds = 3600*abs(decimal degrees - degrees) - 60*minutes
@@ -58,7 +58,7 @@ LBL B	; Convert from decimal degrees to sexagesimal
 	; Calculating degrees
 	; X is the starting value
 	STO I 	; Store decimal degrees for future use
-	GSB 0	; R4 <- trunc(decimal degrees,0)
+	GSB truncate
 	F? 2
 		CHS
 	STO 1 	; R1 := degrees <- trunc(decimal degrees,0)
@@ -70,7 +70,7 @@ LBL B	; Convert from decimal degrees to sexagesimal
 	abs
 	60
 	*		; X <- 60*abs(decimal degrees - degrees)
-	GSB 0	; R4 <- trunc(60*abs(decimal degrees - degrees),0)
+	GSB truncate
 	STO 2	; seconds <- trunc(60*abs(decimal degrees - degrees),0)
 
 	; Calculating seconds
@@ -89,11 +89,11 @@ LBL B	; Convert from decimal degrees to sexagesimal
 	RCL 1	; Recall degrees for display
 	RTN		; End program
 
-LBL 0   ; INT part of float
-    GSB 2
+truncate:
+    GSB store_sign
 	ENTER
 	ENTER	
-    GSB 3
+    GSB round_for_truncation
     x>y     ; Adjust rounded result by 1
     	1
 	0	
@@ -101,19 +101,19 @@ LBL 0   ; INT part of float
     10	
     /	
     -
-    RTN	
+    RTN
 
-LBL 2   ; Subroutine to store sign
+store_sign:
     CF 2	
     x<0	
         SF 2	
     ABS	
     RTN	
 
-LBL 3	; Subroutine to round
+round_for_truncation:
     EEX	
     9	
     +	
     LSTx	
     -	
-    RTN	
+    RTN

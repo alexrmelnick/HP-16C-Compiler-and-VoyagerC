@@ -1,7 +1,7 @@
 ; Program can be found on pages 90-93 of the HP-16C manual
 ; Starting settings: 2-04-0000
 
-LBL D
+checksum:
 UNSGN
 4
 WSIZE
@@ -10,7 +10,7 @@ A
 STO I
 0
 enter
-LBL 0
+checksum_loop:
 RCL (i)
 #B
 +
@@ -20,5 +20,5 @@ rlc     ; Rotate left with carry, not recall
 + 
 X<=>Y
 dsz
-GTO 0
+GTO checksum_loop
 RTN

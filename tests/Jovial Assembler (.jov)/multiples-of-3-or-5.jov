@@ -16,7 +16,7 @@
 // RI := Counter
 // R0 := sum
 // Default settings: Unsigned, 32-bit, dec
-lbl A   // Start of program
+main:   // Start of program
     UNSGN
     DEC
     32
@@ -27,31 +27,31 @@ lbl A   // Start of program
     0       // R0 <- 0 := sum
     sto 0   
 
-    lbl 0   // Loop top
+    divisor_loop:   // Loop top
         rcl i   // X <- RI
         3       // X <- 3, Y <- RI
         rmd     // X <- RI % 3
         x==0    // If X==0, goto 1, else skip
-            gto 1
+            gto add_counter
         rcl I   // Else if I%5 == 0
         5
         rmd
         x==0
-            gto 1
+            gto add_counter
         
-        lbl 3   // END IF
+        continue_loop:   // END IF
         dsz     // RI--, do next instruction if RI==0
-            gto 0   // Goto end of program
-        gto 2   // Goto top of loop
+            gto divisor_loop   // Goto top of loop
+        gto done
 
-    lbl 2   // End of program
+    done:   // End of program
     rcl 0
     show dec // display result
     rtn
 
-lbl 1   // sum += I
+add_counter:   // sum += I
     rcl 0
     rcl i
     +
     sto 0
-    gto 3  // goto END IF
+    gto continue_loop

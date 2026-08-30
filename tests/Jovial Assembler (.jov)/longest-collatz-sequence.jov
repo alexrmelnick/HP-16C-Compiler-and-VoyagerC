@@ -47,7 +47,7 @@
 //  Y_end := the length of the longest sequence
 
 // Starting settings: unsigned, 32-bit, base irrelevant
-lbl a   // Label the start of our prgm
+main:
     // Initialize settings
     UNSGN
     DEC
@@ -60,36 +60,36 @@ lbl a   // Label the start of our prgm
     1       // X <- 1
     sto 1   // R1 <- 1 := longest_chain_index
     
-    lbl 0   // Top of loop
+    candidate_loop:
         rcl i   // X <- i
-        gsb B   // Goto subroutine, X <- Collatz(i)
+        gsb collatz
         rcl 0   // X <- R0 := longest_chain_length, Y <- Collatz(i)
         x>y     // If longest_chain_length > Collatz(i), skip update, else do it
-            gto 4   // Skip the update
+            gto skip_update
         x<>Y    // X <- Collatz(i)
         sto 0   // Store the new longest length in R0
         rcl I
         sto 1   // Store the updated longest index in R1
 
-        lbl 4
+        skip_update:
         dsz // i--, if i != 0, do the next line
-            gto 0
+            gto candidate_loop
     rcl 0 // Recall the returns
     rcl 1 
     rtn
 
-lbl B   // label for Collatz function
+collatz:
     // X <- input
     1
     sto 2   // reset Collatz_length
     x<>Y    // put the input back in X
-    lbl 5
+    collatz_loop:
         0
         B?    // If X%2==1, Skip the next instruction, else do it
-            GTO 2   // If even, goto else_then (2)
-        GSB 1   // If odd, goto if_then (1)
+            GTO even_step
+        GSB odd_step
         
-        lbl 3   // end_if
+        after_step:
         RCL 2   // X <- R2 := Collatz_length
                 // This might be able to be done without memory calls
         1
@@ -99,25 +99,25 @@ lbl B   // label for Collatz function
         1       // X <- 1, Y <- num
         X<>Y    // X <- num, Y <- 1
         x!=Y    // If X==Y, do the next line, else skip it
-            gto 5   // Goto top of loop
+            gto collatz_loop
     
     RCL 2   // recall Collatz_length and return
     
     //Show dec
     rtn   
 
-lbl 1 // if_then
+odd_step:
     // X <- X/2
     2
     /
     rtn
 
-lbl 2 // else_then
+even_step:
     // X <- 3X+1 
     3
     *
     1
     +
-    gto 3   // goto end_if
+    gto after_step
         
         

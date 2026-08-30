@@ -3,10 +3,10 @@ HP16C Program Listing: incrementer.jov
  Program Code    | Command Text
  ================================= 
  000 -           | 
- 001 - 43,22, A  | [g][LBL] A
+ 001 - 43,22, 0  | [g][LBL] 0
  002 - 1         | 1
  003 - 40        | [+]
  004 - 42 26     | [f][SHOW BIN] 
- 005 - 22 A      | [GTO] A
+ 005 - 22 0      | [GTO] 0
  ================================= 
 

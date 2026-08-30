@@ -1,6 +1,6 @@
 ; Programs taken from Appendix D of the HP-16C manual
 ; Convert from HP-16C floating point to IEEE 754 single precision floating point.
-lbl A
+float_to_ieee:
 2s
 HEX
 cf 4
@@ -17,10 +17,10 @@ sf 0
 abs
 x<>Y
 x<0
-gto 9
+gto normalize_float
 1
 +
-lbl 6
+normalize_loop:
 sto i
 rv
 2
@@ -40,7 +40,7 @@ rcl i
 F
 F
 x>Y
-gto 7
+gto assemble_ieee
 x<>Y
 rv
 rv
@@ -48,20 +48,20 @@ clx
 r^
 r^
 sf 5
-lbl 7
+assemble_ieee:
 rv
 or
 f? 0
-gsb 8
+gsb set_sign_bit
 9
 rrn
 cf 4
 rtn
-lbl 8
+set_sign_bit:
 8
 sb
 rtn
-lbl 9
+normalize_float:
 abs
 3
 0
@@ -73,11 +73,11 @@ x<>Y
 sb
 /
 0
-gto 6
+gto normalize_loop
 
 
 ; Convert from IEEE 754 single precision floating point to HP-16C floating point.
-lbl B
+ieee_to_float:
 hex
 2's
 2
@@ -87,7 +87,7 @@ sl
 enter
 enter
 x=0
-gto 2
+gto return_float
 1
 8
 maskr
@@ -98,15 +98,15 @@ x<>y
 8
 maskl
 x=y 
-gto 4
+gto special_value
 rv
 x=0
-gto 3
+gto add_hidden_bit
 x<>y
 1
 8
 sb
-lbl 1
+apply_exponent_sign:
 f? 4
 chs
 x<>Y
@@ -116,29 +116,29 @@ rln
 7
 -
 cf 4
-lbl 2
+return_float:
 float .
 rtn
-lbl 3
+add_hidden_bit:
 1
 8
 sb
 x<>Y
-gto 1
-lbl 4
+gto apply_exponent_sign
+special_value:
 rv
 clx
 x!=Y
-gto 5
+gto finish_special_value
 1
 4
 5
 enter
-lbl 5
+finish_special_value:
 x<>Y
 f? 4
 chs
 asr
 x<>Y
 sf 4
-gto 2
+gto return_float
