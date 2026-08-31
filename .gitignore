@@ -4,7 +4,6 @@
 # Pyinstaller junk
 /build/jovial
 /env
-/jovial.spec
 
 # Documentation
 docs/HP-16C-Owners-Handbook.pdf
@@ -13,6 +12,6 @@ docs/Crafting-Interpreters.pdf
 /docs/I wrote a programming language. Here’s how you can, too..pdf
 /docs/Building Your Own Programming Language From Scratch HackerNoon.pdf
 /docs/MIPS_Green_Sheet.pdf
-/src/__pycache__
+__pycache__/
 
 /src/test.jov

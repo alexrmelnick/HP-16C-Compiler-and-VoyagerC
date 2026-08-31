@@ -22,17 +22,44 @@ This project started after I received an HP-16C for my birthday. I was absolutel
 
 
 ## Usage/Installation
-The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may work, but they have not been tested. You can use the Jovial Assembler by using the following methods. Options 2 and 3 require python to be installed on your system.:
 
-1. Download the `jovial.exe` file in the `dist` folder or clone the repo. 
-2. Run the `jovial.exe` file. This is a standalone executable that does not require Python to be installed. 
-  - This file is created using PyInstaller and is located in the `dist` folder. 
-  - The assembled file will be saved in the same directory as the executable.
-  - This file is only available for Windows. If you would like to run the assembler on another operating system, you will need to install Python 3.12 and run the assembler from the command line.
-  - Updated versions of the executable can be built by running the following command:
-    - `pyinstaller src/Jovial_Assembler.py --onefile --path src --name jovial --add-data='.\src\fonts\hdad-dotrice-1.001\dotrice-condensed.ttf':'fonts\hdad-dotrice-1.001'`
-3. If you want to run the assembler from the command line using the `jovial` with arguments, add the folder containing the `jovial.exe` file to your system's PATH variable.
-  - Follow [these instructions here if you are unfamiliar with this process](https://stackoverflow.com/questions/4822400/register-an-exe-so-you-can-run-it-from-any-command-line-in-windows).
+The Jovial Assembler is written in Python 3.12. Other Python 3 versions may work, but they have not been tested.
+
+### Standalone executables
+
+The `dist` folder contains standalone executables that do not require Python:
+
+- `jovial.exe` for 64-bit Windows.
+- `jovial-linux-x86_64` for 64-bit Linux systems using the x86-64 architecture and glibc 2.28 or newer.
+
+On Linux, make the downloaded file executable before running it:
+
+```bash
+chmod +x jovial-linux-x86_64
+./jovial-linux-x86_64 --help
+```
+
+On either platform, pass an input `.jov` file and the desired output filename:
+
+```bash
+jovial-linux-x86_64 -i program.jov -o program.pdf
+```
+
+The generated `.pdf`, `.16c`, or `.txt` file is written to the path supplied with `-o`. You can optionally put the executable on your system `PATH` and invoke it as `jovial`.
+
+### Building executables
+
+Both platforms use the checked-in `jovial.spec` PyInstaller definition. After installing Python 3.12 and the dependencies in `requirements.txt`, build on the target operating system (PyInstaller does not cross-compile):
+
+```bash
+# Linux
+./build-linux.sh
+
+# Windows (PowerShell)
+python -m PyInstaller --clean --noconfirm jovial.spec
+```
+
+The GitHub Actions workflow in `.github/workflows/build-executables.yml` also builds and tests downloadable Windows x86-64 and Linux x86-64 artifacts on every main-branch push, pull request, version tag, or manual run.
 
 
 ## Roadmap
@@ -52,8 +79,8 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
   - Write assembly programs to test the assembler’s functionality.
   - Verify that the generated keystroke sequences produce the expected results.
 ### 3. Write an installer for the Jovial Assembler **(complete for now)**
-  - I have a working executable that can be run on Windows. 
-  - You can add it to your path to run it from the command line.
+  - Standalone executables are available for Windows x86-64 and Linux x86-64.
+  - You can add the appropriate executable to your path to run it from the command line.
   - I hope to one day make a proper installer for the program so this is automated.
 ### 4. Extend the Jovial Assembler to new simulators **(complete)**
   - Add support for Jamie O'Connell's HP-16C Emulator.
@@ -65,7 +92,7 @@ The Jovial Assembler is written in Python 3.12. Other versions of Python 3 may w
 ### 6. Future hopes and dreams
   - Add support for the PX16C Kit. 
     - This is closed source, so this will require either cooperation from the developer or reverse engineering. 
-  - Add support for a linux and MacOS executable.
+  - Add support for a macOS executable.
   - Add the ability to combine multiple programs into 1 single file seamlessly so that you can keep a library of programs.
     - Need to be able to handle conflicting labels and memory addresses.
   - Figure out how to disable the traceback when the task is terminated manually. 
